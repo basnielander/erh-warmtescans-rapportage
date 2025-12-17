@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="erh.heatscans.reporting.client/erh.heatscans.reporting.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="ERH.HeatScans.Reporting.Server/ERH.HeatScans.Reporting.Server.csproj" />
+</Solution>
