@@ -1,24 +1,33 @@
-﻿<h1 id="tableLabel">Weather forecast</h1>
+<main class="main">
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>{{ title }}</h1>
+      <p>Sign in with Google to access your Drive files</p>
+    </div>
 
-<p>This component demonstrates fetching data from the server.</p>
+    <!-- Authentication Section -->
+    <div class="auth-section">
+      @if (isAuthLoading()) {
+      <div class="loading">Initializing authentication...</div>
+      } @else if (authError()) {
+      <div class="error">{{ authError() }}</div>
+      }
 
-<p *ngIf="!forecasts"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
-
-<table *ngIf="forecasts">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let forecast of forecasts">
-            <td>{{ forecast.date }}</td>
-            <td>{{ forecast.temperatureC }}</td>
-            <td>{{ forecast.temperatureF }}</td>
-            <td>{{ forecast.summary }}</td>
-        </tr>
-    </tbody>
-</table>
+      @if (!isAuthenticated()) {
+      <button class="btn btn-primary" (click)="onSignIn()" [disabled]="isAuthLoading()">
+        Sign in with Google
+      </button>
+      } @else {
+      <div class="user-info">
+        <img [src]="user()?.picture" [alt]="user()?.name" class="user-avatar" />
+        <div class="user-details">
+          <p class="user-name">{{ user()?.name }}</p>
+          <p class="user-email">{{ user()?.email }}</p>
+        </div>
+      </div>
+      <button class="btn btn-secondary" (click)="onSignOut()">Sign Out</button>
+      }
+    </div>   
+  </div>
+</main>

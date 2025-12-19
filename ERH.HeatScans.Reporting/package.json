@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@types/google.accounts": "^0.0.18"
+  }
+}
