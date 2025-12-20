@@ -28,6 +28,13 @@
       </div>
       <button class="btn btn-secondary" (click)="onSignOut()">Sign Out</button>
       }
-    </div>   
+    </div>    
+
+    <!-- Google Drive Browser Section -->
+    @if (isAuthenticated()) {
+    <div class="drive-section">
+      <app-google-drive-browser></app-google-drive-browser>
+    </div>
+    }
   </div>
 </main>
