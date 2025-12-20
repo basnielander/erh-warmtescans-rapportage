@@ -1,12 +1,9 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { GoogleUser, GoogleAuthResponse, DecodedToken } from '../models/google-auth.model';
 import { Injectable, signal, computed, effect } from '@angular/core';
 import { environment } from '../../environments/environment';
 
 /// <reference types="gapi" />
 declare const gapi: any;
 declare const google: any;
-
 
 export interface User {
   id: string;
@@ -33,16 +30,7 @@ export class AuthService {
   isAuthInitialized = this.isAuthInitializedSignal.asReadonly();
 
   private tokenClient: any = null;
-  private accessToken = signal<string | null>(null);
-
-
-
-
-
-  //private currentUserSubject: BehaviorSubject<GoogleUser | null>;
-  //public currentUser: Observable<GoogleUser | null>;
-  //private accessTokenSubject: BehaviorSubject<string | null>;
-  
+  private accessToken: string | null = null;
 
   constructor() {
     // Effect to log authentication state changes
@@ -50,16 +38,6 @@ export class AuthService {
       const user = this.userSignal();
       console.log('Auth state changed:', user ? 'Logged in' : 'Logged out');
     });
-    //const storedUser = localStorage.getItem('currentUser');
-    //const storedToken = localStorage.getItem('accessToken');
-    
-    //this.currentUserSubject = new BehaviorSubject<GoogleUser | null>(
-    //  storedUser ? JSON.parse(storedUser) : null
-    //);
-    //this.accessTokenSubject = new BehaviorSubject<string | null>(storedToken);
-    
-    //this.currentUser = this.currentUserSubject.asObservable();
-    //this.accessToken = this.accessTokenSubject.asObservable();
   }
 
   /**
@@ -108,7 +86,6 @@ export class AuthService {
    * Initialize GAPI client for Drive API
    */
   private async initGapiClient(): Promise<void> {
-    // apiKey: environment.googleApiKey,
     try {
       await gapi.client.init({
         discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
@@ -216,7 +193,7 @@ export class AuthService {
    * Get current access token
    */
   getAccessToken(): string | null {
-    return this.accessToken();
+    return this.accessToken;
   }
 
   /**
@@ -224,145 +201,6 @@ export class AuthService {
    */
   private handleSignOut(): void {
     this.userSignal.set(null);
-    this.accessToken.set(null);
+    this.accessToken = null;
   }
-
-  //public get currentUserValue(): GoogleUser | null {
-  //  return this.currentUserSubject.value;
-  //}
-
-  //public get accessTokenValue(): string | null {
-  //  return this.accessTokenSubject.value;
-  //}
-
-  //initializeGoogleAuth(clientId: string): Promise<void> {
-  //  return new Promise((resolve, reject) => {
-  //    if (google == null) {
-  //      reject('Google Identity Services not loaded');
-  //      return;
-  //    }
-
-  //    try {
-  //      google.accounts.id.initialize({
-  //        client_id: clientId,
-  //        callback: (response: GoogleAuthResponse) => this.handleCredentialResponse(response),
-  //        auto_select: false,
-  //        cancel_on_tap_outside: true,
-  //      });
-
-  //      // Initialize the token client once during auth setup
-  //      this.tokenClient = google.accounts.oauth2.initTokenClient({
-  //        client_id: clientId,
-  //        scope: 'https://www.googleapis.com/auth/drive',
-  //        callback: (tokenResponse: any) => {
-  //          console.log('Access Token Response:', tokenResponse);
-  //          if (tokenResponse && tokenResponse.access_token) {
-  //            localStorage.setItem('accessToken', tokenResponse.access_token);
-  //            this.accessTokenSubject.next(tokenResponse.access_token);
-  //          } else if (tokenResponse.error) {
-  //            console.error('Error getting access token:', tokenResponse.error);
-  //          }
-  //        },
-  //      });
-
-  //      resolve();
-  //    } catch (error) {
-  //      reject(error);
-  //    }
-  //  });
-  //}
-
-  //renderButton(element: HTMLElement): void {
-  //  google.accounts.id.renderButton(
-  //    element,
-  //    { 
-  //      theme: 'outline', 
-  //      size: 'large',
-  //      text: 'signin_with',
-  //      shape: 'rectangular',
-  //      logo_alignment: 'left'
-  //    }
-  //  );
-  //}
-
-  //private handleCredentialResponse(response: GoogleAuthResponse): void {
-  //  console.log("handleCredentialResponse")
-  //  const token = response.credential;
-  //  const decoded = this.parseJwt(token);
-    
-  //  const user: GoogleUser = {
-  //    email: decoded.email,
-  //    name: decoded.name,
-  //    picture: decoded.picture,
-  //    sub: decoded.sub
-  //  };
-
-  //  localStorage.setItem('currentUser', JSON.stringify(user));
-  //  localStorage.setItem('idToken', token);
-    
-  //  this.currentUserSubject.next(user);
-    
-  //  // Check if we have a valid access token, if not, it needs to be requested with user interaction
-  //  const storedAccessToken = localStorage.getItem('accessToken');
-  //  if (storedAccessToken) {
-  //    this.accessTokenSubject.next(storedAccessToken);
-  //  }
-  //  // Note: Don't automatically request access token here - it requires user gesture
-  //  // Call requestAccessToken() from a button click or user action instead
-  //}
-
-  //public requestAccessToken(): void {
-  //  if (!this.tokenClient) {
-  //    console.error('Token client not initialized. Call initializeGoogleAuth first.');
-  //    return;
-  //  }
-
-  //  // Check if we already have a valid token
-  //  const existingToken = localStorage.getItem('accessToken');
-  //  if (existingToken) {
-  //    this.accessTokenSubject.next(existingToken);
-  //    console.log('Using existing access token');
-  //    return;
-  //  }
-
-  //  console.log('Requesting new access token - requires user interaction');
-  //  // This MUST be called from a user gesture (button click, etc.)
-  //  try {
-  //    this.tokenClient.requestAccessToken({ prompt: '' });
-  //  } catch (error) {
-  //    console.error('Error requesting access token:', error);
-  //  }
-  //}
-
-  //private parseJwt(token: string): DecodedToken {
-  //  const base64Url = token.split('.')[1];
-  //  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  //  const jsonPayload = decodeURIComponent(
-  //    atob(base64)
-  //      .split('')
-  //      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-  //      .join('')
-  //  );
-  //  return JSON.parse(jsonPayload);
-  //}
-
-  //logout(): void {
-  //  localStorage.removeItem('currentUser');
-  //  localStorage.removeItem('idToken');
-  //  localStorage.removeItem('accessToken');
-  //  this.currentUserSubject.next(null);
-  //  this.accessTokenSubject.next(null);
-  //  google.accounts.id.disableAutoSelect();
-    
-  //  // Revoke the access token if it exists
-  //  if (this.tokenClient) {
-  //    google.accounts.oauth2.revoke(this.accessTokenValue || '', () => {
-  //      console.log('Access token revoked');
-  //    });
-  //  }
-  //}
-
-  //isAuthenticated(): boolean {
-  //  return this.currentUserValue !== null && this.accessTokenValue !== null;
-  //}
 }

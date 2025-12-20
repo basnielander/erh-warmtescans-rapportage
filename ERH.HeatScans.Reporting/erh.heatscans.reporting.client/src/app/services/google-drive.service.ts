@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GoogleDriveItem } from '../models/google-drive.model';
 import { AuthService } from './auth.service';
+import { GoogleDriveItem } from '../models/google-drive.model';
 
 @Injectable({
   providedIn: 'root'
