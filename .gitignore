@@ -419,3 +419,5 @@ FodyWeavers.xsd
 **/google-credentials.json
 **/appsettings.Development.json
 **/http-client.env.json
+**/Web.Debug.config
+**/launchSettings.json
