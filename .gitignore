@@ -416,6 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server/google-credentials.json
-/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server/appsettings.Development.json
-/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/http-client.env.json
+**/google-credentials.json
+**/appsettings.Development.json
+**/http-client.env.json

@@ -1,0 +1,34 @@
+
+#
+## Setup Address Folder (from Angular app - proxied)
+# When calling from Angular app running on port 49806, use the proxied path
+
+POST {{BaseUrl}}/api/user/googledrive?addressFolderId={{AddressFolderId}}
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+###
+
+### Get Folder Structure
+# Gets the hierarchical folder and file structure from Google Drive
+
+GET {{BaseUrl}}/api/user/googledrive/structure
+Authorization: Bearer {{AccessToken}}
+
+###
+
+### Get Files (Flat List)
+# Gets a flat list of all files from Google Drive folder
+
+GET {{BaseUrl}}/api/user/googledrive/files
+Authorization: Bearer {{AccessToken}}
+
+###
+
+### Get Files from Specific Folder
+# Gets files from a specific folder ID
+
+GET {{BaseUrl}}/api/user/googledrive/files?folderId={{AddressFolderId}}
+Authorization: Bearer {{AccessToken}}
+
+###
