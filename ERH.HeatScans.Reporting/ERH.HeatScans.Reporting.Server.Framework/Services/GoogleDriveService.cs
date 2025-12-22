@@ -7,6 +7,9 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using ERH.HeatScans.Reporting.Server.Framework.Models;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Services
 {
@@ -194,7 +197,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 }
 
                 // Find image files in the address folder (not in subfolders)
-                var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".tiff" };
+                var imageExtensions = new[] { ".jpg", ".jpeg" };
                 var imageFiles = addressFolderItems.Where(item =>
                     !item.IsFolder &&
                     imageExtensions.Any(ext => item.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
@@ -266,6 +269,146 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
             var copiedFile = await request.ExecuteAsync(cancellationToken);
             return copiedFile.Id;
+        }
+
+        public async Task<Report> GetReportAsync(string accessToken, string addressFolderId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var driveService = CreateDriveService(accessToken);
+
+                // Get all items in the address folder
+                var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                // Find "2. Bewerkt" subfolder
+                var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                    item.IsFolder && item.Name == "2. Bewerkt");
+
+                if (bewerktFolder == null)
+                {
+                    throw new Exception($"Subfolder '2. Bewerkt' not found in folder {addressFolderId}");
+                }
+
+                string bewerktFolderId = bewerktFolder.Id;
+
+                // Get all items in "2. Bewerkt" folder
+                var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                // Look for report.json file
+                var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                    !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                Report report;
+
+                if (reportFile != null)
+                {
+                    // Read existing report.json
+                    report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+                }
+                else
+                {
+                    // Create new report
+                    report = new Report
+                    {
+                        FolderId = addressFolderId,
+                        Images = new List<ImageInfo>()
+                    };
+                }
+
+                // Get all image files from "2. Bewerkt" folder
+                var imageExtensions = new[] { ".jpg", ".jpeg" };
+                var imageFiles = bewerktFolderItems.Where(item =>
+                    !item.IsFolder &&
+                    imageExtensions.Any(ext => item.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+
+                // Update report with current images
+                report.FolderId = addressFolderId;
+                report.Images = imageFiles.Select(img => new ImageInfo
+                {
+                    Id = img.Id,
+                    Name = img.Name,
+                    MimeType = img.MimeType,
+                    Size = img.Size,
+                    ModifiedTime = img.ModifiedTime?.ToString("o") // ISO 8601 format
+                }).ToList();
+
+                // Save or update report.json
+                if (reportFile != null)
+                {
+                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+                }
+                else
+                {
+                    await CreateReportFileAsync(driveService, bewerktFolderId, report, cancellationToken);
+                }
+
+                return report;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting report for folder ID: {addressFolderId}", ex);
+            }
+        }
+
+        private async Task<Report> ReadReportFileAsync(DriveService driveService, string fileId, CancellationToken cancellationToken)
+        {
+            var request = driveService.Files.Get(fileId);
+            var stream = new MemoryStream();
+            await request.DownloadAsync(stream, cancellationToken);
+            
+            stream.Position = 0;
+            using (var reader = new StreamReader(stream))
+            {
+                var json = await reader.ReadToEndAsync();
+                return JsonConvert.DeserializeObject<Report>(json) ?? new Report();
+            }
+        }
+
+        private async Task<string> CreateReportFileAsync(DriveService driveService, string parentFolderId, Report report, CancellationToken cancellationToken)
+        {
+            var json = JsonConvert.SerializeObject(report, Formatting.Indented);
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+            {
+                Name = "report.json",
+                MimeType = "application/json",
+                Parents = new List<string> { parentFolderId }
+            };
+
+            using (var stream = new MemoryStream(bytes))
+            {
+                var request = driveService.Files.Create(fileMetadata, stream, "application/json");
+                request.Fields = "id";
+                var file = await request.UploadAsync(cancellationToken);
+                
+                if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
+                {
+                    throw new Exception("Failed to upload report.json file");
+                }
+
+                return request.ResponseBody.Id;
+            }
+        }
+
+        private async Task UpdateReportFileAsync(DriveService driveService, string fileId, Report report, CancellationToken cancellationToken)
+        {
+            var json = JsonConvert.SerializeObject(report, Formatting.Indented);
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            var fileMetadata = new Google.Apis.Drive.v3.Data.File();
+
+            using (var stream = new MemoryStream(bytes))
+            {
+                var request = driveService.Files.Update(fileMetadata, fileId, stream, "application/json");
+                var file = await request.UploadAsync(cancellationToken);
+                
+                if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
+                {
+                    throw new Exception("Failed to update report.json file");
+                }
+            }
         }
     }
 }

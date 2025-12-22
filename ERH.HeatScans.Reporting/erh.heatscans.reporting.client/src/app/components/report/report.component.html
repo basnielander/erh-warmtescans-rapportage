@@ -4,7 +4,29 @@
     <h2>📊 Report: {{ folderName }}</h2>
   </div>
 
-  <div class="report-content">
+  <!-- Setup Status -->
+  <div *ngIf="isSettingUp" class="setup-status loading">
+    <div class="spinner"></div>
+    <p>Setting up address folder...</p>
+  </div>
+
+  <div *ngIf="setupError" class="setup-status error">
+    <p>⚠️ {{ setupError }}</p>
+    <button (click)="setupAddressFolder()" class="btn-retry">Retry Setup</button>
+  </div>
+
+  <!-- Report Loading Status -->
+  <div *ngIf="isLoadingReport" class="setup-status loading">
+    <div class="spinner"></div>
+    <p>Loading report...</p>
+  </div>
+
+  <div *ngIf="reportError" class="setup-status error">
+    <p>⚠️ {{ reportError }}</p>
+    <button (click)="loadReport()" class="btn-retry">Retry Loading Report</button>
+  </div>
+
+  <div class="report-content" *ngIf="!isSettingUp && !isLoadingReport">
     <div class="map-section">
       <h3>📍 Location Map</h3>
       <app-map-display [address]="folderName"></app-map-display>
@@ -18,6 +40,33 @@
       <div class="info-item">
         <strong>Folder ID:</strong> {{ folderId }}
       </div>
+      <div class="info-item" *ngIf="addressReport()">
+        <strong>Total Images:</strong> {{ addressReport()!.images.length }}
+      </div>
+    </div>
+
+    <!-- Images Section -->
+    <div class="images-section" *ngIf="addressReport() && addressReport()!.images.length > 0">
+      <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
+      <div class="images-grid">
+        <div *ngFor="let image of addressReport()!.images" class="image-card">
+          <div class="image-icon">🖼️</div>
+          <div class="image-info">
+            <div class="image-name" [title]="image.name">{{ image.name }}</div>
+            <div class="image-meta">
+              <span *ngIf="image.size" class="image-size">{{ formatFileSize(image.size) }}</span>
+              <span *ngIf="image.modifiedTime" class="image-date">
+                {{ image.modifiedTime | date:'short' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Images Message -->
+    <div class="no-images" *ngIf="addressReport() && addressReport()!.images.length === 0">
+      <p>📭 No images found in the "2. Bewerkt" folder.</p>
     </div>
   </div>
 </div>

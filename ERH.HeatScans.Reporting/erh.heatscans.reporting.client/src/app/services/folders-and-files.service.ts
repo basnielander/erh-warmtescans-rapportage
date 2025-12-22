@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GoogleDriveItem } from '../models/google-drive.model';
+import { Report } from '../models/report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,20 @@ export class GoogleDriveService {
       : `${this.baseUrl}/files`;
     
     return this.http.get<GoogleDriveItem[]>(url, { headers });
+  }
+
+  setupAddressFolder(addressFolderId: string): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}?addressFolderId=${addressFolderId}`;
+    
+    return this.http.post<void>(url, null, { headers });
+  }
+
+  getReport(folderId: string): Observable<Report> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/report?folderId=${folderId}`;
+    
+    return this.http.get<Report>(url, { headers });
   }
 
   private getAuthHeaders(): HttpHeaders {

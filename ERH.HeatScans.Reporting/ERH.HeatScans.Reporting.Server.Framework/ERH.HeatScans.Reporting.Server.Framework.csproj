@@ -207,6 +207,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\GoogleDriveItem.cs" />
+    <Compile Include="Models\Report.cs" />
     <Compile Include="Services\GoogleDriveService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
