@@ -30,6 +30,13 @@
       }
     </div>    
 
+    <!-- Map Display Section -->
+    @if (isAuthenticated()) {
+    <div class="map-section">
+      <app-map-display address="Pruimengaarde 8, Houten, Netherlands"></app-map-display>
+    </div>
+    }
+
     <!-- Google Drive Browser Section -->
     @if (isAuthenticated()) {
     <div class="drive-section">

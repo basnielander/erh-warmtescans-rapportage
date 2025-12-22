@@ -213,3 +213,8 @@ main {
 .drive-section {
   padding: 2rem;
 }
+
+.map-section {
+  padding: 2rem;
+  border-bottom: 1px solid var(--gray-400);
+}

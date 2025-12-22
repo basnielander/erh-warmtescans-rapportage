@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { GoogleDriveService } from './services/google-drive.service';
 import { GoogleDriveBrowserComponent } from './components/google-drive-browser/google-drive-browser.component';
+import { MapDisplayComponent } from './components/map-display/map-display.component';
 
 @Component({
   selector: 'app-root',
-  imports: [GoogleDriveBrowserComponent],
+  imports: [GoogleDriveBrowserComponent, MapDisplayComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -8,13 +8,13 @@ using Google.Type;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
-    [RoutePrefix("api/user/maps")]
+    [RoutePrefix("api/maps")]
     public class MapsController : ApiController
     {
-        // GET api/user/maps/image?address=...&zoom=16&size=600x400
+        // GET api/maps/image?address=...&zoom=16&size=600x400
         [HttpGet]
         [Route("image")]
-        public IHttpActionResult GetStaticMapImage(string address, int zoom = 16, string size = "600x400", CancellationToken cancellationToken = default)
+        public IHttpActionResult GetStaticMapImage(string address, int zoom = 19, string size = "600x400", CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(address))
                 return BadRequest("Address is required.");

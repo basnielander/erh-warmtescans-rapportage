@@ -4,5 +4,5 @@
 
 ### Get static map image URL for the address
 # @name getMap
-GET {{BaseUrl}}/api/user/maps/image?address={{address}}&zoom={{zoom}}&size={{size}}
+GET {{BaseUrl}}/api/maps/image?address={{address}}&zoom={{zoom}}&size={{size}}
 Accept: application/json
