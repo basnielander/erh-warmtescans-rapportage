@@ -1,13 +1,13 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { GoogleDriveItem } from '../../models/google-drive.model';
-import { MapDisplayComponent } from '../map-display/map-display.component';
 
 @Component({
   selector: 'app-google-drive-browser',
   standalone: true,
-  imports: [CommonModule, MapDisplayComponent],
+  imports: [CommonModule],
   templateUrl: './google-drive-browser.component.html',
   styleUrl: './google-drive-browser.component.css'
 })
@@ -17,15 +17,11 @@ export class GoogleDriveBrowserComponent implements OnInit {
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
   expandedFolders = signal<Set<string>>(new Set());
-  selectedThirdLevelFolder = signal<GoogleDriveItem | null>(null);
 
-  // Computed signal for selected folder address
-  selectedFolderAddress = computed(() => {
-    const folder = this.selectedThirdLevelFolder();
-    return folder?.name ?? '';
-  });
-
-  constructor(private googleDriveService: GoogleDriveService) {}
+  constructor(
+    private googleDriveService: GoogleDriveService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadFolderStructure();
@@ -57,9 +53,9 @@ export class GoogleDriveBrowserComponent implements OnInit {
   }
 
   toggleFolder(folderId: string, item?: GoogleDriveItem, level?: number): void {
-    // If this is a third-level folder (level 2, since root is 0), handle it specially
+    // If this is a third-level folder (level 2, since root is 0), navigate to report page
     if (level === 2 && item?.isFolder) {
-      this.onThirdLevelFolderClick(item);
+      this.navigateToReport(item);
       return;
     }
 
@@ -75,22 +71,9 @@ export class GoogleDriveBrowserComponent implements OnInit {
     });
   }
 
-  onThirdLevelFolderClick(folder: GoogleDriveItem): void {
-    // Toggle selection
-    const currentSelection = this.selectedThirdLevelFolder();
-    if (currentSelection?.id === folder.id) {
-      this.selectedThirdLevelFolder.set(null);
-    } else {
-      this.selectedThirdLevelFolder.set(folder);
-    }
-  }
-
-  isThirdLevelFolderSelected(folderId: string): boolean {
-    return this.selectedThirdLevelFolder()?.id === folderId;
-  }
-
-  clearSelection(): void {
-    this.selectedThirdLevelFolder.set(null);
+  navigateToReport(folder: GoogleDriveItem): void {
+    // Navigate to the report page with folder information
+    this.router.navigate(['/report', folder.id, folder.name]);
   }
 
   isFolderExpanded(folderId: string): boolean {

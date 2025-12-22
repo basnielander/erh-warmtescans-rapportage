@@ -30,17 +30,10 @@
       }
     </div>    
 
-    <!-- Map Display Section -->
+    <!-- Router Outlet for Navigation -->
     @if (isAuthenticated()) {
-    <!--<div class="map-section">
-      <app-map-display address="Pruimengaarde 8"></app-map-display>
-    </div>-->
-    }
-
-    <!-- Google Drive Browser Section -->
-    @if (isAuthenticated()) {
-    <div class="drive-section">
-      <app-google-drive-browser></app-google-drive-browser>
+    <div class="content-section">
+      <router-outlet></router-outlet>
     </div>
     }
   </div>

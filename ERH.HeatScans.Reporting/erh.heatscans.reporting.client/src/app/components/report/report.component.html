@@ -1,0 +1,23 @@
+<div class="report-container">
+  <div class="report-header">
+    <button (click)="goBack()" class="btn-back">← Back to Browser</button>
+    <h2>📊 Report: {{ folderName }}</h2>
+  </div>
+
+  <div class="report-content">
+    <div class="map-section">
+      <h3>📍 Location Map</h3>
+      <app-map-display [address]="folderName"></app-map-display>
+    </div>
+
+    <div class="info-section">
+      <h3>ℹ️ Folder Information</h3>
+      <div class="info-item">
+        <strong>Folder Name:</strong> {{ folderName }}
+      </div>
+      <div class="info-item">
+        <strong>Folder ID:</strong> {{ folderId }}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { GoogleDriveService } from './services/folders-and-files.service';
-import { GoogleDriveBrowserComponent } from './components/google-drive-browser/google-drive-browser.component';
-import { MapDisplayComponent } from './components/map-display/map-display.component';
 
 @Component({
   selector: 'app-root',
-  imports: [GoogleDriveBrowserComponent, MapDisplayComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
