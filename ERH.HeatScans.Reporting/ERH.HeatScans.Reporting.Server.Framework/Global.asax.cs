@@ -23,7 +23,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework
         private void ConfigureDependencyInjection(UnityContainer container)
         {
             // Register services
-            container.RegisterType<UserGoogleDriveService>();
+            container.RegisterType<GoogleDriveService>();
         }
                
     }

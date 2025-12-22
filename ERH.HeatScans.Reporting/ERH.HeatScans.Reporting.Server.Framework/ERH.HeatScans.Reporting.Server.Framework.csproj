@@ -196,39 +196,30 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
-    <Content Include="WEB_CONFIG_TRANSFORM_FIX.md" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\MapsController.cs" />
-    <Compile Include="Controllers\UserGoogleDriveController.cs" />
+    <Compile Include="Controllers\FoldersAndFilesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\GoogleDriveItem.cs" />
-    <Compile Include="Services\UserGoogleDriveService.cs" />
+    <Compile Include="Services\GoogleDriveService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NUGET_TROUBLESHOOTING.md" />
     <Content Include="CleanAndRestore.bat" />
-    <Content Include="NUGET_FIX_SUMMARY.md" />
-    <Content Include="ConfigurePort7209.ps1" />
-    <Content Include="FIX_HTTPS_PORT_7209.md" />
-    <Content Include="CORS_FIX_SUMMARY.md" />
     <Content Include="http-client.env.json" />
     <Content Include="Maps.http" />
-    <Content Include="NET_FRAMEWORK_ENV_VARS.md" />
     <None Include="packages.config" />
     <Content Include="RestorePackages.ps1" />
     <Content Include="RestorePackages.bat" />
-    <Content Include="PORT_7209_SETUP.md" />
-    <Content Include="QUICK_PORT_CHANGE.md" />
     <Content Include="Setup-IISExpressSSL.ps1" />
     <Content Include="UserGoogleDrive.http" />
     <Content Include="protos\google\type\timeofday.proto" />
@@ -287,10 +278,7 @@
     <Content Include="protos\google\api\backend.proto" />
     <Content Include="protos\google\api\auth.proto" />
     <Content Include="protos\google\api\annotations.proto" />
-    <Content Include="Web.config.user" />
     <Content Include="SetEnvVars.ps1" />
-    <Content Include="QUICK_FIX_ENV_VARS.md" />
-    <Content Include="README_ENV_VARS.md" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

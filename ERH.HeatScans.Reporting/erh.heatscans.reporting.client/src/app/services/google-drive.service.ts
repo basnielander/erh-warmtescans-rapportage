@@ -8,7 +8,7 @@ import { GoogleDriveItem } from '../models/google-drive.model';
   providedIn: 'root'
 })
 export class GoogleDriveService {
-  private baseUrl = 'https://localhost:7209/api/user/googledrive';
+  private baseUrl = 'https://localhost:7209/api/folders-and-files';
 
   constructor(
     private http: HttpClient,

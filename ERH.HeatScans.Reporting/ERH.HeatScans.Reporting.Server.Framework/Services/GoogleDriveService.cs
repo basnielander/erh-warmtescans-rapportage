@@ -10,7 +10,7 @@ using ERH.HeatScans.Reporting.Server.Framework.Models;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Services
 {
-    public class UserGoogleDriveService
+    public class GoogleDriveService
     {
         public async Task<GoogleDriveItem> GetFolderStructureAsync(string accessToken, string folderId = null, CancellationToken cancellationToken = default)
         {

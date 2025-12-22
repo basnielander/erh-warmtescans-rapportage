@@ -7,12 +7,12 @@ using ERH.HeatScans.Reporting.Server.Framework.Services;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
-    [RoutePrefix("api/user/googledrive")]
-    public class UserGoogleDriveController : ApiController
+    [RoutePrefix("api/folders-and-files")]
+    public class FoldersAndFilesController : ApiController
     {
-        private readonly UserGoogleDriveService _driveService;
+        private readonly GoogleDriveService _driveService;
 
-        public UserGoogleDriveController(UserGoogleDriveService driveService)
+        public FoldersAndFilesController(GoogleDriveService driveService)
         {
             _driveService = driveService;
         }
