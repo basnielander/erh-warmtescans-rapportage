@@ -1,7 +1,10 @@
 using ERH.HeatScans.Reporting.Server.Framework.Services;
+using Google.Maps.Places.V1;
+using Google.Type;
 using System;
 using System.Configuration;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -126,6 +129,39 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 var report = await _driveService.GetReportAsync(accessToken, folderId, cancellationToken);
                 return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpGet]
+        [Route("image")]
+        public async Task<IHttpActionResult> GetImage(string fileId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = GetAccessTokenFromHeader();
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+
+                if (string.IsNullOrWhiteSpace(fileId))
+                {
+                    return BadRequest("fileId is required");
+                }
+
+                var result = await _driveService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
+                
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new ByteArrayContent(result.Data)
+                };
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(result.MimeType);
+                
+                return ResponseMessage(response);
             }
             catch (Exception ex)
             {

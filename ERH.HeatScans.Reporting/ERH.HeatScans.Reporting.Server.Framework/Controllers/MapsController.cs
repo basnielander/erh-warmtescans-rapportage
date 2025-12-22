@@ -65,17 +65,17 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             // Download the image and return bytes
             using var httpClient = new HttpClient();
             
-                var httpResponse = httpClient.GetAsync(url, cancellationToken).Result;
-                if (!httpResponse.IsSuccessStatusCode)
-                    return InternalServerError(new HttpRequestException($"Failed to download map image: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}"));
+            var httpResponse = httpClient.GetAsync(url, cancellationToken).Result;
+            if (!httpResponse.IsSuccessStatusCode)
+                return InternalServerError(new HttpRequestException($"Failed to download map image: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}"));
 
-                var bytes = httpResponse.Content.ReadAsByteArrayAsync().Result;
-                var result = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new ByteArrayContent(bytes)
-                };
-                result.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                return ResponseMessage(result);
+            var bytes = httpResponse.Content.ReadAsByteArrayAsync().Result;
+            var result = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(bytes)
+            };
+            result.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+            return ResponseMessage(result);
             
         }
     }

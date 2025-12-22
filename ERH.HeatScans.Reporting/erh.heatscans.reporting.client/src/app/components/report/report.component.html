@@ -1,44 +1,44 @@
 <div class="report-container">
   <div class="report-header">
     <button (click)="goBack()" class="btn-back">← Back to Browser</button>
-    <h2>📊 Report: {{ folderName }}</h2>
+    <h2>📊 Report: {{ folderName() }}</h2>
   </div>
 
   <!-- Setup Status -->
-  <div *ngIf="isSettingUp" class="setup-status loading">
+  <div *ngIf="isSettingUp()" class="setup-status loading">
     <div class="spinner"></div>
     <p>Setting up address folder...</p>
   </div>
 
-  <div *ngIf="setupError" class="setup-status error">
-    <p>⚠️ {{ setupError }}</p>
+  <div *ngIf="setupError()" class="setup-status error">
+    <p>⚠️ {{ setupError() }}</p>
     <button (click)="setupAddressFolder()" class="btn-retry">Retry Setup</button>
   </div>
 
   <!-- Report Loading Status -->
-  <div *ngIf="isLoadingReport" class="setup-status loading">
+  <div *ngIf="isLoadingReport()" class="setup-status loading">
     <div class="spinner"></div>
     <p>Loading report...</p>
   </div>
 
-  <div *ngIf="reportError" class="setup-status error">
-    <p>⚠️ {{ reportError }}</p>
+  <div *ngIf="reportError()" class="setup-status error">
+    <p>⚠️ {{ reportError() }}</p>
     <button (click)="loadReport()" class="btn-retry">Retry Loading Report</button>
   </div>
 
-  <div class="report-content" *ngIf="!isSettingUp && !isLoadingReport">
+  <div class="report-content" *ngIf="!isSettingUp() && !isLoadingReport()">
     <div class="map-section">
       <h3>📍 Location Map</h3>
-      <app-map-display [address]="folderName"></app-map-display>
+      <app-map-display [address]="folderName()"></app-map-display>
     </div>
 
     <div class="info-section">
       <h3>ℹ️ Folder Information</h3>
       <div class="info-item">
-        <strong>Folder Name:</strong> {{ folderName }}
+        <strong>Folder Name:</strong> {{ folderName() }}
       </div>
       <div class="info-item">
-        <strong>Folder ID:</strong> {{ folderId }}
+        <strong>Folder ID:</strong> {{ folderId() }}
       </div>
       <div class="info-item" *ngIf="addressReport()">
         <strong>Total Images:</strong> {{ addressReport()!.images.length }}
@@ -50,7 +50,22 @@
       <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
       <div class="images-grid">
         <div *ngFor="let image of addressReport()!.images" class="image-card">
-          <div class="image-icon">🖼️</div>
+          <div class="image-container">
+            <img 
+              *ngIf="getImageUrl(image.id); else loadingImage"
+              [src]="getImageUrl(image.id)" 
+              [alt]="image.name"
+              [title]="image.name"
+              class="image-thumbnail"
+              loading="lazy"
+            />
+            <ng-template #loadingImage>
+              <div class="image-loading">
+                <div class="spinner-small"></div>
+                <p>Loading...</p>
+              </div>
+            </ng-template>
+          </div>
           <div class="image-info">
             <div class="image-name" [title]="image.name">{{ image.name }}</div>
             <div class="image-meta">

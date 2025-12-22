@@ -46,6 +46,16 @@ export class GoogleDriveService {
     return this.http.get<Report>(url, { headers });
   }
 
+  getImage(fileId: string): Observable<Blob> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/image?fileId=${fileId}`;
+    
+    return this.http.get(url, { 
+      headers, 
+      responseType: 'blob' 
+    });
+  }
+
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
     console.log("token", token);

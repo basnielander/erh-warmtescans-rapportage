@@ -351,6 +351,32 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
+
+        internal async Task<FileDownloadResult> GetFileBytesAsync(string accessToken, string fileId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var driveService = CreateDriveService(accessToken);
+                
+                var metadataRequest = driveService.Files.Get(fileId);
+                metadataRequest.Fields = "id, name, mimeType";
+                var fileMetadata = await metadataRequest.ExecuteAsync(cancellationToken);
+                
+                var request = driveService.Files.Get(fileId);
+                var stream = new MemoryStream();
+                await request.DownloadAsync(stream, cancellationToken);
+                
+                return new FileDownloadResult
+                {
+                    Data = stream.ToArray(),
+                    MimeType = fileMetadata.MimeType
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error downloading file with ID: {fileId}", ex);
+            }
+        }
         private async Task<Report> ReadReportFileAsync(DriveService driveService, string fileId, CancellationToken cancellationToken)
         {
             var request = driveService.Files.Get(fileId);
