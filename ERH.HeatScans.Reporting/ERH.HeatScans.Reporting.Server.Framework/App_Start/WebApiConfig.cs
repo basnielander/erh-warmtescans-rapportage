@@ -1,5 +1,6 @@
 using System.Web.Http;
 using System.Web.Http.Cors;
+using Newtonsoft.Json.Serialization;
 
 namespace ERH.HeatScans.Reporting.Server.Framework
 {
@@ -30,6 +31,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework
             var json = config.Formatters.JsonFormatter;
             json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             json.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            
+            // Use camel case for JSON serialization
+            json.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            
             config.Formatters.Remove(config.Formatters.XmlFormatter);
         }
     }

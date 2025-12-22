@@ -15,11 +15,9 @@ export class GoogleDriveService {
     private authService: AuthService
   ) {}
 
-  getFolderStructure(folderId?: string): Observable<GoogleDriveItem> {
+  getFolderStructure(): Observable<GoogleDriveItem> {
     const headers = this.getAuthHeaders();
-    const url = folderId 
-      ? `${this.baseUrl}/structure?folderId=${folderId}`
-      : `${this.baseUrl}/structure`;
+    const url = `${this.baseUrl}/users`;
     
     return this.http.get<GoogleDriveItem>(url, { headers });
   }

@@ -12,10 +12,8 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 {
     public class GoogleDriveService
     {
-        public async Task<GoogleDriveItem> GetFolderStructureAsync(string accessToken, string folderId = null, CancellationToken cancellationToken = default)
+        public async Task<GoogleDriveItem> GetFolderStructureAsync(string accessToken, string folderId, CancellationToken cancellationToken = default)
         {
-            folderId = folderId ?? "1A9-OGvD5LDPzFggsPNG7PF3pKl9xcHvQ";
-
             try
             {
                 var driveService = CreateDriveService(accessToken);

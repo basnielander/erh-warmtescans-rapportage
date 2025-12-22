@@ -217,6 +217,8 @@
     <Content Include="CleanAndRestore.bat" />
     <Content Include="http-client.env.json" />
     <Content Include="Maps.http" />
+    <Content Include="CAMEL_CASE_CHANGE.md" />
+    <Content Include="CAMEL_CASE_QUICK_REF.md" />
     <None Include="packages.config" />
     <Content Include="RestorePackages.ps1" />
     <Content Include="RestorePackages.bat" />
