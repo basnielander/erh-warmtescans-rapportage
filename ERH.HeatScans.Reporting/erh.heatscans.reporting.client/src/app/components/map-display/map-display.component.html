@@ -1,25 +1,25 @@
 <div class="map-container">
-  <h3>Map for: {{ address }}</h3>
+  <h3>Map for: {{ address() }}</h3>
   
   <div class="map-content">
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="loading">
+    <div *ngIf="isLoading()" class="loading">
       <div class="spinner"></div>
       <p>Loading map...</p>
     </div>
 
     <!-- Error State -->
-    <div *ngIf="error && !isLoading" class="error">
-      <p class="error-message">{{ error }}</p>
+    <div *ngIf="error() && !isLoading()" class="error">
+      <p class="error-message">{{ error() }}</p>
       <button (click)="reload()" class="retry-button">Retry</button>
     </div>
 
     <!-- Map Image -->
-    <div *ngIf="imageUrl && !isLoading && !error" class="map-image-wrapper">
-      <img [src]="imageUrl" [alt]="'Map of ' + address" class="map-image" />
+    <div *ngIf="imageUrl() && !isLoading() && !error()" class="map-image-wrapper">
+      <img [src]="imageUrl()" [alt]="'Map of ' + address()" class="map-image" />
       <div class="map-info">
-        <p><strong>Address:</strong> {{ address }}</p>
-        <p><strong>Zoom:</strong> {{ zoom }}</p>
+        <p><strong>Address:</strong> {{ address() }}</p>
+        <p><strong>Zoom:</strong> {{ zoom() }}</p>
         <button (click)="reload()" class="reload-button">Reload Map</button>
       </div>
     </div>

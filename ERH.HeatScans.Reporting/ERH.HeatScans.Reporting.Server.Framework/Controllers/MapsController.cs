@@ -19,6 +19,13 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             if (string.IsNullOrWhiteSpace(address))
                 return BadRequest("Address is required.");
 
+            if (!address.Contains(",", StringComparison.OrdinalIgnoreCase))
+            {
+                address += ", Houten";
+            }
+            
+            address += ", Netherlands";
+
             // Try to get API key from AppSettings first, then fall back to environment variable
             var apiKey = ConfigurationManager.AppSettings["GoogleMapsApiKey"];
             if (string.IsNullOrWhiteSpace(apiKey))

@@ -1,20 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { GoogleDriveItem } from '../../models/google-drive.model';
+import { MapDisplayComponent } from '../map-display/map-display.component';
 
 @Component({
   selector: 'app-google-drive-browser',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MapDisplayComponent],
   templateUrl: './google-drive-browser.component.html',
   styleUrl: './google-drive-browser.component.css'
 })
 export class GoogleDriveBrowserComponent implements OnInit {
-  folderStructure: GoogleDriveItem | null = null;
-  isLoading = false;
-  error: string | null = null;
-  expandedFolders: Set<string> = new Set();
+  // State signals
+  folderStructure = signal<GoogleDriveItem | null>(null);
+  isLoading = signal<boolean>(false);
+  error = signal<string | null>(null);
+  expandedFolders = signal<Set<string>>(new Set());
+  selectedThirdLevelFolder = signal<GoogleDriveItem | null>(null);
+
+  // Computed signal for selected folder address
+  selectedFolderAddress = computed(() => {
+    const folder = this.selectedThirdLevelFolder();
+    return folder?.name ?? '';
+  });
 
   constructor(private googleDriveService: GoogleDriveService) {}
 
@@ -23,55 +32,91 @@ export class GoogleDriveBrowserComponent implements OnInit {
   }
 
   loadFolderStructure(): void {
-    this.isLoading = true;
-    this.error = null;
+    this.isLoading.set(true);
+    this.error.set(null);
 
     this.googleDriveService.getFolderStructure().subscribe({
       next: (data) => {
-        this.folderStructure = data;
+        this.folderStructure.set(data);
         // Expand root folder by default
         if (data?.id) {
-          this.expandedFolders.add(data.id);
+          this.expandedFolders.update(folders => {
+            const newSet = new Set(folders);
+            newSet.add(data.id);
+            return newSet;
+          });
         }
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
       error: (err) => {
-        this.error = 'Failed to load folder structure: ' + (err.message || 'Unknown error');
-        this.isLoading = false;
+        this.error.set('Failed to load folder structure: ' + (err.message || 'Unknown error'));
+        this.isLoading.set(false);
         console.error('Error loading folder structure:', err);
       }
     });
   }
 
-  toggleFolder(folderId: string): void {
-    if (this.expandedFolders.has(folderId)) {
-      this.expandedFolders.delete(folderId);
+  toggleFolder(folderId: string, item?: GoogleDriveItem, level?: number): void {
+    // If this is a third-level folder (level 2, since root is 0), handle it specially
+    if (level === 2 && item?.isFolder) {
+      this.onThirdLevelFolderClick(item);
+      return;
+    }
+
+    // Normal expand/collapse behavior
+    this.expandedFolders.update(folders => {
+      const newSet = new Set(folders);
+      if (newSet.has(folderId)) {
+        newSet.delete(folderId);
+      } else {
+        newSet.add(folderId);
+      }
+      return newSet;
+    });
+  }
+
+  onThirdLevelFolderClick(folder: GoogleDriveItem): void {
+    // Toggle selection
+    const currentSelection = this.selectedThirdLevelFolder();
+    if (currentSelection?.id === folder.id) {
+      this.selectedThirdLevelFolder.set(null);
     } else {
-      this.expandedFolders.add(folderId);
+      this.selectedThirdLevelFolder.set(folder);
     }
   }
 
+  isThirdLevelFolderSelected(folderId: string): boolean {
+    return this.selectedThirdLevelFolder()?.id === folderId;
+  }
+
+  clearSelection(): void {
+    this.selectedThirdLevelFolder.set(null);
+  }
+
   isFolderExpanded(folderId: string): boolean {
-    return this.expandedFolders.has(folderId);
+    return this.expandedFolders().has(folderId);
   }
 
   expandAll(): void {
-    if (this.folderStructure) {
-      this.expandAllRecursive(this.folderStructure);
+    const structure = this.folderStructure();
+    if (structure) {
+      this.expandAllRecursive(structure);
     }
   }
 
   collapseAll(): void {
-    this.expandedFolders.clear();
-    // Keep root expanded
-    if (this.folderStructure?.id) {
-      this.expandedFolders.add(this.folderStructure.id);
-    }
+    const rootId = this.folderStructure()?.id;
+    this.expandedFolders.set(rootId ? new Set([rootId]) : new Set());
   }
 
   private expandAllRecursive(item: GoogleDriveItem): void {
     if (item.isFolder) {
-      this.expandedFolders.add(item.id);
+      this.expandedFolders.update(folders => {
+        const newSet = new Set(folders);
+        newSet.add(item.id);
+        return newSet;
+      });
+      
       if (item.children && item.children.length > 0) {
         item.children.forEach(child => this.expandAllRecursive(child));
       }

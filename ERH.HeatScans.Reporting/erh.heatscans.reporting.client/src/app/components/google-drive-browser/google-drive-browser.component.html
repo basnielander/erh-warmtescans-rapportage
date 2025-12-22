@@ -1,55 +1,66 @@
 <div class="google-drive-browser">
   <div class="header">
     <h2>Google Drive Browser</h2>
-    <div *ngIf="folderStructure && !isLoading" class="actions">
+    <div *ngIf="folderStructure() && !isLoading()" class="actions">
       <button (click)="expandAll()" class="btn-action">Expand All</button>
       <button (click)="collapseAll()" class="btn-action">Collapse All</button>
       <button (click)="loadFolderStructure()" class="btn-action">Refresh</button>
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="loading">
+  <div *ngIf="isLoading()" class="loading">
     <div class="spinner"></div>
     <p>Loading folder structure...</p>
   </div>
 
-  <div *ngIf="error" class="error">
-    <p>{{ error }}</p>
+  <div *ngIf="error()" class="error">
+    <p>{{ error() }}</p>
     <button (click)="loadFolderStructure()">Retry</button>
   </div>
 
-  <div *ngIf="folderStructure && !isLoading" class="folder-structure">
+  <!-- Map Display Section (shown when third-level folder is selected) -->
+  <div *ngIf="selectedThirdLevelFolder()" class="map-display-section">
+    <div class="map-header">
+      <h3>📍 Location: {{ selectedThirdLevelFolder()!.name }}</h3>
+      <button (click)="clearSelection()" class="btn-close">✕ Close Map</button>
+    </div>
+    <app-map-display 
+      [address]="selectedFolderAddress()">
+    </app-map-display>
+  </div>
+
+  <div *ngIf="folderStructure() && !isLoading()" class="folder-structure">
     <!-- Root folder -->
     <div class="tree-item root-item">
-      <div class="item-header" (click)="toggleFolder(folderStructure.id)">
+      <div class="item-header" (click)="toggleFolder(folderStructure()!.id)">
         <span class="expand-icon">
-          {{ isFolderExpanded(folderStructure.id) ? '▼' : '▶' }}
+          {{ isFolderExpanded(folderStructure()!.id) ? '▼' : '▶' }}
         </span>
         <span class="item-icon folder-icon">📁</span>
-        <span class="item-name">{{ folderStructure.name }}</span>
-        <span class="item-info" *ngIf="folderStructure.children">
-          ({{ getItemCount(folderStructure).folders }} folders, {{ getItemCount(folderStructure).files }} files)
+        <span class="item-name">{{ folderStructure()!.name }}</span>
+        <span class="item-info" *ngIf="folderStructure()!.children">
+          ({{ getItemCount(folderStructure()!).folders }} folders, {{ getItemCount(folderStructure()!).files }} files)
         </span>
       </div>
       
       <!-- Root metadata -->
       <div class="item-meta">
-        <span class="meta-item">ID: {{ folderStructure.id }}</span>
-        <span *ngIf="folderStructure.modifiedTime" class="meta-item">
-          Modified: {{ folderStructure.modifiedTime | date:'short' }}
+        <span class="meta-item">ID: {{ folderStructure()!.id }}</span>
+        <span *ngIf="folderStructure()!.modifiedTime" class="meta-item">
+          Modified: {{ folderStructure()!.modifiedTime | date:'short' }}
         </span>
       </div>
 
       <!-- Root children -->
-      <div *ngIf="isFolderExpanded(folderStructure.id) && folderStructure.children && folderStructure.children.length > 0" 
+      <div *ngIf="isFolderExpanded(folderStructure()!.id) && folderStructure()!.children && folderStructure()!.children.length > 0" 
            class="tree-children">
-        <ng-container *ngFor="let item of folderStructure.children">
+        <ng-container *ngFor="let item of folderStructure()!.children">
           <ng-container *ngTemplateOutlet="treeNode; context: { item: item, level: 1 }"></ng-container>
         </ng-container>
       </div>
 
       <!-- Empty state -->
-      <div *ngIf="isFolderExpanded(folderStructure.id) && (!folderStructure.children || folderStructure.children.length === 0)" 
+      <div *ngIf="isFolderExpanded(folderStructure()!.id) && (!folderStructure()!.children || folderStructure()!.children.length === 0)" 
            class="empty-folder">
         <span class="empty-icon">📭</span>
         <span>This folder is empty</span>
@@ -63,14 +74,29 @@
   <div class="tree-item" [style.padding-left.px]="level * 20">
     
     <!-- Folder item -->
-    <div *ngIf="item.isFolder" class="item-header folder" (click)="toggleFolder(item.id)">
-      <span class="expand-icon" *ngIf="item.children && item.children.length > 0">
+    <div *ngIf="item.isFolder" 
+         class="item-header folder" 
+         [class.selected]="isThirdLevelFolderSelected(item.id)"
+         (click)="toggleFolder(item.id, item, level)">
+      <span class="expand-icon" *ngIf="level !== 2 && item.children && item.children.length > 0">
         {{ isFolderExpanded(item.id) ? '▼' : '▶' }}
       </span>
-      <span class="expand-icon placeholder" *ngIf="!item.children || item.children.length === 0"></span>
+      <span class="expand-icon placeholder" *ngIf="level !== 2 && (!item.children || item.children.length === 0)"></span>
+      
+      <!-- For third-level folders (level 2), show a map pin icon instead of expand icon -->
+      <span class="expand-icon map-indicator" *ngIf="level === 2">
+        📍
+      </span>
+      
       <span class="item-icon folder-icon">📁</span>
       <span class="item-name">{{ item.name }}</span>
-      <span class="item-info" *ngIf="item.children && item.children.length > 0">
+      
+      <!-- Add "Click to view map" hint for level 2 folders -->
+      <span class="map-hint" *ngIf="level === 2">
+        (Click to view map)
+      </span>
+      
+      <span class="item-info" *ngIf="level !== 2 && item.children && item.children.length > 0">
         ({{ getItemCount(item).folders }} folders, {{ getItemCount(item).files }} files)
       </span>
       <span *ngIf="item.modifiedTime" class="item-modified">
@@ -89,16 +115,16 @@
       </span>
     </div>
 
-    <!-- Folder children (recursive) -->
-    <div *ngIf="item.isFolder && isFolderExpanded(item.id) && item.children && item.children.length > 0" 
+    <!-- Folder children (recursive) - Don't show for level 2 folders -->
+    <div *ngIf="item.isFolder && level !== 2 && isFolderExpanded(item.id) && item.children && item.children.length > 0" 
          class="tree-children">
       <ng-container *ngFor="let child of item.children">
         <ng-container *ngTemplateOutlet="treeNode; context: { item: child, level: level + 1 }"></ng-container>
       </ng-container>
     </div>
 
-    <!-- Empty folder indicator -->
-    <div *ngIf="item.isFolder && isFolderExpanded(item.id) && (!item.children || item.children.length === 0)"
+    <!-- Empty folder indicator - Don't show for level 2 folders -->
+    <div *ngIf="item.isFolder && level !== 2 && isFolderExpanded(item.id) && (!item.children || item.children.length === 0)"
          class="empty-folder"
          [style.padding-left.px]="(level + 1) * 20">
       <span class="empty-icon">📭</span>
