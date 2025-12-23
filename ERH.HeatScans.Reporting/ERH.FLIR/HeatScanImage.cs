@@ -1,24 +1,33 @@
 ﻿using Flir.Atlas.Image;
 using System.Drawing;
+using System.IO;
 
 namespace ERH.FLIR
 {
     public class HeatScanImage
     {
-        private readonly Bitmap bitmap;
-
-        public HeatScanImage(ThermalImageFile thermalImageFile)
+        public static bool IsHeatScanImage(Stream image)
         {
-            bitmap = thermalImageFile.Image.Clone() as Bitmap;
+            image.Position = 0; // Reset stream position 
+
+            return ThermalImageFile.IsThermalImage(image);
         }
 
-        public Bitmap Image(ThermalImageFile _image)
+        public static byte[] ImageInBytes(Stream image, bool includeSpotNames = true)
         {
+            image.Position = 0; // Reset stream position 
+
+            using var thermalImage = new ThermalImageFile(image);
+            using var bitmap = thermalImage.Image;
+
             using var graphics = Graphics.FromImage(bitmap);
-            var overlay = new Overlay(_image, true);
+            var overlay = new Overlay(thermalImage, includeSpotNames);
             overlay.Draw(graphics);
 
-            return bitmap;
+            // convert to byte array
+            using var ms = new MemoryStream();
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            return ms.ToArray();
         }
     }
 }

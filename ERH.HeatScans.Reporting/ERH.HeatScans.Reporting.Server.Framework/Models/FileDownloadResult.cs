@@ -7,7 +7,6 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Models
 
         public FileDownloadResult()
         {
-            Data = new byte[0];
             MimeType = string.Empty;
         }
     }

@@ -1,9 +1,8 @@
-using System;
+using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System.Web;
 using System.Web.Http;
 using Unity;
 using Unity.AspNet.WebApi;
-using ERH.HeatScans.Reporting.Server.Framework.Services;
 
 namespace ERH.HeatScans.Reporting.Server.Framework
 {
@@ -24,7 +23,8 @@ namespace ERH.HeatScans.Reporting.Server.Framework
         {
             // Register services
             container.RegisterType<GoogleDriveService>();
+            container.RegisterType<FLIRService>();
         }
-               
+
     }
 }

@@ -55,6 +55,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FLIR.ATS.Format.Utilities">
+      <HintPath>..\lib\FLIR.ATS.Format.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Common">
+      <HintPath>..\lib\Flir.Cronos.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Filter">
+      <HintPath>..\lib\Flir.Cronos.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Filter.Adapter">
+      <HintPath>..\lib\Flir.Cronos.Filter.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Panorama">
+      <HintPath>..\lib\Flir.Cronos.Panorama.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.FormatPlugin.IRSDK">
+      <HintPath>..\lib\Flir.FormatPlugin.IRSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.FormatPlugin.PTW">
+      <HintPath>..\lib\Flir.FormatPlugin.PTW.dll</HintPath>
+    </Reference>
+    <Reference Include="FLIRCommunicationsAdapter">
+      <HintPath>..\lib\FLIRCommunicationsAdapter.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="DaylightImage.cs" />
     <Compile Include="HeatScanImage.cs" />
     <Compile Include="Overlay.cs" />

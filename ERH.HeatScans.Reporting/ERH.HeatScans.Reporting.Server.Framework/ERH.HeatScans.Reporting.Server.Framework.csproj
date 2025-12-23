@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props" Condition="Exists('..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -46,6 +47,15 @@
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.7.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.7\lib\net48\CommonServiceLocator.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Atlas.Gigevision, Version=1.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flir.Atlas.Cronos.7.6.0\lib\net452\Flir.Atlas.Gigevision.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Atlas.Image, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flir.Atlas.Cronos.7.6.0\lib\net452\Flir.Atlas.Image.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Atlas.Live, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flir.Atlas.Cronos.7.6.0\lib\net452\Flir.Atlas.Live.dll</HintPath>
     </Reference>
     <Reference Include="Google.Api.CommonProtos, Version=2.17.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Api.CommonProtos.2.17.0\lib\net461\Google.Api.CommonProtos.dll</HintPath>
@@ -125,13 +135,20 @@
     <Reference Include="Newtonsoft.Json.Bson, Version=1.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.Bson.1.0.2\lib\net45\Newtonsoft.Json.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.6.0.2\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -168,7 +185,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Http, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.3.0\lib\net45\System.Web.Http.dll</HintPath>
@@ -179,8 +198,12 @@
     <Reference Include="System.Web.Http.WebHost, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.3.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Unity.Abstractions, Version=5.11.7.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.Abstractions.5.11.7\lib\net48\Unity.Abstractions.dll</HintPath>
     </Reference>
@@ -192,6 +215,35 @@
     </Reference>
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FLIR.ATS.Format.Utilities">
+      <HintPath>..\lib\FLIR.ATS.Format.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Common">
+      <HintPath>..\lib\Flir.Cronos.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Filter">
+      <HintPath>..\lib\Flir.Cronos.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Filter.Adapter">
+      <HintPath>..\lib\Flir.Cronos.Filter.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Panorama">
+      <HintPath>..\lib\Flir.Cronos.Panorama.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.FormatPlugin.IRSDK">
+      <HintPath>..\lib\Flir.FormatPlugin.IRSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.FormatPlugin.PTW">
+      <HintPath>..\lib\Flir.FormatPlugin.PTW.dll</HintPath>
+    </Reference>
+    <Reference Include="FLIRCommunicationsAdapter">
+      <HintPath>..\lib\FLIRCommunicationsAdapter.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +260,7 @@
     </Compile>
     <Compile Include="Models\FileDownloadResult.cs" />
     <Compile Include="Models\GoogleDriveItem.cs" />
+    <Compile Include="Services\FLIRService.cs" />
     <Compile Include="Services\GoogleDriveService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -329,8 +382,11 @@
     <Error Condition="!Exists('..\packages\Grpc.Core.2.46.6\build\net45\Grpc.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Grpc.Core.2.46.6\build\net45\Grpc.Core.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets'))" />
     <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets'))" />
+    <Error Condition="!Exists('..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props'))" />
+    <Error Condition="!Exists('..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets'))" />
   </Target>
   <Import Project="..\packages\Grpc.Core.2.46.6\build\net45\Grpc.Core.targets" Condition="Exists('..\packages\Grpc.Core.2.46.6\build\net45\Grpc.Core.targets')" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <Import Project="..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" />
+  <Import Project="..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('..\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />
 </Project>

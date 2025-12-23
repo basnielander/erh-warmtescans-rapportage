@@ -1,9 +1,6 @@
 using ERH.HeatScans.Reporting.Server.Framework.Services;
-using Google.Maps.Places.V1;
-using Google.Type;
 using System;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +11,13 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
     [RoutePrefix("api/folders-and-files")]
     public class FoldersAndFilesController : ApiController
     {
-        private readonly GoogleDriveService _driveService;
+        private readonly GoogleDriveService storageService;
+        private readonly FLIRService heatScanService;
 
-        public FoldersAndFilesController(GoogleDriveService driveService)
+        public FoldersAndFilesController(GoogleDriveService driveService, FLIRService fLIRService)
         {
-            _driveService = driveService;
+            storageService = driveService;
+            heatScanService = fLIRService;
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return BadRequest("UsersFolderId is not configured.");
                 }
 
-                var structure = await _driveService.GetFolderStructureAsync(accessToken, usersFolderId, CancellationToken.None);
+                var structure = await storageService.GetFolderStructureAsync(accessToken, usersFolderId, CancellationToken.None);
                 return Ok(structure);
             }
             catch (Exception ex)
@@ -74,7 +73,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return Unauthorized();
                 }
 
-                var files = await _driveService.GetFlatFileListAsync(accessToken, folderId, cancellationToken);
+                var files = await storageService.GetFlatFileListAsync(accessToken, folderId, cancellationToken);
                 return Ok(files);
             }
             catch (Exception ex)
@@ -86,7 +85,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [HttpPost]
         [Route("")]
         public async Task<IHttpActionResult> SetupAddressFolder(string addressFolderId, CancellationToken cancellationToken = default)
-        {            
+        {
             try
             {
                 var accessToken = GetAccessTokenFromHeader();
@@ -94,7 +93,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 {
                     return Unauthorized();
                 }
-                await _driveService.SetupAddressFolderAsync(accessToken, addressFolderId, cancellationToken);
+                await storageService.SetupAddressFolderAsync(accessToken, addressFolderId, cancellationToken);
                 return Ok();
             }
             catch (Exception ex)
@@ -127,7 +126,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return BadRequest("folderId is required");
                 }
 
-                var report = await _driveService.GetReportAsync(accessToken, folderId, cancellationToken);
+                var report = await storageService.GetReportAsync(accessToken, folderId, cancellationToken);
                 return Ok(report);
             }
             catch (Exception ex)
@@ -153,14 +152,16 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return BadRequest("fileId is required");
                 }
 
-                var result = await _driveService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
-                
+                var rawFileInBytes = await storageService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
+
+                var result = heatScanService.GetHeatscanImage(rawFileInBytes);
+
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {
                     Content = new ByteArrayContent(result.Data)
                 };
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(result.MimeType);
-                
+
                 return ResponseMessage(response);
             }
             catch (Exception ex)

@@ -359,7 +359,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
         }
 
 
-        internal async Task<FileDownloadResult> GetFileBytesAsync(string accessToken, string fileId, CancellationToken cancellationToken)
+        internal async Task<Stream> GetFileBytesAsync(string accessToken, string fileId, CancellationToken cancellationToken)
         {
             try
             {
@@ -373,11 +373,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 var stream = new MemoryStream();
                 await request.DownloadAsync(stream, cancellationToken);
 
-                return new FileDownloadResult
-                {
-                    Data = stream.ToArray(),
-                    MimeType = fileMetadata.MimeType
-                };
+                return stream;
             }
             catch (Exception ex)
             {
