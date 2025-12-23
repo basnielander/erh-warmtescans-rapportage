@@ -2,6 +2,7 @@ using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System;
 using System.Configuration;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -141,6 +142,8 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         {
             try
             {
+                var assembly = Assembly.Load("Flir.Cronos.Filter.Adapter, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b");
+
                 var accessToken = GetAccessTokenFromHeader();
                 if (string.IsNullOrEmpty(accessToken))
                 {

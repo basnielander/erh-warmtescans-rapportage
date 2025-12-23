@@ -32,3 +32,13 @@ GET {{BaseUrl}}/api/folders-and-files/files?folderId={{AddressFolderId}}
 Authorization: Bearer {{AccessToken}}
 
 ###
+
+### Get Image by File ID
+# Gets a specific image file by its file ID
+
+@ImageFileId=1WhM09OSSWFh8MZPPkxYjR-J6CdKQzui5
+
+GET {{BaseUrl}}/api/folders-and-files/image?fileId={{ImageFileId}}
+Authorization: Bearer {{AccessToken}}
+
+###

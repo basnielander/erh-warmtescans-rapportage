@@ -2,7 +2,6 @@ using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System.Web;
 using System.Web.Http;
 using Unity;
-using Unity.AspNet.WebApi;
 
 namespace ERH.HeatScans.Reporting.Server.Framework
 {
@@ -16,7 +15,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework
             // Configure Dependency Injection
             var container = new UnityContainer();
             ConfigureDependencyInjection(container);
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
+            // GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }
 
         private void ConfigureDependencyInjection(UnityContainer container)
