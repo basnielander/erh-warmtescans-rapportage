@@ -1,3 +1,38 @@
+# Migration from packages.config to PackageReference
+
+## Problem
+
+The application fails to start with the error:
+```
+System.Configuration.ConfigurationErrorsException: Cannot load file or assembly 
+'Flir.Cronos.Filter.Adapter.DLL' or one of its dependencies.
+```
+
+### Root Cause
+
+The `Flir.Cronos.Filter.Adapter.dll` file exists in the bin directory but depends on **native (unmanaged) C++ DLLs** that are missing. FLIR SDKs typically require:
+- Visual C++ Redistributable runtime libraries (vcruntime140.dll, msvcp140.dll)
+- Native FLIR IRSDK libraries
+
+When using `packages.config`, native dependencies from NuGet packages may not be automatically copied to the output directory. The `PackageReference` format has better support for handling native dependencies.
+
+## Solution: Migrate to PackageReference
+
+### Step 1: Close Visual Studio
+
+**Important**: You must close Visual Studio completely before modifying the `.csproj` file.
+
+### Step 2: Backup Your Project
+
+Create a backup of:
+- `ERH.HeatScans.Reporting.Server.Framework.csproj`
+- `packages.config`
+
+### Step 3: Replace the Project File Content
+
+Replace the entire content of `ERH.HeatScans.Reporting.Server.Framework.csproj` with the following:
+
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -34,7 +69,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,9 +102,6 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.3.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.3.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Tracing">
-      <Version>5.3.0</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.3.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
     <PackageReference Include="Microsoft.Bcl.TimeProvider" Version="8.0.1" />
@@ -165,7 +196,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\SafeUnityDependencyResolver.cs" />
     <Compile Include="Models\FileDownloadResult.cs" />
     <Compile Include="Models\GoogleDriveItem.cs" />
     <Compile Include="Services\FLIRService.cs" />
@@ -179,6 +209,10 @@
     <Content Include="CleanAndRestore.bat" />
     <Content Include="http-client.env.json" />
     <Content Include="Maps.http" />
+    <Content Include="CAMEL_CASE_CHANGE.md" />
+    <Content Include="CAMEL_CASE_QUICK_REF.md" />
+    <Content Include="RestorePackages.ps1" />
+    <Content Include="RestorePackages.bat" />
     <Content Include="Setup-IISExpressSSL.ps1" />
     <Content Include="UserGoogleDrive.http" />
     <Content Include="protos\google\type\timeofday.proto" />
@@ -277,3 +311,75 @@
     </VisualStudio>
   </ProjectExtensions>
 </Project>
+```
+
+### Step 4: Delete packages.config
+
+Delete the file `ERH.HeatScans.Reporting.Server.Framework\packages.config`.
+
+### Step 5: Reopen Visual Studio
+
+1. Open the solution in Visual Studio
+2. Right-click the solution ? **Restore NuGet Packages**
+3. Clean the solution
+4. Rebuild the solution
+
+### Step 6: Verify the Fix
+
+After rebuilding, check the `bin` directory for:
+- All managed assemblies should still be present
+- Native dependencies from the `Flir.Atlas.Cronos` package should now be in the bin directory or subdirectories
+
+## If Native Dependencies Are Still Missing
+
+If the error persists after migration, the `Flir.Atlas.Cronos` NuGet package may not include the required native DLLs. In that case:
+
+### Option A: Install Visual C++ Redistributable
+
+Download and install the **Microsoft Visual C++ Redistributable** (x64) from:
+https://aka.ms/vs/17/release/vc_redist.x64.exe
+
+This provides the required runtime DLLs system-wide.
+
+### Option B: Manually Copy Native DLLs
+
+If you have the FLIR SDK installed elsewhere:
+
+1. Locate the native DLL files (typically in the FLIR SDK installation directory):
+   - `vcruntime140.dll`
+   - `msvcp140.dll`
+   - `msvcp140_1.dll`
+   - Any FLIR-specific native DLLs (e.g., `IRSDK_*.dll`)
+
+2. Copy them to the `bin` directory: `ERH.HeatScans.Reporting.Server.Framework\bin\`
+
+### Option C: Use the Web.config Workaround
+
+The `Web.config` has already been updated to prevent automatic loading of the problematic assembly during startup:
+
+```xml
+<compilation debug="true" targetFramework="4.8.1">
+  <assemblies>
+    <remove assembly="Flir.Cronos.Filter.Adapter" />
+  </assemblies>
+</compilation>
+```
+
+This prevents ASP.NET from loading the assembly automatically. You'll need to load it explicitly in your code when needed, after ensuring native dependencies are available.
+
+## Key Changes Made
+
+1. **Added** `<RestoreProjectStyle>PackageReference</RestoreProjectStyle>` to enable the new format
+2. **Converted** all `<Reference>` elements with HintPath from packages folder to `<PackageReference>` elements
+3. **Removed** old NuGet package Import targets at the end of the file
+4. **Kept** manual references to FLIR libraries from `..\lib\` folder (these are not from NuGet)
+5. **Updated** `Web.config` to exclude the problematic assembly from automatic loading
+
+## Benefits of PackageReference
+
+- Better handling of native dependencies
+- Transitive dependency resolution
+- Cleaner project files
+- Global package cache (no more solution-level `packages` folder)
+- Better performance during restore operations
+- Proper content file deployment
