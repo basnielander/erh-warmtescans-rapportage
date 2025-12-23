@@ -208,7 +208,6 @@
     </Compile>
     <Compile Include="Models\FileDownloadResult.cs" />
     <Compile Include="Models\GoogleDriveItem.cs" />
-    <Compile Include="Models\Report.cs" />
     <Compile Include="Services\GoogleDriveService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -283,6 +282,16 @@
     <Content Include="protos\google\api\auth.proto" />
     <Content Include="protos\google\api\annotations.proto" />
     <Content Include="SetEnvVars.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ERH.FLIR\ERH.FLIR.csproj">
+      <Project>{1dc4cf1a-ac29-4acd-97ba-d228dc353bbe}</Project>
+      <Name>ERH.FLIR</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.csproj">
+      <Project>{1149835a-85e5-4d0f-b3e5-4d1753a06aa3}</Project>
+      <Name>ERH.HeatScans.Reporting</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

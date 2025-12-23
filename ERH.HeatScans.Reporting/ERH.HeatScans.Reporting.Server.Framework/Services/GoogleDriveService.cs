@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using ERH.HeatScans.Reporting.Server.Framework.Models;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
-using ERH.HeatScans.Reporting.Server.Framework.Models;
-using System.IO;
-using System.Text;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Services
 {
@@ -311,7 +311,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                     report = new Report
                     {
                         FolderId = addressFolderId,
-                        Images = new List<ImageInfo>()
+                        Images = new List<ReportImage>()
                     };
                 }
 
@@ -324,14 +324,21 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
                 // Update report with current images
                 report.FolderId = addressFolderId;
-                report.Images = imageFiles.Select(img => new ImageInfo
+                report.Images = new List<ReportImage>();
+
+                var index = 0;
+                foreach (var heatScan in imageFiles)
                 {
-                    Id = img.Id,
-                    Name = img.Name,
-                    MimeType = img.MimeType,
-                    Size = img.Size,
-                    ModifiedTime = img.ModifiedTime?.ToString("o") // ISO 8601 format
-                }).ToList();
+                    report.Images.Add(new ReportImage(heatScan.Id, index)
+                    {
+                        Name = heatScan.Name,
+                        MimeType = heatScan.MimeType,
+                        Size = heatScan.Size,
+                        ModifiedTime = heatScan.ModifiedTime?.ToString("o"), // ISO 8601 format
+                    });
+
+                    index++;
+                }
 
                 // Save or update report.json
                 if (reportFile != null)
@@ -357,15 +364,15 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             try
             {
                 var driveService = CreateDriveService(accessToken);
-                
+
                 var metadataRequest = driveService.Files.Get(fileId);
                 metadataRequest.Fields = "id, name, mimeType";
                 var fileMetadata = await metadataRequest.ExecuteAsync(cancellationToken);
-                
+
                 var request = driveService.Files.Get(fileId);
                 var stream = new MemoryStream();
                 await request.DownloadAsync(stream, cancellationToken);
-                
+
                 return new FileDownloadResult
                 {
                     Data = stream.ToArray(),
@@ -382,7 +389,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             var request = driveService.Files.Get(fileId);
             var stream = new MemoryStream();
             await request.DownloadAsync(stream, cancellationToken);
-            
+
             stream.Position = 0;
             using (var reader = new StreamReader(stream))
             {
@@ -408,7 +415,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 var request = driveService.Files.Create(fileMetadata, stream, "application/json");
                 request.Fields = "id";
                 var file = await request.UploadAsync(cancellationToken);
-                
+
                 if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
                 {
                     throw new Exception("Failed to upload report.json file");
@@ -429,7 +436,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             {
                 var request = driveService.Files.Update(fileMetadata, fileId, stream, "application/json");
                 var file = await request.UploadAsync(cancellationToken);
-                
+
                 if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
                 {
                     throw new Exception("Failed to update report.json file");
