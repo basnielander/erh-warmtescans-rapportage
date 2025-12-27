@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class MapsService {
-  private baseUrl = 'https://localhost:7209/api/maps';
+  private baseUrl = 'https://test.nielander.nl/api/maps';
 
   constructor(
     private http: HttpClient,

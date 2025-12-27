@@ -13,8 +13,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ERH.HeatScans.Reporting.Server.Framework</RootNamespace>
     <AssemblyName>ERH.HeatScans.Reporting.Server.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>7209</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
@@ -25,6 +25,7 @@
     </NuGetPackageImportStamp>
     <LangVersion>latest</LangVersion>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,7 +48,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommonServiceLocator" Version="2.0.7" />
-    <PackageReference Include="Flir.Atlas.Cronos" Version="7.6.0" />
     <PackageReference Include="Google.Api.CommonProtos" Version="2.17.0" />
     <PackageReference Include="Google.Api.Gax" Version="4.12.1" />
     <PackageReference Include="Google.Api.Gax.Grpc" Version="4.12.1" />
@@ -102,20 +102,16 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -205,10 +201,22 @@
     <Content Include="SetEnvVars.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ERH.FLIR\ERH.FLIR.csproj">
-      <Project>{1dc4cf1a-ac29-4acd-97ba-d228dc353bbe}</Project>
-      <Name>ERH.FLIR</Name>
-    </ProjectReference>
+    <Content Include="IIS-DEPLOYMENT.md" />
+    <Content Include="IIS-SETUP-QUICKSTART.md" />
+    <Content Include="CUSTOM-DOMAIN-SETUP.md" />
+    <Content Include="CERTIFICATE-QUICK-REFERENCE.md" />
+    <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
+    <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
+    <Content Include="Setup-IIS.ps1" />
+    <Content Include="Setup-IIS.bat" />
+    <Content Include="Setup-Certificate-TestDomain.ps1" />
+    <Content Include="Setup-Certificate-TestDomain.bat" />
+    <Content Include="Setup-IIS-CustomDomain.ps1" />
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.csproj">
       <Project>{1149835a-85e5-4d0f-b3e5-4d1753a06aa3}</Project>
       <Name>ERH.HeatScans.Reporting</Name>
@@ -217,6 +225,9 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
@@ -229,14 +240,15 @@
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>52154</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:7209</IISUrl>
-          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>https://localhost:7209/</IISAppRootUrl>
+          <IISUrl>https://test.nielander.nl</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
           </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <servers defaultServer="">
+            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:52154/" workingDir="" />
+          </servers>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

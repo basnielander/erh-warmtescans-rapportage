@@ -10,7 +10,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework
         {
             // Enable CORS
             var cors = new EnableCorsAttribute(
-                origins: "http://localhost:49806,https://localhost:49806,https://localhost:5173,https://localhost:7209",
+                origins: "http://localhost:49806,https://localhost:49806,https://localhost:5173,https://localhost:7209,https://test.nielander.nl",
                 headers: "*",
                 methods: "*")
             {
