@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Google.Maps.Places.V1;
+using Google.Type;
+using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading;
 using System.Web.Http;
-using Google.Maps.Places.V1;
-using Google.Type;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
@@ -19,11 +19,11 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             if (string.IsNullOrWhiteSpace(address))
                 return BadRequest("Address is required.");
 
-            if (!address.Contains(",", StringComparison.OrdinalIgnoreCase))
+            if (!address.Contains(","))
             {
                 address += ", Houten";
             }
-            
+
             address += ", Netherlands";
 
             // Try to get API key from AppSettings first, then fall back to environment variable
@@ -32,12 +32,12 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             {
                 apiKey = Environment.GetEnvironmentVariable("GoogleMapsApiKey");
             }
-            
+
             if (string.IsNullOrWhiteSpace(apiKey))
                 return InternalServerError(new InvalidOperationException("Google Maps API key is missing in configuration (appSettings: GoogleMapsApiKey) and environment variables."));
 
             // Create Places client using API key
-            var client = new PlacesClientBuilder { ApiKey = apiKey }.Build();            
+            var client = new PlacesClientBuilder { ApiKey = apiKey }.Build();
 
             var request = new SearchTextRequest
             {
@@ -64,7 +64,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
             // Download the image and return bytes
             using var httpClient = new HttpClient();
-            
+
             var httpResponse = httpClient.GetAsync(url, cancellationToken).Result;
             if (!httpResponse.IsSuccessStatusCode)
                 return InternalServerError(new HttpRequestException($"Failed to download map image: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}"));
@@ -76,7 +76,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             };
             result.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
             return ResponseMessage(result);
-            
+
         }
     }
 }

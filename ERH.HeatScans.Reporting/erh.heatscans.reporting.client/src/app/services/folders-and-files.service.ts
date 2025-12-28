@@ -9,7 +9,7 @@ import { Report } from '../models/report.model';
   providedIn: 'root'
 })
 export class GoogleDriveService {
-  private baseUrl = 'https://test.nielander.nl/api/folders-and-files';
+  private baseUrl = 'https://localhost:7209/api/folders-and-files';
 
   constructor(
     private http: HttpClient,
