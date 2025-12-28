@@ -93,16 +93,11 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.15.0" />
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.2" />
-    <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Net.Http.WinHttpHandler" Version="8.0.0" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-    <PackageReference Include="System.ValueTuple" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
