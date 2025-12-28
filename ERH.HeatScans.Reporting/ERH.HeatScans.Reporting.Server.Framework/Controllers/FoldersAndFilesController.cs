@@ -14,10 +14,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         private readonly GoogleDriveService storageService;
         private readonly FLIRService heatScanService;
 
-        public FoldersAndFilesController(GoogleDriveService driveService, FLIRService fLIRService)
+        public FoldersAndFilesController() : base()
         {
-            storageService = driveService;
-            heatScanService = fLIRService;
+            storageService = new GoogleDriveService();
+            heatScanService = new FLIRService();
         }
 
         /// <summary>

@@ -62,7 +62,6 @@
     <Content Include="C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\*.dll" />
   </ItemGroup>-->
   <ItemGroup>
-    <PackageReference Include="CommonServiceLocator" Version="2.0.7" />
     <PackageReference Include="Flir.Atlas.Cronos">
       <Version>7.6.0</Version>
     </PackageReference>
@@ -91,7 +90,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.3.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Bcl.TimeProvider" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="8.15.0" />
@@ -102,7 +100,6 @@
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Net.Http.WinHttpHandler" Version="8.0.0" />
@@ -112,11 +109,6 @@
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="System.ValueTuple" Version="4.6.1" />
-    <PackageReference Include="Unity" Version="5.11.10" />
-    <PackageReference Include="Unity.Abstractions" Version="5.11.7" />
-    <PackageReference Include="Unity.AspNet.WebApi" Version="5.11.2" />
-    <PackageReference Include="Unity.Container" Version="5.11.11" />
-    <PackageReference Include="WebActivatorEx" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -136,8 +128,6 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\UnityConfig.cs" />
-    <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\MapsController.cs" />
     <Compile Include="Controllers\FoldersAndFilesController.cs" />
@@ -154,7 +144,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\SafeUnityDependencyResolver.cs" />
     <Compile Include="Models\FileDownloadResult.cs" />
     <Compile Include="Models\GoogleDriveItem.cs" />
     <Compile Include="Services\FLIRService.cs" />
