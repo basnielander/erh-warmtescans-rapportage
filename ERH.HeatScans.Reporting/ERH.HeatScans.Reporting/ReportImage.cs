@@ -26,7 +26,7 @@ public class ReportImage
     //    }
     //}
 
-    public string? Comments { get; set; }
+    public string Comments { get; set; }
 
     public bool ExcludeFromReport { get; set; } = false;
 
@@ -43,7 +43,7 @@ public class ReportImage
     //    }
     //}
 
-    public string? TemperatureScaleImageFile
+    public string TemperatureScaleImageFile
     {
         get; set;
     }

@@ -173,16 +173,6 @@
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\MapsController.cs" />
     <Compile Include="Controllers\FoldersAndFilesController.cs" />
-    <Compile Include="ERHFLIR\DaylightImage.cs" />
-    <Compile Include="ERHFLIR\HeatScanImage.cs" />
-    <Compile Include="ERHFLIR\Overlay.cs" />
-    <Compile Include="ERHFLIR\Scale.cs" />
-    <Compile Include="ERHFLIR\Spot.cs" />
-    <Compile Include="ERHFLIR\Spots.cs" />
-    <Compile Include="ERHFLIR\ThermalImageFileMetaData.cs" />
-    <Compile Include="ERHHeatScansReporting\Report.cs" />
-    <Compile Include="ERHHeatScansReporting\ReportImage.cs" />
-    <Compile Include="ERHHeatScansReporting\TemperatureScale.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -199,7 +189,6 @@
     <Content Include="CleanAndRestore.bat" />
     <Content Include="http-client.env.json" />
     <Content Include="Maps.http" />
-    <Content Include="Setup-IISExpressSSL.ps1" />
     <Content Include="UserGoogleDrive.http" />
     <Content Include="protos\google\type\timeofday.proto" />
     <Content Include="protos\google\type\quaternion.proto" />
@@ -260,27 +249,10 @@
     <Content Include="SetEnvVars.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="IIS-DEPLOYMENT.md" />
-    <Content Include="IIS-SETUP-QUICKSTART.md" />
-    <Content Include="CUSTOM-DOMAIN-SETUP.md" />
-    <Content Include="CERTIFICATE-QUICK-REFERENCE.md" />
     <Content Include="Copy-FLIR-DLLs.ps1" />
     <Content Include="Copy-FLIR-DLLs.bat" />
-    <Content Include="FLIR-ASSEMBLY-TROUBLESHOOTING.md" />
-    <Content Include="FLIR-QUICK-FIX.md" />
-    <Content Include="FIX-SUMMARY.md" />
-    <Content Include="FIX-COMPLETED-CHECKLIST.md" />
-    <Content Include="FLIR-QUICK-REFERENCE-CARD.md" />
-    <Content Include="FLIR-APPDOMAIN-IMPLEMENTATION.md" />
-    <Content Include="FLIR-APPDOMAIN-QUICK-REFERENCE.md" />
-    <Content Include="FLIR-APPDOMAIN-CHANGE-SUMMARY.md" />
     <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
     <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
-    <Content Include="Setup-IIS.ps1" />
-    <Content Include="Setup-IIS.bat" />
-    <Content Include="Setup-Certificate-TestDomain.ps1" />
-    <Content Include="Setup-Certificate-TestDomain.bat" />
-    <Content Include="Setup-IIS-CustomDomain.ps1" />
     <Content Include="warmtescans.pfx" />
     <Content Include="Web.config.transformation.targets" />
     <None Include="Web.Debug.config">
@@ -289,6 +261,16 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ERH.FLIR\ERH.FLIR.csproj">
+      <Project>{1dc4cf1a-ac29-4acd-97ba-d228dc353bbe}</Project>
+      <Name>ERH.FLIR</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.csproj">
+      <Project>{1149835a-85e5-4d0f-b3e5-4d1753a06aa3}</Project>
+      <Name>ERH.HeatScans.Reporting</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -6,18 +6,18 @@ namespace ERH.FLIR
 {
     public class HeatScanImage
     {
-        public static bool IsHeatScanImage(Stream image)
+        public static bool IsHeatScanImage(Stream imageStream)
         {
-            image.Position = 0; // Reset stream position 
+            imageStream.Position = 0; // Reset stream position 
 
-            return ThermalImageFile.IsThermalImage(image);
+            return ThermalImageFile.IsThermalImage(imageStream);
         }
 
-        public static byte[] ImageInBytes(Stream image, bool includeSpotNames = true)
+        public static byte[] ImageInBytes(Stream imageStream, bool includeSpotNames = true)
         {
-            image.Position = 0; // Reset stream position 
+            imageStream.Position = 0; // Reset stream position 
 
-            using var thermalImage = new ThermalImageFile(image);
+            using var thermalImage = new ThermalImageFile(imageStream);
             using var bitmap = thermalImage.Image;
 
             using var graphics = Graphics.FromImage(bitmap);

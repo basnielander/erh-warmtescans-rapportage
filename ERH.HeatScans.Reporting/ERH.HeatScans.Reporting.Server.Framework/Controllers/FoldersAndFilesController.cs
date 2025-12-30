@@ -28,7 +28,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <returns>Folder structure with children</returns>
         [HttpGet]
         [Route("users")]
-        public async Task<IHttpActionResult> GetStructure(CancellationToken cancellationToken = default)
+        public async Task<IHttpActionResult> GetFolderStructure(CancellationToken cancellationToken = default)
         {
             try
             {
