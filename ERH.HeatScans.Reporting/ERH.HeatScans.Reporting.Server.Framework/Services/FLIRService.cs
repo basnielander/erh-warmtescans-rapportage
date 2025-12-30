@@ -77,6 +77,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
                 throw;
             }
+            finally
+            {
+                UnloadFLIRDomain();
+            }
         }
 
         public static void UnloadFLIRDomain()
