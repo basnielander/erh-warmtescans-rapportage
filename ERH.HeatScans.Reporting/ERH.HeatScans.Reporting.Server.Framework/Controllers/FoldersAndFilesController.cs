@@ -1,7 +1,9 @@
 using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System;
 using System.Configuration;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -152,7 +154,25 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return BadRequest("fileId is required");
                 }
 
-                var rawFileInBytes = await storageService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
+                //var rawFileInBytes = await storageService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
+
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "ERH.HeatScans.Reporting.Server.Framework.FLIR4310.jpg";
+                
+                byte[] rawFileInBytes;
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null)
+                    {
+                        return BadRequest($"Embedded resource '{resourceName}' not found");
+                    }
+                    
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(memoryStream, 81920, cancellationToken);
+                        rawFileInBytes = memoryStream.ToArray();
+                    }
+                }
 
                 var result = heatScanService.GetHeatscanImage(rawFileInBytes);
 

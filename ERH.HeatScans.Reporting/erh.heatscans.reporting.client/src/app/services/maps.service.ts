@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapsService {
-  private baseUrl = 'https://localhost:7209/api/maps';
+  private baseUrl = `${environment.apiBaseUrl}maps`;
 
   constructor(
     private http: HttpClient,

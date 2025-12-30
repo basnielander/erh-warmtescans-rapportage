@@ -8,5 +8,7 @@
     <Build />
     <Deploy />
   </Project>
-  <Project Path="ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj" Id="8b5e5f7d-9c4a-4e2b-8f3d-1a2b3c4d5e6f" />
+  <Project Path="ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj" Id="8b5e5f7d-9c4a-4e2b-8f3d-1a2b3c4d5e6f">
+    <Platform Solution="Debug|x64" Project="x64" />
+  </Project>
 </Solution>

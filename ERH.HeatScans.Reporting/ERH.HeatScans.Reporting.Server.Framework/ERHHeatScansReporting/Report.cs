@@ -50,47 +50,5 @@ namespace ERH.HeatScans.Reporting
         public TemperatureScale TemperatureScale { get; set; }
 
         public string TemperatureScaleImage { get; set; }
-
-        public FileInfo FrontPage
-        {
-            get
-            {
-#if DEBUG
-                return new FileInfo(@".\ERH-voorblad.docx");
-#else
-                return new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ERH Warmtescan Rapportage", "ERH-voorblad.docx"));
-#endif
-            }
-        }
-
-        public FileInfo ImagePage
-        {
-            get
-            {
-#if DEBUG
-                return new FileInfo(@".\ERH-pagina.docx");
-#else
-                return new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ERH Warmtescan Rapportage", "ERH-pagina.docx"));
-#endif
-            }
-        }
-
-
-
-        public FileInfo ScaleImageFile
-        {
-            get
-            {
-#if DEBUG            
-                return new FileInfo(@".\images\temperature-scale.png");
-#else
-                return new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ERH Warmtescan Rapportage", "Images", "temperature-scale.png"));
-#endif
-
-            }
-        }
-
-
-
     }
 }

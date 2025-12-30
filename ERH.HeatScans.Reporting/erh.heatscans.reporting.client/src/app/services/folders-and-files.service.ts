@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GoogleDriveItem } from '../models/google-drive.model';
 import { Report } from '../models/report.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleDriveService {
-  private baseUrl = 'https://localhost:7209/api/folders-and-files';
+  private baseUrl = `${environment.apiBaseUrl}folders-and-files`;
 
   constructor(
     private http: HttpClient,
