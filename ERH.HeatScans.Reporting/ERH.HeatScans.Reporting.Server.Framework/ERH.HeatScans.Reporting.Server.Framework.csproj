@@ -15,7 +15,7 @@
     <RootNamespace>ERH.HeatScans.Reporting.Server.Framework</RootNamespace>
     <AssemblyName>ERH.HeatScans.Reporting.Server.Framework</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress>true</Use64BitIISExpress>
     <IISExpressSSLPort>7209</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
@@ -323,7 +323,7 @@
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>52154</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://test.nielander.nl</IISUrl>
+          <IISUrl>https://localhost:7209/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
