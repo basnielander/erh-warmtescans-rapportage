@@ -1,5 +1,6 @@
 using System.Web;
 using System.Web.Http;
+using ERH.HeatScans.Reporting.Server.Framework.Services;
 
 namespace ERH.HeatScans.Reporting.Server.Framework
 {
@@ -9,6 +10,12 @@ namespace ERH.HeatScans.Reporting.Server.Framework
         {
             // Configure Web API
             GlobalConfiguration.Configure(WebApiConfig.Register);
+        }
+
+        protected void Application_End()
+        {
+            // Clean up the FLIR AppDomain when the application stops
+            FLIRService.UnloadFLIRDomain();
         }
     }
 }

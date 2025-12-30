@@ -13,9 +13,9 @@ namespace ERH.FLIR
             return ThermalImageFile.IsThermalImage(image);
         }
 
-        public static byte[] ImageInBytes(byte[] image, bool includeSpotNames = true)
+        public static byte[] ImageInBytes(Stream imageStream, bool includeSpotNames = true)
         {
-            using var thermalImage = new ThermalImageFile(image);
+            using var thermalImage = new ThermalImageFile(imageStream);
             using var bitmap = thermalImage.Image;
 
             using var graphics = Graphics.FromImage(bitmap);

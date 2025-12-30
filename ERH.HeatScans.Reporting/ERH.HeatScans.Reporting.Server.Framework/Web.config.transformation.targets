@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!-- Apply Web.config transformation during build -->
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Web\Microsoft.Web.Publishing.Tasks.dll" />
+  
+  <Target Name="ApplyWebConfigTransformation" AfterTargets="Build">
+    <PropertyGroup>
+      <TransformInputFile>$(ProjectDir)Web.config</TransformInputFile>
+      <TransformFile>$(ProjectDir)Web.$(Configuration).config</TransformFile>
+      <TransformOutputFile>$(OutputPath)$(AssemblyName).dll.config</TransformOutputFile>
+    </PropertyGroup>
+    
+    <Message Text="Applying Web.config transformation from $(TransformFile)" Importance="high" Condition="Exists('$(TransformFile)')" />
+    
+    <TransformXml 
+      Source="$(TransformInputFile)" 
+      Transform="$(TransformFile)" 
+      Destination="$(TransformOutputFile)" 
+      Condition="Exists('$(TransformFile)')" />
+    
+    <Message Text="Web.config transformation complete: $(TransformOutputFile)" Importance="high" Condition="Exists('$(TransformFile)')" />
+    <Warning Text="Web.config transformation file not found: $(TransformFile)" Condition="!Exists('$(TransformFile)')" />
+  </Target>
+  
+</Project>

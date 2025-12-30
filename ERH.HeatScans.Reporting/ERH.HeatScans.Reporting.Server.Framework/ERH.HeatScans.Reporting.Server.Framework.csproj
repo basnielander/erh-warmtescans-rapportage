@@ -112,6 +112,11 @@
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.15.0" />
     <PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.15.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.15.0" />
+    <PackageReference Include="Microsoft.VisualStudio.SlowCheetah">
+      <Version>4.0.50</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.2" />
@@ -265,6 +270,9 @@
     <Content Include="FIX-SUMMARY.md" />
     <Content Include="FIX-COMPLETED-CHECKLIST.md" />
     <Content Include="FLIR-QUICK-REFERENCE-CARD.md" />
+    <Content Include="FLIR-APPDOMAIN-IMPLEMENTATION.md" />
+    <Content Include="FLIR-APPDOMAIN-QUICK-REFERENCE.md" />
+    <Content Include="FLIR-APPDOMAIN-CHANGE-SUMMARY.md" />
     <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
     <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
     <Content Include="Setup-IIS.ps1" />
@@ -273,6 +281,10 @@
     <Content Include="Setup-Certificate-TestDomain.bat" />
     <Content Include="Setup-IIS-CustomDomain.ps1" />
     <Content Include="warmtescans.pfx" />
+    <Content Include="Web.config.transformation.targets" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -301,6 +313,7 @@
     <Error Condition="!Exists('C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" Text="$([System.String]::Format('$(ErrorText)', 'C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets'))" />
   </Target>
   <Import Project="C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />
+  <Import Project="Web.config.transformation.targets" Condition=" '$(Configuration)' == 'Debug' " />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
