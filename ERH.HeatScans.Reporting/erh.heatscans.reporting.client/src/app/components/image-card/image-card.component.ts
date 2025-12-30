@@ -46,6 +46,25 @@ export class ImageCardComponent implements OnInit {
     });
   }
 
+  onImageClick(event: MouseEvent): void {
+    const imgElement = event.target as HTMLImageElement;
+    const rect = imgElement.getBoundingClientRect();
+    
+    const x = Math.round(event.clientX - rect.left);
+    const y = Math.round(event.clientY - rect.top);
+
+    console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image.id}`);
+
+    this.driveService.addSpot(this.image.id, x, y).subscribe({
+      next: () => {
+        console.log('Spot added successfully');
+      },
+      error: (err) => {
+        console.error('Error adding spot:', err);
+      }
+    });
+  }
+
   formatFileSize(bytes: number | undefined): string {
     if (!bytes) return '';
     if (bytes < 1024) return bytes + ' B';

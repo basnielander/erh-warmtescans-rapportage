@@ -57,6 +57,13 @@ export class GoogleDriveService {
     });
   }
 
+  addSpot(imageFileId: string, x: number, y: number): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${environment.apiBaseUrl}image/spot?imageFileId=${imageFileId}&x=${x}&y=${y}`;
+    
+    return this.http.post<void>(url, null, { headers });
+  }
+
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
     console.log("token", token);

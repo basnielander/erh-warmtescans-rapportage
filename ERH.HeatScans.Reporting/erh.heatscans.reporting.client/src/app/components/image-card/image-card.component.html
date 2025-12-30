@@ -7,6 +7,7 @@
       [title]="image.name"
       class="image-thumbnail"
       loading="lazy"
+      (click)="onImageClick($event)"
     />
     <div *ngIf="isLoading()" class="image-loading">
       <div class="spinner-small"></div>
