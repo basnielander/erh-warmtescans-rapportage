@@ -1,0 +1,28 @@
+<div class="image-card">
+  <div class="image-container">
+    <img 
+      *ngIf="imageUrl() && !isLoading() && !hasError()"
+      [src]="imageUrl()!" 
+      [alt]="image.name"
+      [title]="image.name"
+      class="image-thumbnail"
+      loading="lazy"
+    />
+    <div *ngIf="isLoading()" class="image-loading">
+      <div class="spinner-small"></div>
+      <p>Loading...</p>
+    </div>
+    <div *ngIf="hasError()" class="image-error">
+      <p>⚠️ Failed to load</p>
+    </div>
+  </div>
+  <div class="image-info">
+    <div class="image-name" [title]="image.name">{{ image.name }}</div>
+    <div class="image-meta">
+      <span *ngIf="image.size" class="image-size">{{ formatFileSize(image.size) }}</span>
+      <span *ngIf="image.modifiedTime" class="image-date">
+        {{ image.modifiedTime | date:'short' }}
+      </span>
+    </div>
+  </div>
+</div>

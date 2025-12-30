@@ -5,13 +5,13 @@ import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { GoogleDriveItem } from '../../models/google-drive.model';
 
 @Component({
-  selector: 'app-google-drive-browser',
+  selector: 'app-folder-browser',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './google-drive-browser.component.html',
-  styleUrl: './google-drive-browser.component.css'
+  templateUrl: './folder-browser.component.html',
+  styleUrl: './folder-browser.component.css'
 })
-export class GoogleDriveBrowserComponent implements OnInit {
+export class FolderBrowserComponent implements OnInit {
   // State signals
   folderStructure = signal<GoogleDriveItem | null>(null);
   isLoading = signal<boolean>(false);

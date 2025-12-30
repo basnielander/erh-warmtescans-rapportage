@@ -1,4 +1,4 @@
-.google-drive-browser {
+.folder-browser {
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
@@ -267,7 +267,7 @@ h2 {
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .google-drive-browser {
+  .folder-browser {
     padding: 10px;
   }
 

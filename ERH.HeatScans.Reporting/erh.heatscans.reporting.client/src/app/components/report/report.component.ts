@@ -2,15 +2,15 @@ import { Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MapDisplayComponent } from '../map-display/map-display.component';
+import { ImageCardComponent } from '../image-card/image-card.component';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { Report, ImageInfo } from '../../models/report.model';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-report',
   standalone: true,
-  imports: [CommonModule, MapDisplayComponent],
+  imports: [CommonModule, MapDisplayComponent, ImageCardComponent],
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css']
 })
@@ -27,15 +27,11 @@ export class ReportComponent implements OnInit {
   addressReport = signal<Report | null>(null);
   isLoadingReport = signal<boolean>(false);
   reportError = signal<string | null>(null);
-  
-  // Store image URLs
-  imageUrls = new Map<string, SafeUrl>();
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private driveService: GoogleDriveService,
-    private sanitizer: DomSanitizer
+    private driveService: GoogleDriveService
   ) {
     this.params.set(toSignal(this.route?.paramMap)() ?? null);
 
@@ -89,8 +85,6 @@ export class ReportComponent implements OnInit {
         console.log('Report loaded successfully:', report);
         this.addressReport.set(report);
         this.isLoadingReport.set(false);
-        // Load images after report is loaded
-        this.loadImages(report.images);
       },
       error: (err) => {
         console.error('Error loading report:', err);
@@ -98,33 +92,6 @@ export class ReportComponent implements OnInit {
         this.isLoadingReport.set(false);
       }
     });
-  }
-
-  loadImages(images: ImageInfo[]): void {
-    images.forEach(image => {
-      this.driveService.getImage(image.id).subscribe({
-        next: (blob) => {
-          const url = URL.createObjectURL(blob);
-          const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
-          this.imageUrls.set(image.id, safeUrl);
-        },
-        error: (err) => {
-          console.error(`Error loading image ${image.name}:`, err);
-        }
-      });
-    });
-  }
-
-  getImageUrl(fileId: string): SafeUrl | undefined {
-    return this.imageUrls.get(fileId);
-  }
-
-  formatFileSize(bytes: number): string {
-    if (!bytes) return '';
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
   }
 
   goBack(): void {

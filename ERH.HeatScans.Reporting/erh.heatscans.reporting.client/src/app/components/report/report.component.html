@@ -49,33 +49,10 @@
     <div class="images-section" *ngIf="addressReport() && addressReport()!.images.length > 0">
       <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
       <div class="images-grid">
-        <div *ngFor="let image of addressReport()!.images" class="image-card">
-          <div class="image-container">
-            <img 
-              *ngIf="getImageUrl(image.id); else loadingImage"
-              [src]="getImageUrl(image.id)" 
-              [alt]="image.name"
-              [title]="image.name"
-              class="image-thumbnail"
-              loading="lazy"
-            />
-            <ng-template #loadingImage>
-              <div class="image-loading">
-                <div class="spinner-small"></div>
-                <p>Loading...</p>
-              </div>
-            </ng-template>
-          </div>
-          <div class="image-info">
-            <div class="image-name" [title]="image.name">{{ image.name }}</div>
-            <div class="image-meta">
-              <span *ngIf="image.size" class="image-size">{{ formatFileSize(image.size) }}</span>
-              <span *ngIf="image.modifiedTime" class="image-date">
-                {{ image.modifiedTime | date:'short' }}
-              </span>
-            </div>
-          </div>
-        </div>
+        <app-image-card 
+          *ngFor="let image of addressReport()!.images" 
+          [image]="image">
+        </app-image-card>
       </div>
     </div>
 

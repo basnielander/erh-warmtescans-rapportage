@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\MapsController.cs" />
     <Compile Include="Controllers\FoldersAndFilesController.cs" />
     <Compile Include="ERHFLIR\DaylightImage.cs" />
