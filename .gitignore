@@ -422,3 +422,4 @@ FodyWeavers.xsd
 **/Web.Debug.config
 **/launchSettings.json
 /ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/SetEnvVars.ps1
+/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config

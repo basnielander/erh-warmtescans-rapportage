@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ImageInfo } from '../../models/report.model';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
+import { ImageService } from '../../services/image.service';
 
 @Component({
   selector: 'app-image-card',
@@ -20,6 +21,7 @@ export class ImageCardComponent implements OnInit {
 
   constructor(
     private driveService: GoogleDriveService,
+    private imageService: ImageService,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -31,7 +33,7 @@ export class ImageCardComponent implements OnInit {
     this.isLoading.set(true);
     this.hasError.set(false);
 
-    this.driveService.getImage(this.image.id).subscribe({
+    this.imageService.getImage(this.image.id).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
@@ -55,7 +57,7 @@ export class ImageCardComponent implements OnInit {
 
     console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image.id}`);
 
-    this.driveService.addSpot(this.image.id, x, y).subscribe({
+    this.imageService.addSpot(this.image.id, x, y).subscribe({
       next: () => {
         console.log('Spot added successfully');
       },

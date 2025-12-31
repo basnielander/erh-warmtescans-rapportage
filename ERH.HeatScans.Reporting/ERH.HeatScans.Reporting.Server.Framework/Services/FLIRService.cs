@@ -2,6 +2,7 @@
 using ERH.HeatScans.Reporting.Server.Framework.Models;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Services
 {
@@ -98,6 +99,36 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                         _flirDomain = null;
                     }
                 }
+            }
+        }
+
+        internal FileDownloadResult AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Get or create the FLIR AppDomain
+                AppDomain flirDomain = GetOrCreateFLIRDomain();
+
+                // Create a proxy to execute code in the FLIR AppDomain
+                FLIRImageProcessor processor = (FLIRImageProcessor)flirDomain.CreateInstanceAndUnwrap(
+                    typeof(FLIRImageProcessor).Assembly.FullName,
+                    typeof(FLIRImageProcessor).FullName
+                );
+
+                // Process the image in the separate AppDomain
+                byte[] imageData = processor.ProcessImage(imageStream);
+
+                return new FileDownloadResult
+                {
+                    Data = imageData,
+                    MimeType = "image/jpeg"
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (add logging framework if available)
+                System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
+                throw;
             }
         }
     }

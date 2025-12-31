@@ -1,7 +1,6 @@
 using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System;
 using System.Configuration;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -32,7 +31,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         {
             try
             {
-                var accessToken = GetAccessTokenFromHeader();
+                var accessToken = AccessToken.Get(Request);
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     return Unauthorized();
@@ -67,13 +66,15 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         {
             try
             {
-                var accessToken = GetAccessTokenFromHeader();
+                var accessToken = AccessToken.Get(Request);
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     return Unauthorized();
                 }
 
                 var files = await storageService.GetFlatFileListAsync(accessToken, folderId, cancellationToken);
+
+
                 return Ok(files);
             }
             catch (Exception ex)
@@ -88,7 +89,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         {
             try
             {
-                var accessToken = GetAccessTokenFromHeader();
+                var accessToken = AccessToken.Get(Request);
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     return Unauthorized();
@@ -115,7 +116,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         {
             try
             {
-                var accessToken = GetAccessTokenFromHeader();
+                var accessToken = AccessToken.Get(Request);
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     return Unauthorized();
@@ -133,52 +134,6 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             {
                 return InternalServerError(ex);
             }
-        }
-
-        [HttpGet]
-        [Route("image")]
-        public async Task<IHttpActionResult> GetImage(string fileId, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var accessToken = GetAccessTokenFromHeader();
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    return Unauthorized();
-                }
-
-                if (string.IsNullOrWhiteSpace(fileId))
-                {
-                    return BadRequest("fileId is required");
-                }
-
-                var rawFileInBytes = await storageService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
-
-                var result = heatScanService.GetHeatscanImage(rawFileInBytes);
-
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new ByteArrayContent(result.Data)
-                };
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(result.MimeType);
-
-                return ResponseMessage(response);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-        private string GetAccessTokenFromHeader()
-        {
-            var authHeader = Request.Headers.Authorization;
-            if (authHeader == null || authHeader.Scheme != "Bearer")
-            {
-                return null;
-            }
-
-            return authHeader.Parameter;
         }
     }
 }

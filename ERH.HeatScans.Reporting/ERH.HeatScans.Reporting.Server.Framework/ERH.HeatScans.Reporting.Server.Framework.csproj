@@ -29,6 +29,7 @@
     <TargetFrameworkProfile />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -166,10 +167,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FLIR4310.jpg" />
-    <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccessToken.cs" />
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\MapsController.cs" />
     <Compile Include="Controllers\FoldersAndFilesController.cs" />
@@ -255,12 +256,7 @@
     <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
     <Content Include="warmtescans.pfx" />
     <Content Include="Web.config.transformation.targets" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
+    <None Include="Web.config.template" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ERH.FLIR\ERH.FLIR.csproj">
