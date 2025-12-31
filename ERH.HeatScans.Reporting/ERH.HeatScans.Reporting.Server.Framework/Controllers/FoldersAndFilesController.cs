@@ -11,12 +11,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
     public class FoldersAndFilesController : ApiController
     {
         private readonly GoogleDriveService storageService;
-        private readonly FLIRService heatScanService;
 
         public FoldersAndFilesController() : base()
         {
             storageService = new GoogleDriveService();
-            heatScanService = new FLIRService();
         }
 
         /// <summary>
@@ -103,37 +101,6 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             }
         }
 
-        /// <summary>
-        /// Get report for a specific address folder
-        /// Retrieves or creates report.json in the "2. Bewerkt" subfolder
-        /// </summary>
-        /// <param name="folderId">Address folder ID</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Report with folder ID and list of images</returns>
-        [HttpGet]
-        [Route("report")]
-        public async Task<IHttpActionResult> GetReport(string folderId = null, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    return Unauthorized();
-                }
 
-                if (string.IsNullOrWhiteSpace(folderId))
-                {
-                    return BadRequest("folderId is required");
-                }
-
-                var report = await storageService.GetReportAsync(accessToken, folderId, cancellationToken);
-                return Ok(report);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
     }
 }

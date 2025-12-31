@@ -169,6 +169,7 @@
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\MapsController.cs" />
     <Compile Include="Controllers\FoldersAndFilesController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

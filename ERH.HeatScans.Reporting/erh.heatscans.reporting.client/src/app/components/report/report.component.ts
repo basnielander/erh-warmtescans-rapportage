@@ -6,6 +6,7 @@ import { ImageCardComponent } from '../image-card/image-card.component';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { Report, ImageInfo } from '../../models/report.model';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ReportService } from '../../services/report.service';
 
 @Component({
   selector: 'app-report',
@@ -31,7 +32,8 @@ export class ReportComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private driveService: GoogleDriveService
+    private driveService: GoogleDriveService,
+    private reportService: ReportService
   ) {
     this.params.set(toSignal(this.route?.paramMap)() ?? null);
 
@@ -80,7 +82,7 @@ export class ReportComponent implements OnInit {
     this.isLoadingReport.set(true);
     this.reportError.set(null);
 
-    this.driveService.getReport(this.folderId()).subscribe({
+    this.reportService.getReport(this.folderId()).subscribe({
       next: (report) => {
         console.log('Report loaded successfully:', report);
         this.addressReport.set(report);

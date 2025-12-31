@@ -39,13 +39,6 @@ export class GoogleDriveService {
     
     return this.http.post<void>(url, null, { headers });
   }
-
-  getReport(folderId: string): Observable<Report> {
-    const headers = this.getAuthHeaders();
-    const url = `${this.baseUrl}/report?folderId=${folderId}`;
-    
-    return this.http.get<Report>(url, { headers });
-  }
   
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
