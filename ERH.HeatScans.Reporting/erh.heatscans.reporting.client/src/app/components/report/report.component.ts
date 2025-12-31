@@ -29,6 +29,10 @@ export class ReportComponent implements OnInit {
   isLoadingReport = signal<boolean>(false);
   reportError = signal<string | null>(null);
 
+  // Drag and drop state
+  draggedIndex = signal<number | null>(null);
+  isUpdatingIndices = signal<boolean>(false);
+
   // Computed signal for sorted images
   sortedImages = computed(() => {
     const report = this.addressReport();
@@ -105,5 +109,81 @@ export class ReportComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  // Drag and drop methods
+  onDragStart(event: DragEvent, index: number): void {
+    this.draggedIndex.set(index);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/html', '');
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  onDrop(event: DragEvent, dropIndex: number): void {
+    event.preventDefault();
+    const dragIndex = this.draggedIndex();
+    
+    if (dragIndex === null || dragIndex === dropIndex) {
+      this.draggedIndex.set(null);
+      return;
+    }
+
+    const images = [...this.sortedImages()];
+    const [draggedImage] = images.splice(dragIndex, 1);
+    images.splice(dropIndex, 0, draggedImage);
+
+    // Update indices
+    const updatedImages = images.map((img, idx) => ({
+      ...img,
+      index: idx
+    }));
+
+    // Update the report with new order
+    const currentReport = this.addressReport();
+    if (currentReport) {
+      this.addressReport.set({
+        ...currentReport,
+        images: updatedImages
+      });
+    }
+
+    // Send update to server
+    this.updateImageIndices(updatedImages);
+    
+    this.draggedIndex.set(null);
+  }
+
+  onDragEnd(): void {
+    this.draggedIndex.set(null);
+  }
+
+  updateImageIndices(images: ImageInfo[]): void {
+    this.isUpdatingIndices.set(true);
+    
+    const indexUpdates = images.map(img => ({
+      id: img.id,
+      index: img.index
+    }));
+
+    this.reportService.updateImageIndices(this.folderId(), indexUpdates).subscribe({
+      next: () => {
+        console.log('Image indices updated successfully');
+        this.isUpdatingIndices.set(false);
+      },
+      error: (err) => {
+        console.error('Error updating image indices:', err);
+        this.isUpdatingIndices.set(false);
+        // Optionally reload the report to restore the correct order
+        this.loadReport();
+      }
+    });
   }
 }

@@ -48,11 +48,25 @@
     <!-- Images Section -->
     <div class="images-section" *ngIf="addressReport() && sortedImages().length > 0">
       <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
+      <div class="update-status" *ngIf="isUpdatingIndices()">
+        <div class="spinner-small"></div>
+        <span>Updating order...</span>
+      </div>
       <div class="images-grid">
-        <app-image-card 
-          *ngFor="let image of sortedImages()" 
-          [image]="image">
-        </app-image-card>
+        <div 
+          *ngFor="let image of sortedImages(); let i = index"
+          class="image-wrapper"
+          [class.dragging]="draggedIndex() === i"
+          draggable="true"
+          (dragstart)="onDragStart($event, i)"
+          (dragover)="onDragOver($event)"
+          (drop)="onDrop($event, i)"
+          (dragend)="onDragEnd()">
+          <div class="drag-handle">⋮⋮</div>
+          <app-image-card 
+            [image]="image">
+          </app-image-card>
+        </div>
       </div>
     </div>
 

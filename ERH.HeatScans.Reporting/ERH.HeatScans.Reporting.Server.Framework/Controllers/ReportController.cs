@@ -1,5 +1,7 @@
 ﻿using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -48,5 +50,49 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        /// <summary>
+        /// Update image indices in the report
+        /// </summary>
+        /// <param name="folderId">Address folder ID</param>
+        /// <param name="indexUpdates">List of image index updates</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Success status</returns>
+        [HttpPost]
+        [Route("update-indices")]
+        public async Task<IHttpActionResult> UpdateImageIndices(string folderId, [FromBody] List<ImageIndexUpdate> indexUpdates, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = AccessToken.Get(Request);
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+
+                if (string.IsNullOrWhiteSpace(folderId))
+                {
+                    return BadRequest("folderId is required");
+                }
+
+                if (indexUpdates == null || !indexUpdates.Any())
+                {
+                    return BadRequest("indexUpdates are required");
+                }
+
+                await storageService.UpdateImageIndicesAsync(accessToken, folderId, indexUpdates, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+    }
+
+    public class ImageIndexUpdate
+    {
+        public string Id { get; set; }
+        public int Index { get; set; }
     }
 }

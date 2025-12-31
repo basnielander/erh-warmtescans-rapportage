@@ -311,39 +311,32 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 {
                     // Create new report
                     report = new Report(addressFolder.Id, addressFolder.Name);
-                }
 
-                // Get all image files from "2. Bewerkt" folder
-                var imageExtensions = new[] { ".jpg", ".jpeg" };
-                var imageFiles = bewerktFolderItems.Where(item =>
-                    !item.IsFolder &&
-                    imageExtensions.Any(ext => item.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
-                ).ToList();
+                    // Get all image files from "2. Bewerkt" folder
+                    var imageExtensions = new[] { ".jpg", ".jpeg" };
+                    var imageFiles = bewerktFolderItems.Where(item =>
+                        !item.IsFolder &&
+                        imageExtensions.Any(ext => item.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                    ).ToList();
 
-                // Update report with current images
-                report.Images = [];
+                    // Update report with current images
+                    report.Images = [];
 
-                var index = 0;
-                foreach (var heatScan in imageFiles)
-                {
-                    report.Images.Add(new ReportImage(heatScan.Id, index)
+                    var index = 0;
+                    foreach (var heatScan in imageFiles)
                     {
-                        Name = heatScan.Name,
-                        MimeType = heatScan.MimeType,
-                        Size = heatScan.Size,
-                        ModifiedTime = heatScan.ModifiedTime?.ToString("o"), // ISO 8601 format
-                    });
+                        report.Images.Add(new ReportImage(heatScan.Id, index)
+                        {
+                            Name = heatScan.Name,
+                            MimeType = heatScan.MimeType,
+                            Size = heatScan.Size,
+                            ModifiedTime = heatScan.ModifiedTime?.ToString("o"), // ISO 8601 format
+                        });
 
-                    index++;
-                }
+                        index++;
+                    }
 
-                // Save or update report.json
-                if (reportFile != null)
-                {
-                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
-                }
-                else
-                {
+                    // Save report.json
                     await CreateReportFileAsync(driveService, bewerktFolderId, report, cancellationToken);
                 }
 
@@ -434,6 +427,60 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 {
                     throw new Exception("Failed to update report.json file");
                 }
+            }
+        }
+
+        public async Task UpdateImageIndicesAsync(string accessToken, string addressFolderId, List<Controllers.ImageIndexUpdate> indexUpdates, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var driveService = CreateDriveService(accessToken);
+
+                // Get all items in the address folder
+                var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                // Find "2. Bewerkt" subfolder
+                var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                    item.IsFolder && item.Name == "2. Bewerkt");
+
+                if (bewerktFolder == null)
+                {
+                    throw new Exception($"Subfolder '2. Bewerkt' not found in folder {addressFolderId}");
+                }
+
+                string bewerktFolderId = bewerktFolder.Id;
+
+                // Get all items in "2. Bewerkt" folder
+                var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                // Look for report.json file
+                var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                    !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                if (reportFile == null)
+                {
+                    throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                }
+
+                // Read existing report
+                var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                // Update indices
+                foreach (var update in indexUpdates)
+                {
+                    var image = report.Images.FirstOrDefault(img => img.Id == update.Id);
+                    if (image != null)
+                    {
+                        image.Index = update.Index;
+                    }
+                }
+
+                // Save updated report
+                await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating image indices for folder ID: {addressFolderId}", ex);
             }
         }
     }

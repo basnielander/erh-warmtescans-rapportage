@@ -6,6 +6,11 @@ import { GoogleDriveItem } from '../models/google-drive.model';
 import { Report } from '../models/report.model';
 import { environment } from '../../environments/environment';
 
+export interface ImageIndexUpdate {
+  id: string;
+  index: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +27,13 @@ export class ReportService {
     const url = `${this.baseUrl}/report?folderId=${folderId}`;
     
     return this.http.get<Report>(url, { headers });
+  }
+
+  updateImageIndices(folderId: string, indexUpdates: ImageIndexUpdate[]): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/update-indices?folderId=${folderId}`;
+    
+    return this.http.post<void>(url, indexUpdates, { headers });
   }
   
   private getAuthHeaders(): HttpHeaders {

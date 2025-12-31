@@ -144,6 +144,60 @@
   margin-top: 15px;
 }
 
+.image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: move;
+}
+
+.image-wrapper:hover {
+  background-color: #f8f9fa;
+  border-color: #e0e0e0;
+}
+
+.image-wrapper.dragging {
+  opacity: 0.5;
+  background-color: #e8f0fe;
+  border-color: #4285f4;
+}
+
+.drag-handle {
+  font-size: 20px;
+  color: #999;
+  cursor: grab;
+  user-select: none;
+  padding: 5px;
+  line-height: 1;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.image-wrapper app-image-card {
+  flex: 1;
+}
+
+.update-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: #e8f0fe;
+  border: 1px solid #4285f4;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #1967d2;
+}
+
 .no-images {
   text-align: center;
   padding: 40px;
