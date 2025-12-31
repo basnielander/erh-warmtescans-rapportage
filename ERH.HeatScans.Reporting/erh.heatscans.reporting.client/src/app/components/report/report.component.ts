@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect } from '@angular/core';
+import { Component, OnInit, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MapDisplayComponent } from '../map-display/map-display.component';
@@ -28,6 +28,13 @@ export class ReportComponent implements OnInit {
   addressReport = signal<Report | null>(null);
   isLoadingReport = signal<boolean>(false);
   reportError = signal<string | null>(null);
+
+  // Computed signal for sorted images
+  sortedImages = computed(() => {
+    const report = this.addressReport();
+    if (!report || !report.images) return [];
+    return [...report.images].sort((a, b) => a.index - b.index);
+  });
 
   constructor(
     private route: ActivatedRoute,

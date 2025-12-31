@@ -41,23 +41,23 @@
         <strong>Folder ID:</strong> {{ folderId() }}
       </div>
       <div class="info-item" *ngIf="addressReport()">
-        <strong>Total Images:</strong> {{ addressReport()!.images.length }}
+        <strong>Total Images:</strong> {{ sortedImages().length }}
       </div>
     </div>
 
     <!-- Images Section -->
-    <div class="images-section" *ngIf="addressReport() && addressReport()!.images.length > 0">
+    <div class="images-section" *ngIf="addressReport() && sortedImages().length > 0">
       <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
       <div class="images-grid">
         <app-image-card 
-          *ngFor="let image of addressReport()!.images" 
+          *ngFor="let image of sortedImages()" 
           [image]="image">
         </app-image-card>
       </div>
     </div>
 
     <!-- No Images Message -->
-    <div class="no-images" *ngIf="addressReport() && addressReport()!.images.length === 0">
+    <div class="no-images" *ngIf="addressReport() && sortedImages().length === 0">
       <p>📭 No images found in the "2. Bewerkt" folder.</p>
     </div>
   </div>

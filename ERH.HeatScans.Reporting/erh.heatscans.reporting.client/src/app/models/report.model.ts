@@ -5,6 +5,7 @@ export interface Report {
 
 export interface ImageInfo {
   id: string;
+  index: number;
   name: string;
   mimeType: string;
   size?: number;
