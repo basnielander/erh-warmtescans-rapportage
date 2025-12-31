@@ -84,7 +84,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             var request = driveService.Files.List();
             request.Q = $"'{folderId}' in parents and trashed = false";
             request.Fields = "nextPageToken, files(id, name, mimeType, modifiedTime, size)";
-            request.PageSize = 1000;
+            request.PageSize = 500;
 
             do
             {
@@ -277,6 +277,8 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             {
                 var driveService = CreateDriveService(accessToken);
 
+                var addressFolder = await GetFileMetadataAsync(driveService, addressFolderId, cancellationToken);
+
                 // Get all items in the address folder
                 var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
 
@@ -308,11 +310,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 else
                 {
                     // Create new report
-                    report = new Report
-                    {
-                        FolderId = addressFolderId,
-                        Images = new List<ReportImage>()
-                    };
+                    report = new Report(addressFolder.Id, addressFolder.Name);
                 }
 
                 // Get all image files from "2. Bewerkt" folder
@@ -323,8 +321,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 ).ToList();
 
                 // Update report with current images
-                report.FolderId = addressFolderId;
-                report.Images = new List<ReportImage>();
+                report.Images = [];
 
                 var index = 0;
                 foreach (var heatScan in imageFiles)
@@ -390,7 +387,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             using (var reader = new StreamReader(stream))
             {
                 var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<Report>(json) ?? new Report();
+                return JsonConvert.DeserializeObject<Report>(json);
             }
         }
 

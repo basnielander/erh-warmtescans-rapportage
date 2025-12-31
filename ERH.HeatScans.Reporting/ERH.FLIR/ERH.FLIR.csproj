@@ -111,10 +111,5 @@
       <Version>7.4.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="CheckDllDependencies.ps1" />
-    <None Include="DisableFusionLog.ps1" />
-    <None Include="EnableFusionLog.ps1" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
