@@ -92,7 +92,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
                 if (result.Files != null)
                 {
-                    foreach (var file in result.Files)
+                    foreach (var file in result.Files.OrderBy(f => f.Name))
                     {
                         var item = new GoogleDriveItem
                         {
@@ -331,6 +331,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                             MimeType = heatScan.MimeType,
                             Size = heatScan.Size,
                             ModifiedTime = heatScan.ModifiedTime?.ToString("o"), // ISO 8601 format
+                            ExcludeFromReport = false
                         });
 
                         index++;

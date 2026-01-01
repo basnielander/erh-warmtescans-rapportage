@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ImageService {
-  private baseUrl = `${environment.apiBaseUrl}image`;
+  private baseUrl = `${environment.apiBaseUrl}images`;
 
   constructor(
     private http: HttpClient,
@@ -19,7 +19,7 @@ export class ImageService {
   
   getImage(fileId: string): Observable<Blob> {
     const headers = this.getAuthHeaders();
-    const url = `${this.baseUrl}?fileId=${fileId}`;
+    const url = `${this.baseUrl}/${fileId}`;
     
     return this.http.get(url, { 
       headers, 
@@ -29,7 +29,7 @@ export class ImageService {
 
   addSpot(imageFileId: string, x: number, y: number): Observable<void> {
     const headers = this.getAuthHeaders();
-    const url = `${this.baseUrl}/spot?imageFileId=${imageFileId}&x=${x}&y=${y}`;
+    const url = `${this.baseUrl}/${imageFileId}/spots?x=${x}&y=${y}`;
     
     return this.http.post<void>(url, null, { headers });
   }

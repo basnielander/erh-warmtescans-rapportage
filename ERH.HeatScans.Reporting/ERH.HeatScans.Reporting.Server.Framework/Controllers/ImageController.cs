@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
-    [RoutePrefix("api/image")]
+    [RoutePrefix("api/images")]
     public class ImageController : ApiController
     {
         private readonly GoogleDriveService storageService;
@@ -21,8 +21,8 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<IHttpActionResult> GetImage(string fileId, CancellationToken cancellationToken = default)
+        [Route("{imageFileId}")]
+        public async Task<IHttpActionResult> GetImage(string imageFileId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -32,12 +32,12 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return Unauthorized();
                 }
 
-                if (string.IsNullOrWhiteSpace(fileId))
+                if (string.IsNullOrWhiteSpace(imageFileId))
                 {
-                    return BadRequest("fileId is required");
+                    return BadRequest("imageFileId is required");
                 }
 
-                var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, fileId, cancellationToken);
+                var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
 
                 var result = heatScanService.GetHeatscanImage(rawFileAsStream);
 
@@ -56,7 +56,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         }
 
         [HttpPost]
-        [Route("spot")]
+        [Route("{imageFileId}/spots")]
         public async Task<IHttpActionResult> AddSpot(string imageFileId, int x, int y, CancellationToken cancellationToken = default)
         {
             try
@@ -78,6 +78,32 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(updatedHeatscan.MimeType);
 
                 return ResponseMessage(response);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("calibrate")]
+        public async Task<IHttpActionResult> CalibrateImages([FromBody] CalibrationRequest calibrationRequest, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = AccessToken.Get(Request);
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+                //var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+                //FileDownloadResult calibratedHeatscan = heatScanService.CalibrateHeatscanImage(rawFileAsStream, knownTemperature, x, y, cancellationToken);
+                //var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                //{
+                //    Content = new ByteArrayContent(calibratedHeatscan.Data)
+                //};
+                //response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(calibratedHeatscan.MimeType);
+                return NotFound();
             }
             catch (Exception ex)
             {

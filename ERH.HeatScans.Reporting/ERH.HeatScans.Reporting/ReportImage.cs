@@ -11,5 +11,7 @@ public class ReportImage(string id, int index)
     public Spots Spots { get; set; }
     public string Comments { get; set; }
     public bool ExcludeFromReport { get; set; } = false;
-
+    public bool Outdoor { get; set; } = true;
+    public double? TemperatureMin { get; set; }
+    public double? TemperatureMax { get; set; }
 }
