@@ -4,7 +4,8 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MapDisplayComponent } from '../map-display/map-display.component';
 import { ImageCardComponent } from '../image-card/image-card.component';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
-import { Report, ImageInfo } from '../../models/report.model';
+import { Report } from '../../models/report.model';
+import { ImageInfo } from "../../models/image.model";
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReportService } from '../../services/report.service';
 
@@ -217,6 +218,28 @@ export class ReportComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error toggling image exclusion:', err);
+      }
+    });
+  }
+
+  onUpdateImageProperties(data: { imageId: string, comment: string, outdoor: boolean }): void {
+    const currentReport = this.addressReport();
+    if (!currentReport) return;
+
+    this.reportService.updateImageProperties(this.folderId(), data.imageId, data.comment, data.outdoor).subscribe({
+      next: () => {
+        console.log('Image properties updated successfully');
+        // Update the local state
+        const updatedImages = currentReport.images.map(img => 
+          img.id === data.imageId ? { ...img, comment: data.comment, outdoor: data.outdoor } : img
+        );
+        this.addressReport.set({
+          ...currentReport,
+          images: updatedImages
+        });
+      },
+      error: (err) => {
+        console.error('Error updating image properties:', err);
       }
     });
   }

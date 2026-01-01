@@ -25,21 +25,83 @@
         {{ image.modifiedTime | date:'short' }}
       </span>
     </div>
+
+    <!-- View Mode -->
+    <div *ngIf="!isEditing()" class="image-details">
+      <div class="detail-item">
+        <span class="detail-label">Location:</span>
+        <span class="detail-value">{{ image.outdoor ? '🌤️ Outdoor' : '🏠 Indoor' }}</span>
+      </div>
+      <div class="detail-item" *ngIf="image.comments">
+        <span class="detail-label">Comments:</span>
+        <span class="detail-value">{{ image.comments }}</span>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div *ngIf="isEditing()" class="image-edit-form">
+      <div class="form-group">
+        <label class="form-label">
+          <input 
+            type="checkbox" 
+            [checked]="editOutdoor()"
+            (change)="editOutdoor.set(!editOutdoor())"
+            class="form-checkbox"
+          />
+          <span class="checkbox-label">{{ editOutdoor() ? '🌤️ Outdoor' : '🏠 Indoor' }}</span>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="comments-{{image.id}}">Comments:</label>
+        <textarea 
+          id="comments-{{image.id}}"
+          [value]="editComment()"
+          (input)="editComment.set($any($event.target).value)"
+          class="form-textarea"
+          rows="3"
+          placeholder="Add a comment about this image..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
     <div class="image-actions">
-      <button 
-        *ngIf="!image.excludeFromReport"
-        class="btn-exclude" 
-        (click)="onToggleExcludeClick($event)"
-        title="Exclude from report">
-        🗑️ Exclude
-      </button>
-      <button 
-        *ngIf="image.excludeFromReport"
-        class="btn-include" 
-        (click)="onToggleExcludeClick($event)"
-        title="Include in report">
-        ↩️ Include
-      </button>
+      <div *ngIf="!isEditing()" class="action-buttons">
+        <button 
+          class="btn-edit" 
+          (click)="onEditClick($event)"
+          title="Edit properties">
+          ✏️ Edit
+        </button>
+        <button 
+          *ngIf="!image.excludeFromReport"
+          class="btn-exclude" 
+          (click)="onToggleExcludeClick($event)"
+          title="Exclude from report">
+          🗑️ Exclude
+        </button>
+        <button 
+          *ngIf="image.excludeFromReport"
+          class="btn-include" 
+          (click)="onToggleExcludeClick($event)"
+          title="Include in report">
+          ↩️ Include
+        </button>
+      </div>
+      <div *ngIf="isEditing()" class="action-buttons">
+        <button 
+          class="btn-save" 
+          (click)="onSaveClick($event)"
+          title="Save changes">
+          ✅ Save
+        </button>
+        <button 
+          class="btn-cancel" 
+          (click)="onCancelClick($event)"
+          title="Cancel editing">
+          ❌ Cancel
+        </button>
+      </div>
     </div>
   </div>
 </div>

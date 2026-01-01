@@ -1,24 +1,31 @@
 import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ImageInfo } from '../../models/report.model';
+import { ImageInfo } from "../../models/image.model";
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { ImageService } from '../../services/image.service';
 
 @Component({
   selector: 'app-image-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './image-card.component.html',
   styleUrl: './image-card.component.css'
 })
 export class ImageCardComponent implements OnInit {
   @Input() image!: ImageInfo;
   @Output() toggleExclude = new EventEmitter<string>();
+  @Output() updateImageProperties = new EventEmitter<{ imageId: string, comment: string, outdoor: boolean }>();
   
   imageUrl = signal<SafeUrl | null>(null);
   isLoading = signal<boolean>(true);
   hasError = signal<boolean>(false);
+  isEditing = signal<boolean>(false);
+  
+  // Local state for editing
+  editComment = signal<string>('');
+  editOutdoor = signal<boolean>(true);
 
   constructor(
     private driveService: GoogleDriveService,
@@ -28,6 +35,8 @@ export class ImageCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadImage();
+    this.editComment.set(this.image.comments || '');
+    this.editOutdoor.set(this.image.outdoor ?? true);
   }
 
   loadImage(): void {
@@ -71,6 +80,30 @@ export class ImageCardComponent implements OnInit {
   onToggleExcludeClick(event: MouseEvent): void {
     event.stopPropagation();
     this.toggleExclude.emit(this.image.id);
+  }
+
+  onEditClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.isEditing.set(true);
+    this.editComment.set(this.image.comments || '');
+    this.editOutdoor.set(this.image.outdoor ?? true);
+  }
+
+  onSaveClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.updateImageProperties.emit({
+      imageId: this.image.id,
+      comment: this.editComment(),
+      outdoor: this.editOutdoor()
+    });
+    this.isEditing.set(false);
+  }
+
+  onCancelClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.isEditing.set(false);
+    this.editComment.set(this.image.comments || '');
+    this.editOutdoor.set(this.image.outdoor ?? true);
   }
 
   formatFileSize(bytes: number | undefined): string {

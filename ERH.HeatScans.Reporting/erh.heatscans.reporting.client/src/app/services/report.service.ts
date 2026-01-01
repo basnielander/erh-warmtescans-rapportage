@@ -42,6 +42,13 @@ export class ReportService {
     
     return this.http.post<void>(url, null, { headers });
   }
+
+  updateImageProperties(folderId: string, imageId: string, comment: string, outdoor: boolean): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/update-image-properties?imageId=${imageId}&comment=${encodeURIComponent(comment)}&outdoor=${outdoor}`;
+    
+    return this.http.patch<void>(url, null, { headers });
+  }
   
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();

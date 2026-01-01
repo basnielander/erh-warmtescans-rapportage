@@ -121,6 +121,40 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        /// <summary>
+        /// Update image properties (comment and outdoor)
+        /// </summary>
+        /// <param name="imageId">Image file ID to update</param>
+        /// <param name="comment">Comment text</param>
+        /// <param name="outdoor">True if outdoor, false if indoor</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Success status</returns>
+        [HttpPatch]
+        [Route("update-image-properties")]
+        public async Task<IHttpActionResult> UpdateImageProperties(string imageId, string comment, bool outdoor, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = AccessToken.Get(Request);
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+
+                if (string.IsNullOrWhiteSpace(imageId))
+                {
+                    return BadRequest("imageId is required");
+                }
+
+                await storageService.UpdateImagePropertiesAsync(accessToken, imageId, comment, outdoor, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 
     public class ImageIndexUpdate

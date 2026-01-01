@@ -538,5 +538,58 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 throw new Exception($"Error toggling image {imageId} exclusion in report", ex);
             }
         }
+
+        public async Task UpdateImagePropertiesAsync(string accessToken, string imageId, string comment, bool outdoor, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var driveService = CreateDriveService(accessToken);
+
+                // Get the image file metadata to find its parent folder
+                var imageRequest = driveService.Files.Get(imageId);
+                imageRequest.Fields = "id, name, parents";
+                var imageFile = await imageRequest.ExecuteAsync(cancellationToken);
+
+                if (imageFile.Parents == null || !imageFile.Parents.Any())
+                {
+                    throw new Exception($"Image with ID {imageId} has no parent folder");
+                }
+
+                // Get the "2. Bewerkt" folder ID (parent of the image)
+                string bewerktFolderId = imageFile.Parents.First();
+
+                // Get all items in "2. Bewerkt" folder
+                var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                // Look for report.json file
+                var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                    !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                if (reportFile == null)
+                {
+                    throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                }
+
+                // Read existing report
+                var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                // Find and update the image's properties
+                var image = report.Images.FirstOrDefault(img => img.Id == imageId);
+                if (image == null)
+                {
+                    throw new Exception($"Image with ID {imageId} not found in report");
+                }
+
+                image.Comments = comment;
+                image.Outdoor = outdoor;
+
+                // Save updated report
+                await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating image {imageId} properties in report", ex);
+            }
+        }
     }
 }

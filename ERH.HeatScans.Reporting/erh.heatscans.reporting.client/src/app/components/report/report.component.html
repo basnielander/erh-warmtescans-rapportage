@@ -65,7 +65,8 @@
           <div class="drag-handle">⋮⋮</div>
           <app-image-card 
             [image]="image"
-            (toggleExclude)="onToggleExcludeImage($event)">
+            (toggleExclude)="onToggleExcludeImage($event)"
+            (updateImageProperties)="onUpdateImageProperties($event)">
           </app-image-card>
         </div>
       </div>
@@ -81,7 +82,8 @@
           class="image-wrapper excluded">
           <app-image-card 
             [image]="image"
-            (toggleExclude)="onToggleExcludeImage($event)">
+            (toggleExclude)="onToggleExcludeImage($event)"
+            (updateImageProperties)="onUpdateImageProperties($event)">
           </app-image-card>
         </div>
       </div>
