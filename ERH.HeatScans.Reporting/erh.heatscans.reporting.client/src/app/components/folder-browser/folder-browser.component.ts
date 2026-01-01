@@ -27,29 +27,27 @@ export class FolderBrowserComponent implements OnInit {
     this.loadFolderStructure();
   }
 
-  loadFolderStructure(): void {
+  async loadFolderStructure(): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.googleDriveService.getFolderStructure().subscribe({
-      next: (data) => {
-        this.folderStructure.set(data);
-        // Expand root folder by default
-        if (data?.id) {
-          this.expandedFolders.update(folders => {
-            const newSet = new Set(folders);
-            newSet.add(data.id);
-            return newSet;
-          });
-        }
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        this.error.set('Failed to load folder structure: ' + (err.message || 'Unknown error'));
-        this.isLoading.set(false);
-        console.error('Error loading folder structure:', err);
+    try {
+      const data = await this.googleDriveService.getFolderStructure();
+      this.folderStructure.set(data);
+      // Expand root folder by default
+      if (data?.id) {
+        this.expandedFolders.update(folders => {
+          const newSet = new Set(folders);
+          newSet.add(data.id);
+          return newSet;
+        });
       }
-    });
+    } catch (err: any) {
+      this.error.set('Failed to load folder structure: ' + (err.message || 'Unknown error'));
+      console.error('Error loading folder structure:', err);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   toggleFolder(folderId: string, item?: GoogleDriveItem, level?: number): void {

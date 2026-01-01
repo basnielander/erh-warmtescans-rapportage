@@ -104,41 +104,37 @@ export class ReportComponent implements OnInit {
     // Initialization is now handled in the constructor's effect
   }
 
-  setupAddressFolder(): void {
+  async setupAddressFolder(): Promise<void> {
     this.isSettingUp.set(true);
     this.setupError.set(null);
 
-    this.driveService.setupAddressFolder(this.folderId()).subscribe({
-      next: () => {
-        console.log('Address folder setup completed successfully');
-        this.isSettingUp.set(false);
-        // Call getReport after successful setup
-        this.loadReport();
-      },
-      error: (err) => {
-        console.error('Error setting up address folder:', err);
-        this.setupError.set('Failed to setup address folder. Please try again.');
-        this.isSettingUp.set(false);
-      }
-    });
+    try {
+      await this.driveService.setupAddressFolder(this.folderId());
+      console.log('Address folder setup completed successfully');
+      this.isSettingUp.set(false);
+      // Call getReport after successful setup
+      await this.loadReport();
+    } catch (err: any) {
+      console.error('Error setting up address folder:', err);
+      this.setupError.set('Failed to setup address folder. Please try again.');
+      this.isSettingUp.set(false);
+    }
   }
 
-  loadReport(): void {
+  async loadReport(): Promise<void> {
     this.isLoadingReport.set(true);
     this.reportError.set(null);
 
-    this.reportService.getReport(this.folderId()).subscribe({
-      next: (report) => {
-        console.log('Report loaded successfully:', report);
-        this.addressReport.set(report);
-        this.isLoadingReport.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading report:', err);
-        this.reportError.set('Failed to load report. Please try again.');
-        this.isLoadingReport.set(false);
-      }
-    });
+    try {
+      const report = await this.reportService.getReport(this.folderId());
+      console.log('Report loaded successfully:', report);
+      this.addressReport.set(report);
+    } catch (err: any) {
+      console.error('Error loading report:', err);
+      this.reportError.set('Failed to load report. Please try again.');
+    } finally {
+      this.isLoadingReport.set(false);
+    }
   }
 
   goBack(): void {
@@ -199,7 +195,7 @@ export class ReportComponent implements OnInit {
     this.draggedIndex.set(null);
   }
 
-  updateImageIndices(images: ImageInfo[]): void {
+  async updateImageIndices(images: ImageInfo[]): Promise<void> {
     this.isUpdatingIndices.set(true);
     
     const indexUpdates = images.map(img => ({
@@ -207,21 +203,19 @@ export class ReportComponent implements OnInit {
       index: img.index
     }));
 
-    this.reportService.updateImageIndices(this.folderId(), indexUpdates).subscribe({
-      next: () => {
-        console.log('Image indices updated successfully');
-        this.isUpdatingIndices.set(false);
-      },
-      error: (err) => {
-        console.error('Error updating image indices:', err);
-        this.isUpdatingIndices.set(false);
-        // Optionally reload the report to restore the correct order
-        this.loadReport();
-      }
-    });
+    try {
+      await this.reportService.updateImageIndices(this.folderId(), indexUpdates);
+      console.log('Image indices updated successfully');
+    } catch (err: any) {
+      console.error('Error updating image indices:', err);
+      // Optionally reload the report to restore the correct order
+      await this.loadReport();
+    } finally {
+      this.isUpdatingIndices.set(false);
+    }
   }
   
-  onToggleExcludeImage(imageId: string): void {
+  async onToggleExcludeImage(imageId: string): Promise<void> {
     const currentReport = this.addressReport();
     if (!currentReport) return;
 
@@ -230,66 +224,60 @@ export class ReportComponent implements OnInit {
 
     const shouldExclude = !image.excludeFromReport;
 
-    this.reportService.toggleImageExclusion(this.folderId(), imageId, shouldExclude).subscribe({
-      next: () => {
-        console.log(`Image ${shouldExclude ? 'excluded from' : 'included in'} report successfully`);
-        // Update the local state
-        const updatedImages = currentReport.images.map(img => 
-          img.id === imageId ? { ...img, excludeFromReport: shouldExclude } : img
-        );
-        this.addressReport.set({
-          ...currentReport,
-          images: updatedImages
-        });
-      },
-      error: (err) => {
-        console.error('Error toggling image exclusion:', err);
-      }
-    });
+    try {
+      await this.reportService.toggleImageExclusion(this.folderId(), imageId, shouldExclude);
+      console.log(`Image ${shouldExclude ? 'excluded from' : 'included in'} report successfully`);
+      // Update the local state
+      const updatedImages = currentReport.images.map(img => 
+        img.id === imageId ? { ...img, excludeFromReport: shouldExclude } : img
+      );
+      this.addressReport.set({
+        ...currentReport,
+        images: updatedImages
+      });
+    } catch (err: any) {
+      console.error('Error toggling image exclusion:', err);
+    }
   }
 
-  onUpdateImageProperties(data: { imageId: string, comment: string, outdoor: boolean }): void {
+  async onUpdateImageProperties(data: { imageId: string, comment: string, outdoor: boolean }): Promise<void> {
     const currentReport = this.addressReport();
     if (!currentReport) return;
 
-    this.reportService.updateImageProperties(this.folderId(), data.imageId, data.comment, data.outdoor).subscribe({
-      next: () => {
-        console.log('Image properties updated successfully');
-        // Update the local state
-        const updatedImages = currentReport.images.map(img => 
-          img.id === data.imageId ? { ...img, comment: data.comment, outdoor: data.outdoor } : img
-        );
-        this.addressReport.set({
-          ...currentReport,
-          images: updatedImages
-        });
-      },
-      error: (err) => {
-        console.error('Error updating image properties:', err);
-      }
-    });
+    try {
+      await this.reportService.updateImageProperties(this.folderId(), data.imageId, data.comment, data.outdoor);
+      console.log('Image properties updated successfully');
+      // Update the local state
+      const updatedImages = currentReport.images.map(img => 
+        img.id === data.imageId ? { ...img, comment: data.comment, outdoor: data.outdoor } : img
+      );
+      this.addressReport.set({
+        ...currentReport,
+        images: updatedImages
+      });
+    } catch (err: any) {
+      console.error('Error updating image properties:', err);
+    }
   }
 
-  onUpdateCalibration(data: { imageId: string, temperatureMin: number, temperatureMax: number }): void {
+  async onUpdateCalibration(data: { imageId: string, temperatureMin: number, temperatureMax: number }): Promise<void> {
     const currentReport = this.addressReport();
     if (!currentReport) return;
 
-    this.reportService.updateImageCalibration(this.folderId(), data.imageId, data.temperatureMin, data.temperatureMax).subscribe({
-      next: () => {
-        console.log('Image calibration updated successfully');
-        // Update the local state
-        const updatedImages = currentReport.images.map(img => 
-          img.id === data.imageId ? { ...img, temperatureMin: data.temperatureMin, temperatureMax: data.temperatureMax } : img
-        );
-        this.addressReport.set({
-          ...currentReport,
-          images: updatedImages
-        });
-      },
-      error: (err) => {
-        console.error('Error updating image calibration:', err);
-      }
-    });
+    try {
+      await this.reportService.updateImageCalibration(this.folderId(), data.imageId, data.temperatureMin, data.temperatureMax);
+      console.log('Image calibration updated successfully');
+      // Update the local state
+      const updatedImages = currentReport.images.map(img => 
+        img.id === data.imageId ? { ...img, temperatureMin: data.temperatureMin, temperatureMax: data.temperatureMax } : img
+      );
+      this.addressReport.set({
+        ...currentReport,
+        images: updatedImages
+      });
+    } catch (err: any) {
+      console.error('Error updating image calibration:', err);
+    }
   }
 
   onShowBatchOutdoorCalibration(): void {
@@ -300,33 +288,31 @@ export class ReportComponent implements OnInit {
     this.showBatchIndoorCalibration.set(true);
   }
 
-  onBatchCalibrationSave(data: { imageIds: string[], temperatureMin: number, temperatureMax: number }): void {
-    this.reportService.batchCalibrateImages(data.imageIds, data.temperatureMin, data.temperatureMax).subscribe({
-      next: () => {
-        console.log('Batch calibration completed successfully');
-        // Update local state for all images
-        const currentReport = this.addressReport();
-        if (currentReport) {
-          const updatedImages = currentReport.images.map(img => 
-            data.imageIds.includes(img.id) 
-              ? { ...img, temperatureMin: data.temperatureMin, temperatureMax: data.temperatureMax } 
-              : img
-          );
-          this.addressReport.set({
-            ...currentReport,
-            images: updatedImages
-          });
-        }
-        this.showBatchOutdoorCalibration.set(false);
-        this.showBatchIndoorCalibration.set(false);
-      },
-      error: (err) => {
-        console.error('Error in batch calibration:', err);
-        alert('Batch calibration failed. Please try again.');
-        this.showBatchOutdoorCalibration.set(false);
-        this.showBatchIndoorCalibration.set(false);
+  async onBatchCalibrationSave(data: { imageIds: string[], temperatureMin: number, temperatureMax: number }): Promise<void> {
+    try {
+      await this.reportService.batchCalibrateImages(data.imageIds, data.temperatureMin, data.temperatureMax);
+      console.log('Batch calibration completed successfully');
+      // Update local state for all images
+      const currentReport = this.addressReport();
+      if (currentReport) {
+        const updatedImages = currentReport.images.map(img => 
+          data.imageIds.includes(img.id) 
+            ? { ...img, temperatureMin: data.temperatureMin, temperatureMax: data.temperatureMax } 
+            : img
+        );
+        this.addressReport.set({
+          ...currentReport,
+          images: updatedImages
+        });
       }
-    });
+      this.showBatchOutdoorCalibration.set(false);
+      this.showBatchIndoorCalibration.set(false);
+    } catch (err: any) {
+      console.error('Error in batch calibration:', err);
+      alert('Batch calibration failed. Please try again.');
+      this.showBatchOutdoorCalibration.set(false);
+      this.showBatchIndoorCalibration.set(false);
+    }
   }
 
   onBatchCalibrationCancel(): void {
@@ -338,25 +324,23 @@ export class ReportComponent implements OnInit {
     this.showReportDetailsEditor.set(true);
   }
 
-  onReportDetailsSave(updatedDetails: Partial<Report>): void {
+  async onReportDetailsSave(updatedDetails: Partial<Report>): Promise<void> {
     const currentReport = this.addressReport();
     if (!currentReport) return;
 
-    this.reportService.updateReportDetails(this.folderId(), updatedDetails).subscribe({
-      next: () => {
-        console.log('Report details updated successfully');
-        // Update local state
-        this.addressReport.set({
-          ...currentReport,
-          ...updatedDetails
-        });
-        this.showReportDetailsEditor.set(false);
-      },
-      error: (err) => {
-        console.error('Error updating report details:', err);
-        alert('Failed to update report details. Please try again.');
-      }
-    });
+    try {
+      await this.reportService.updateReportDetails(this.folderId(), updatedDetails);
+      console.log('Report details updated successfully');
+      // Update local state
+      this.addressReport.set({
+        ...currentReport,
+        ...updatedDetails
+      });
+      this.showReportDetailsEditor.set(false);
+    } catch (err: any) {
+      console.error('Error updating report details:', err);
+      alert('Failed to update report details. Please try again.');
+    }
   }
 
   onReportDetailsCancel(): void {

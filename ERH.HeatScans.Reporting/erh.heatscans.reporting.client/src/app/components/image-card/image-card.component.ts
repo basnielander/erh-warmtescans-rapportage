@@ -47,26 +47,24 @@ export class ImageCardComponent implements OnInit {
     // Initialization now handled in constructor effect
   }
 
-  loadImage(): void {
+  async loadImage(): Promise<void> {
     this.isLoading.set(true);
     this.hasError.set(false);
 
-    this.imageService.getImage(this.image().id).subscribe({
-      next: (blob) => {
-        const url = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
-        this.imageUrl.set(safeUrl);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error(`Error loading image ${this.image().name}:`, err);
-        this.hasError.set(true);
-        this.isLoading.set(false);
-      }
-    });
+    try {
+      const blob = await this.imageService.getImage(this.image().id);
+      const url = URL.createObjectURL(blob);
+      const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
+      this.imageUrl.set(safeUrl);
+    } catch (err: any) {
+      console.error(`Error loading image ${this.image().name}:`, err);
+      this.hasError.set(true);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
-  onImageClick(event: MouseEvent): void {
+  async onImageClick(event: MouseEvent): Promise<void> {
     const imgElement = event.target as HTMLImageElement;
     const rect = imgElement.getBoundingClientRect();
     
@@ -75,14 +73,12 @@ export class ImageCardComponent implements OnInit {
 
     console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image().id}`);
 
-    this.imageService.addSpot(this.image().id, x, y).subscribe({
-      next: () => {
-        console.log('Spot added successfully');
-      },
-      error: (err) => {
-        console.error('Error adding spot:', err);
-      }
-    });
+    try {
+      await this.imageService.addSpot(this.image().id, x, y);
+      console.log('Spot added successfully');
+    } catch (err: any) {
+      console.error('Error adding spot:', err);
+    }
   }
 
   onToggleExcludeClick(event: MouseEvent): void {

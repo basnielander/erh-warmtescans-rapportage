@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GoogleDriveItem } from '../models/google-drive.model';
 import { Report } from '../models/report.model';
@@ -17,21 +17,21 @@ export class ImageService {
     private authService: AuthService
   ) {}
   
-  getImage(fileId: string): Observable<Blob> {
+  getImage(fileId: string): Promise<Blob> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}/${fileId}`;
     
-    return this.http.get(url, { 
+    return lastValueFrom(this.http.get(url, { 
       headers, 
       responseType: 'blob' 
-    });
+    }));
   }
 
-  addSpot(imageFileId: string, x: number, y: number): Observable<void> {
+  addSpot(imageFileId: string, x: number, y: number): Promise<void> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}/${imageFileId}/spots?x=${x}&y=${y}`;
     
-    return this.http.post<void>(url, null, { headers });
+    return lastValueFrom(this.http.post<void>(url, null, { headers }));
   }
 
   private getAuthHeaders(): HttpHeaders {

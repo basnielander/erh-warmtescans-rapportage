@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GoogleDriveItem } from '../models/google-drive.model';
 import { Report } from '../models/report.model';
@@ -17,27 +17,27 @@ export class GoogleDriveService {
     private authService: AuthService
   ) {}
 
-  getFolderStructure(): Observable<GoogleDriveItem> {
+  getFolderStructure(): Promise<GoogleDriveItem> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}/users`;
     
-    return this.http.get<GoogleDriveItem>(url, { headers });
+    return lastValueFrom(this.http.get<GoogleDriveItem>(url, { headers }));
   }
 
-  getFiles(folderId?: string): Observable<GoogleDriveItem[]> {
+  getFiles(folderId?: string): Promise<GoogleDriveItem[]> {
     const headers = this.getAuthHeaders();
     const url = folderId 
       ? `${this.baseUrl}/files?folderId=${folderId}`
       : `${this.baseUrl}/files`;
     
-    return this.http.get<GoogleDriveItem[]>(url, { headers });
+    return lastValueFrom(this.http.get<GoogleDriveItem[]>(url, { headers }));
   }
 
-  setupAddressFolder(addressFolderId: string): Observable<void> {
+  setupAddressFolder(addressFolderId: string): Promise<void> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}?addressFolderId=${addressFolderId}`;
     
-    return this.http.post<void>(url, null, { headers });
+    return lastValueFrom(this.http.post<void>(url, null, { headers }));
   }
   
   private getAuthHeaders(): HttpHeaders {

@@ -43,24 +43,21 @@ export class MapDisplayComponent implements OnInit {
     // Initial load is handled by the effect
   }
 
-  loadMap(): void {
+  async loadMap(): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
     this.imageUrl.set(null);
 
-    this.mapsService.getStaticMapImage(this.address(), this.zoom(), this.size())
-      .subscribe({
-        next: (blob: Blob) => {
-          const objectUrl = URL.createObjectURL(blob);
-          this.imageUrl.set(this.sanitizer.bypassSecurityTrustUrl(objectUrl));
-          this.isLoading.set(false);
-        },
-        error: (err) => {
-          console.error('Error loading map:', err);
-          this.error.set(err.error?.message || 'Failed to load map image');
-          this.isLoading.set(false);
-        }
-      });
+    try {
+      const blob = await this.mapsService.getStaticMapImage(this.address(), this.zoom(), this.size());
+      const objectUrl = URL.createObjectURL(blob);
+      this.imageUrl.set(this.sanitizer.bypassSecurityTrustUrl(objectUrl));
+    } catch (err: any) {
+      console.error('Error loading map:', err);
+      this.error.set(err.error?.message || 'Failed to load map image');
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   reload(): void {
