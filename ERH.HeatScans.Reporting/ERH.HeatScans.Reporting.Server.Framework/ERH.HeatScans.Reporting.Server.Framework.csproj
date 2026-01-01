@@ -166,11 +166,14 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccessToken.cs" />
+    <Compile Include="Controllers\AuthorizedApiController.cs" />
     <Compile Include="Controllers\CalibrationRequest.cs" />
     <Compile Include="Controllers\ImageController.cs" />
+    <Compile Include="Controllers\ImageIndexUpdate.cs" />
     <Compile Include="Controllers\MapsController.cs" />
     <Compile Include="Controllers\FoldersAndFilesController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\ReportDetailsUpdate.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -179,6 +182,7 @@
     <Compile Include="Services\FLIRService.cs" />
     <Compile Include="Services\GoogleDriveService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GoogleMapsService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

@@ -1,5 +1,4 @@
 ﻿using ERH.HeatScans.Reporting.Server.Framework.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,7 +8,7 @@ using System.Web.Http;
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
     [RoutePrefix("api/report")]
-    public class ReportController : ApiController
+    public class ReportController : AuthorizedApiController
     {
         private readonly GoogleDriveService storageService;
 
@@ -29,26 +28,17 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("report")]
         public async Task<IHttpActionResult> GetReport(string folderId = null, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
+                var validationResult = ValidateRequired("folderId", folderId);
+                if (validationResult != null)
                 {
-                    return Unauthorized();
-                }
-
-                if (string.IsNullOrWhiteSpace(folderId))
-                {
-                    return BadRequest("folderId is required");
+                    return validationResult;
                 }
 
                 var report = await storageService.GetReportAsync(accessToken, folderId, cancellationToken);
                 return Ok(report);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         /// <summary>
@@ -62,17 +52,12 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("update-indices")]
         public async Task<IHttpActionResult> UpdateImageIndices(string folderId, [FromBody] List<ImageIndexUpdate> indexUpdates, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
+                var validationResult = ValidateRequired("folderId", folderId);
+                if (validationResult != null)
                 {
-                    return Unauthorized();
-                }
-
-                if (string.IsNullOrWhiteSpace(folderId))
-                {
-                    return BadRequest("folderId is required");
+                    return validationResult;
                 }
 
                 if (indexUpdates == null || !indexUpdates.Any())
@@ -82,11 +67,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 await storageService.UpdateImageIndicesAsync(accessToken, folderId, indexUpdates, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         /// <summary>
@@ -100,26 +81,17 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("toggle-image-exclusion")]
         public async Task<IHttpActionResult> ToggleImageExclusion(string imageId, bool exclude, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
+                var validationResult = ValidateRequired("imageId", imageId);
+                if (validationResult != null)
                 {
-                    return Unauthorized();
-                }
-
-                if (string.IsNullOrWhiteSpace(imageId))
-                {
-                    return BadRequest("imageId is required");
+                    return validationResult;
                 }
 
                 await storageService.ToggleImageExclusionAsync(accessToken, imageId, exclude, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         /// <summary>
@@ -134,26 +106,17 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("update-image-properties")]
         public async Task<IHttpActionResult> UpdateImageProperties(string imageId, string comment, bool outdoor, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
+                var validationResult = ValidateRequired("imageId", imageId);
+                if (validationResult != null)
                 {
-                    return Unauthorized();
-                }
-
-                if (string.IsNullOrWhiteSpace(imageId))
-                {
-                    return BadRequest("imageId is required");
+                    return validationResult;
                 }
 
                 await storageService.UpdateImagePropertiesAsync(accessToken, imageId, comment, outdoor, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         /// <summary>
@@ -168,17 +131,12 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("update-image-calibration")]
         public async Task<IHttpActionResult> UpdateImageCalibration(string imageId, double temperatureMin, double temperatureMax, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
+                var validationResult = ValidateRequired("imageId", imageId);
+                if (validationResult != null)
                 {
-                    return Unauthorized();
-                }
-
-                if (string.IsNullOrWhiteSpace(imageId))
-                {
-                    return BadRequest("imageId is required");
+                    return validationResult;
                 }
 
                 if (temperatureMin >= temperatureMax)
@@ -188,11 +146,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 await storageService.UpdateImageCalibrationAsync(accessToken, imageId, temperatureMin, temperatureMax, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         /// <summary>
@@ -206,47 +160,23 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("update-report-details")]
         public async Task<IHttpActionResult> UpdateReportDetails(string folderId, [FromBody] ReportDetailsUpdate reportDetails, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
+                var validationResult = ValidateRequired("folderId", folderId);
+                if (validationResult != null)
                 {
-                    return Unauthorized();
+                    return validationResult;
                 }
 
-                if (string.IsNullOrWhiteSpace(folderId))
+                validationResult = ValidateRequired("reportDetails", reportDetails);
+                if (validationResult != null)
                 {
-                    return BadRequest("folderId is required");
-                }
-
-                if (reportDetails == null)
-                {
-                    return BadRequest("reportDetails is required");
+                    return validationResult;
                 }
 
                 await storageService.UpdateReportDetailsAsync(accessToken, folderId, reportDetails, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
-    }
-
-    public class ImageIndexUpdate
-    {
-        public string Id { get; set; }
-        public int Index { get; set; }
-    }
-
-    public class ReportDetailsUpdate
-    {
-        public string Address { get; set; }
-        public double? Temperature { get; set; }
-        public double? WindSpeed { get; set; }
-        public string WindDirection { get; set; }
-        public double? HoursOfSunshine { get; set; }
-        public string FrontDoorDirection { get; set; }
     }
 }

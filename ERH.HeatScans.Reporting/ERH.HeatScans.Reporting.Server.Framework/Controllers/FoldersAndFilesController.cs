@@ -1,5 +1,4 @@
 using ERH.HeatScans.Reporting.Server.Framework.Services;
-using System;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using System.Web.Http;
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
     [RoutePrefix("api/folders-and-files")]
-    public class FoldersAndFilesController : ApiController
+    public class FoldersAndFilesController : AuthorizedApiController
     {
         private readonly GoogleDriveService storageService;
 
@@ -27,28 +26,19 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("users")]
         public async Task<IHttpActionResult> GetFolderStructure(CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    return Unauthorized();
-                }
-
                 var usersFolderId = ConfigurationManager.AppSettings["UsersFolderId"];
 
-                if (string.IsNullOrWhiteSpace(usersFolderId))
+                var validationResult = ValidateRequired("UsersFolderId", usersFolderId);
+                if (validationResult != null)
                 {
-                    return BadRequest("UsersFolderId is not configured.");
+                    return validationResult;
                 }
 
                 var structure = await storageService.GetFolderStructureAsync(accessToken, usersFolderId, CancellationToken.None);
                 return Ok(structure);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         /// <summary>
@@ -62,45 +52,22 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         [Route("files")]
         public async Task<IHttpActionResult> GetFiles(string folderId = null, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    return Unauthorized();
-                }
-
                 var files = await storageService.GetFlatFileListAsync(accessToken, folderId, cancellationToken);
-
-
                 return Ok(files);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
 
         [HttpPost]
         [Route("")]
         public async Task<IHttpActionResult> SetupAddressFolder(string addressFolderId, CancellationToken cancellationToken = default)
         {
-            try
+            return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var accessToken = AccessToken.Get(Request);
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    return Unauthorized();
-                }
                 await storageService.SetupAddressFolderAsync(accessToken, addressFolderId, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            });
         }
-
-
     }
 }
