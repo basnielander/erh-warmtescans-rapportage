@@ -1,6 +1,7 @@
 ﻿using ERH.HeatScans.Reporting.Server.Framework.Models;
 using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,14 +97,31 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 {
                     return Unauthorized();
                 }
-                //var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
-                //FileDownloadResult calibratedHeatscan = heatScanService.CalibrateHeatscanImage(rawFileAsStream, knownTemperature, x, y, cancellationToken);
-                //var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                //{
-                //    Content = new ByteArrayContent(calibratedHeatscan.Data)
-                //};
-                //response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(calibratedHeatscan.MimeType);
-                return NotFound();
+
+                if (calibrationRequest == null)
+                {
+                    return BadRequest("calibrationRequest is required");
+                }
+
+                if (calibrationRequest.ImageFileIds == null || calibrationRequest.ImageFileIds.Count == 0)
+                {
+                    return BadRequest("ImageFileIds are required");
+                }
+
+                if (calibrationRequest.MinTemperature >= calibrationRequest.MaxTemperature)
+                {
+                    return BadRequest("MinTemperature must be less than MaxTemperature");
+                }
+
+                // Process each image for calibration
+                await storageService.BatchUpdateImageCalibrationAsync(
+                    accessToken, 
+                    calibrationRequest.ImageFileIds.ToList(), 
+                    calibrationRequest.MinTemperature, 
+                    calibrationRequest.MaxTemperature, 
+                    cancellationToken);
+
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -213,32 +213,76 @@
   font-size: 16px;
 }
 
-/* Excluded Images Section */
-.excluded-section {
-  background-color: #fef8f8;
-  border-color: #f5c6cb;
+/* Batch Calibration Section */
+.batch-actions-section {
+  background-color: #ffffff;
+  border: 2px solid #ff9800;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.excluded-section h3 {
-  color: #721c24;
+.batch-actions-section h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #f57c00;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.section-description {
-  color: #856404;
-  font-size: 14px;
-  margin-bottom: 15px;
-  font-style: italic;
+.batch-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.image-wrapper.excluded {
-  cursor: default;
-  opacity: 0.7;
-  background-color: #fff;
+.btn-batch-outdoor,
+.btn-batch-indoor {
+  flex: 1;
+  min-width: 250px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
-.image-wrapper.excluded:hover {
-  background-color: #fff;
-  border-color: transparent;
+.btn-batch-outdoor {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+}
+
+.btn-batch-outdoor:hover {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(33, 150, 243, 0.4);
+}
+
+.btn-batch-outdoor:active {
+  transform: translateY(0);
+}
+
+.btn-batch-indoor {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+}
+
+.btn-batch-indoor:hover {
+  background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(255, 152, 0, 0.4);
+}
+
+.btn-batch-indoor:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 768px) {
@@ -249,5 +293,15 @@
 
   .report-content {
     gap: 20px;
+  }
+
+  .batch-actions {
+    flex-direction: column;
+  }
+
+  .btn-batch-outdoor,
+  .btn-batch-indoor {
+    width: 100%;
+    min-width: auto;
   }
 }

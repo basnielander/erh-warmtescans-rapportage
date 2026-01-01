@@ -41,12 +41,25 @@
         <strong>Folder ID:</strong> {{ folderId() }}
       </div>
       <div class="info-item" *ngIf="addressReport()">
-        <strong>Total Images:</strong> {{ sortedImages().length }}
+        <strong>Total Images:</strong> {{ allIncludedImages().length }}
+      </div>
+    </div>
+
+    <!-- Batch Calibration Buttons -->
+    <div class="batch-actions-section" *ngIf="indoorImagesAvailable() || outdoorImagesAvailable()">
+      <h3>🔧 Batch Calibration Tools</h3>
+      <div class="batch-actions">
+        <button class="btn-batch-outdoor" (click)="onShowBatchOutdoorCalibration()" *ngIf="outdoorImagesAvailable()">
+          🌤️ Calibrate All Outdoor Images
+        </button>
+        <button class="btn-batch-indoor" (click)="onShowBatchIndoorCalibration()" *ngIf="indoorImagesAvailable()">
+          🏠 Calibrate All Indoor Images
+        </button>
       </div>
     </div>
 
     <!-- Images Section -->
-    <div class="images-section" *ngIf="addressReport() && sortedImages().length > 0">
+    <div class="images-section" *ngIf="addressReport() && allIncludedImages().length > 0">
       <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
       <div class="update-status" *ngIf="isUpdatingIndices()">
         <div class="spinner-small"></div>
@@ -54,7 +67,7 @@
       </div>
       <div class="images-grid">
         <div 
-          *ngFor="let image of sortedImages(); let i = index"
+          *ngFor="let image of allIncludedImages(); let i = index"
           class="image-wrapper"
           [class.dragging]="draggedIndex() === i"
           draggable="true"
@@ -90,8 +103,32 @@
     </div>
 
     <!-- No Images Message -->
-    <div class="no-images" *ngIf="addressReport() && sortedImages().length === 0 && excludedImages().length === 0">
+    <div class="no-images" *ngIf="addressReport() && sortedImages().length === 0">
       <p>📭 No images found in the "2. Bewerkt" folder.</p>
     </div>
   </div>
+
+  <!-- Batch Outdoor Calibration Modal -->
+  <app-modal 
+    [isOpen]="showBatchOutdoorCalibration()" 
+    title="🌤️ Batch Calibrate Outdoor Images"
+    (close)="onBatchCalibrationCancel()">
+    <app-batch-outdoor-calibration
+      [images]="allIncludedImages()"
+      (saveCalibration)="onBatchCalibrationSave($event)"
+      (cancel)="onBatchCalibrationCancel()">
+    </app-batch-outdoor-calibration>
+  </app-modal>
+
+  <!-- Batch Indoor Calibration Modal -->
+  <app-modal 
+    [isOpen]="showBatchIndoorCalibration()" 
+    title="🏠 Batch Calibrate Indoor Images"
+    (close)="onBatchCalibrationCancel()">
+    <app-batch-indoor-calibration
+      [images]="allIncludedImages()"
+      (saveCalibration)="onBatchCalibrationSave($event)"
+      (cancel)="onBatchCalibrationCancel()">
+    </app-batch-indoor-calibration>
+  </app-modal>
 </div>

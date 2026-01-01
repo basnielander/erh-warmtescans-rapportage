@@ -49,6 +49,26 @@ export class ReportService {
     
     return this.http.patch<void>(url, null, { headers });
   }
+
+  updateImageCalibration(folderId: string, imageId: string, temperatureMin: number, temperatureMax: number): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/update-image-calibration?imageId=${imageId}&temperatureMin=${temperatureMin}&temperatureMax=${temperatureMax}`;
+    
+    return this.http.post<void>(url, null, { headers });
+  }
+
+  batchCalibrateImages(imageIds: string[], temperatureMin: number, temperatureMax: number): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${environment.apiBaseUrl}images/calibrate`;
+    
+    const calibrationRequest = {
+      imageFileIds: imageIds,
+      minTemperature: temperatureMin,
+      maxTemperature: temperatureMax
+    };
+    
+    return this.http.post<void>(url, calibrationRequest, { headers });
+  }
   
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();

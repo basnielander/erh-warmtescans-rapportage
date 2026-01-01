@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MapDisplayComponent } from '../map-display/map-display.component';
 import { ImageCardComponent } from '../image-card/image-card.component';
+import { BatchOutdoorCalibrationComponent } from '../batch-outdoor-calibration/batch-outdoor-calibration.component';
+import { BatchIndoorCalibrationComponent } from '../batch-indoor-calibration/batch-indoor-calibration.component';
+import { ModalComponent } from '../modal/modal.component';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { Report } from '../../models/report.model';
 import { ImageInfo } from "../../models/image.model";
@@ -12,7 +15,7 @@ import { ReportService } from '../../services/report.service';
 @Component({
   selector: 'app-report',
   standalone: true,
-  imports: [CommonModule, MapDisplayComponent, ImageCardComponent],
+  imports: [CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent],
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css']
 })
@@ -34,18 +37,39 @@ export class ReportComponent implements OnInit {
   draggedIndex = signal<number | null>(null);
   isUpdatingIndices = signal<boolean>(false);
 
+  // Batch calibration state
+  showBatchOutdoorCalibration = signal<boolean>(false);
+  showBatchIndoorCalibration = signal<boolean>(false);
+
   // Computed signal for sorted images
   sortedImages = computed(() => {
     const report = this.addressReport();
     if (!report || !report.images) return [];
-    return [...report.images].filter((image) => !image.excludeFromReport).sort((a, b) => a.index - b.index);
+    return [...report.images].sort((a, b) => a.index - b.index);
   });
 
   // Computed signal for excluded images
   excludedImages = computed(() => {
-    const report = this.addressReport();
-    if (!report || !report.images) return [];
-    return [...report.images].filter((image) => image.excludeFromReport).sort((a, b) => a.index - b.index);
+    return this.sortedImages().filter((image) => image.excludeFromReport);
+  });
+
+  // Computed signal for all non-excluded images
+  allIncludedImages = computed(() => {
+    return this.sortedImages().filter((image) => !image.excludeFromReport);
+  });
+
+  indoorImagesAvailable = computed(() => {
+    if (this.sortedImages().length === 0) {
+      return false;
+    }
+    return this.sortedImages().some((image) => !image.outdoor);
+  });
+
+  outdoorImagesAvailable = computed(() => {
+    if (this.sortedImages().length === 0) {
+      return false;
+    }
+    return this.sortedImages().some((image) => image.outdoor);
   });
 
   constructor(
@@ -242,5 +266,69 @@ export class ReportComponent implements OnInit {
         console.error('Error updating image properties:', err);
       }
     });
+  }
+
+  onUpdateCalibration(data: { imageId: string, temperatureMin: number, temperatureMax: number }): void {
+    const currentReport = this.addressReport();
+    if (!currentReport) return;
+
+    this.reportService.updateImageCalibration(this.folderId(), data.imageId, data.temperatureMin, data.temperatureMax).subscribe({
+      next: () => {
+        console.log('Image calibration updated successfully');
+        // Update the local state
+        const updatedImages = currentReport.images.map(img => 
+          img.id === data.imageId ? { ...img, temperatureMin: data.temperatureMin, temperatureMax: data.temperatureMax } : img
+        );
+        this.addressReport.set({
+          ...currentReport,
+          images: updatedImages
+        });
+      },
+      error: (err) => {
+        console.error('Error updating image calibration:', err);
+      }
+    });
+  }
+
+  onShowBatchOutdoorCalibration(): void {
+    this.showBatchOutdoorCalibration.set(true);
+  }
+
+  onShowBatchIndoorCalibration(): void {
+    this.showBatchIndoorCalibration.set(true);
+  }
+
+  onBatchCalibrationSave(data: { imageIds: string[], temperatureMin: number, temperatureMax: number }): void {
+    this.reportService.batchCalibrateImages(data.imageIds, data.temperatureMin, data.temperatureMax).subscribe({
+      next: () => {
+        console.log('Batch calibration completed successfully');
+        // Update local state for all images
+        const currentReport = this.addressReport();
+        if (currentReport) {
+          const updatedImages = currentReport.images.map(img => 
+            data.imageIds.includes(img.id) 
+              ? { ...img, temperatureMin: data.temperatureMin, temperatureMax: data.temperatureMax } 
+              : img
+          );
+          this.addressReport.set({
+            ...currentReport,
+            images: updatedImages
+          });
+        }
+        this.showBatchOutdoorCalibration.set(false);
+        this.showBatchIndoorCalibration.set(false);
+      },
+      error: (err) => {
+        console.error('Error in batch calibration:', err);
+        alert('Batch calibration failed. Please try again.');
+        this.showBatchOutdoorCalibration.set(false);
+        this.showBatchIndoorCalibration.set(false);
+      }
+    });
+  }
+
+  onBatchCalibrationCancel(): void {
+    this.showBatchOutdoorCalibration.set(false);
+    this.showBatchIndoorCalibration.set(false);
   }
 }
