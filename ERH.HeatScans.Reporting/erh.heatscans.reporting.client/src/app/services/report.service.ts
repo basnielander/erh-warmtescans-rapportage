@@ -36,6 +36,13 @@ export class ReportService {
     return this.http.post<void>(url, indexUpdates, { headers });
   }
   
+  toggleImageExclusion(folderId: string, imageId: string, exclude: boolean): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/toggle-image-exclusion?imageId=${imageId}&exclude=${exclude}`;
+    
+    return this.http.post<void>(url, null, { headers });
+  }
+  
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
     console.log("token", token);

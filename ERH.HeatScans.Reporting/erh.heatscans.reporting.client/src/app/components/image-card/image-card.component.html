@@ -25,5 +25,21 @@
         {{ image.modifiedTime | date:'short' }}
       </span>
     </div>
+    <div class="image-actions">
+      <button 
+        *ngIf="!image.excludeFromReport"
+        class="btn-exclude" 
+        (click)="onToggleExcludeClick($event)"
+        title="Exclude from report">
+        🗑️ Exclude
+      </button>
+      <button 
+        *ngIf="image.excludeFromReport"
+        class="btn-include" 
+        (click)="onToggleExcludeClick($event)"
+        title="Include in report">
+        ↩️ Include
+      </button>
+    </div>
   </div>
 </div>

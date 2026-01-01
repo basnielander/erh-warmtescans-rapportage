@@ -37,7 +37,14 @@ export class ReportComponent implements OnInit {
   sortedImages = computed(() => {
     const report = this.addressReport();
     if (!report || !report.images) return [];
-    return [...report.images].sort((a, b) => a.index - b.index);
+    return [...report.images].filter((image) => !image.excludeFromReport).sort((a, b) => a.index - b.index);
+  });
+
+  // Computed signal for excluded images
+  excludedImages = computed(() => {
+    const report = this.addressReport();
+    if (!report || !report.images) return [];
+    return [...report.images].filter((image) => image.excludeFromReport).sort((a, b) => a.index - b.index);
   });
 
   constructor(
@@ -183,6 +190,33 @@ export class ReportComponent implements OnInit {
         this.isUpdatingIndices.set(false);
         // Optionally reload the report to restore the correct order
         this.loadReport();
+      }
+    });
+  }
+  
+  onToggleExcludeImage(imageId: string): void {
+    const currentReport = this.addressReport();
+    if (!currentReport) return;
+
+    const image = currentReport.images.find(img => img.id === imageId);
+    if (!image) return;
+
+    const shouldExclude = !image.excludeFromReport;
+
+    this.reportService.toggleImageExclusion(this.folderId(), imageId, shouldExclude).subscribe({
+      next: () => {
+        console.log(`Image ${shouldExclude ? 'excluded from' : 'included in'} report successfully`);
+        // Update the local state
+        const updatedImages = currentReport.images.map(img => 
+          img.id === imageId ? { ...img, excludeFromReport: shouldExclude } : img
+        );
+        this.addressReport.set({
+          ...currentReport,
+          images: updatedImages
+        });
+      },
+      error: (err) => {
+        console.error('Error toggling image exclusion:', err);
       }
     });
   }

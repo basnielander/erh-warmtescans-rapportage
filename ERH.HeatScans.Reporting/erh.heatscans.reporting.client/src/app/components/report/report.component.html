@@ -64,14 +64,31 @@
           (dragend)="onDragEnd()">
           <div class="drag-handle">⋮⋮</div>
           <app-image-card 
-            [image]="image">
+            [image]="image"
+            (toggleExclude)="onToggleExcludeImage($event)">
+          </app-image-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Excluded Images Section -->
+    <div class="images-section excluded-section" *ngIf="addressReport() && excludedImages().length > 0">
+      <h3>🗑️ Excluded Images</h3>
+      <p class="section-description">These images have been excluded from the report.</p>
+      <div class="images-grid">
+        <div 
+          *ngFor="let image of excludedImages(); let i = index"
+          class="image-wrapper excluded">
+          <app-image-card 
+            [image]="image"
+            (toggleExclude)="onToggleExcludeImage($event)">
           </app-image-card>
         </div>
       </div>
     </div>
 
     <!-- No Images Message -->
-    <div class="no-images" *ngIf="addressReport() && sortedImages().length === 0">
+    <div class="no-images" *ngIf="addressReport() && sortedImages().length === 0 && excludedImages().length === 0">
       <p>📭 No images found in the "2. Bewerkt" folder.</p>
     </div>
   </div>

@@ -88,6 +88,39 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        /// <summary>
+        /// Toggle image exclusion from the report
+        /// </summary>
+        /// <param name="imageId">Image file ID to toggle</param>
+        /// <param name="exclude">True to exclude, false to include</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Success status</returns>
+        [HttpPost]
+        [Route("toggle-image-exclusion")]
+        public async Task<IHttpActionResult> ToggleImageExclusion(string imageId, bool exclude, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = AccessToken.Get(Request);
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+
+                if (string.IsNullOrWhiteSpace(imageId))
+                {
+                    return BadRequest("imageId is required");
+                }
+
+                await storageService.ToggleImageExclusionAsync(accessToken, imageId, exclude, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 
     public class ImageIndexUpdate

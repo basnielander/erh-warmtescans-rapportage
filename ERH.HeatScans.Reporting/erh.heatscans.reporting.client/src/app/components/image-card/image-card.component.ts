@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ImageInfo } from '../../models/report.model';
@@ -14,6 +14,7 @@ import { ImageService } from '../../services/image.service';
 })
 export class ImageCardComponent implements OnInit {
   @Input() image!: ImageInfo;
+  @Output() toggleExclude = new EventEmitter<string>();
   
   imageUrl = signal<SafeUrl | null>(null);
   isLoading = signal<boolean>(true);
@@ -65,6 +66,11 @@ export class ImageCardComponent implements OnInit {
         console.error('Error adding spot:', err);
       }
     });
+  }
+
+  onToggleExcludeClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.toggleExclude.emit(this.image.id);
   }
 
   formatFileSize(bytes: number | undefined): string {

@@ -10,4 +10,8 @@ export interface ImageInfo {
   mimeType: string;
   size?: number;
   modifiedTime?: string;
+  excludeFromReport?: boolean;
+  outdoor?: boolean;
+  temperatureMin?: number;
+  temperatureMax?: number;
 }

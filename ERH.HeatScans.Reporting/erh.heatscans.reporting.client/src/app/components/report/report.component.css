@@ -213,6 +213,34 @@
   font-size: 16px;
 }
 
+/* Excluded Images Section */
+.excluded-section {
+  background-color: #fef8f8;
+  border-color: #f5c6cb;
+}
+
+.excluded-section h3 {
+  color: #721c24;
+}
+
+.section-description {
+  color: #856404;
+  font-size: 14px;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.image-wrapper.excluded {
+  cursor: default;
+  opacity: 0.7;
+  background-color: #fff;
+}
+
+.image-wrapper.excluded:hover {
+  background-color: #fff;
+  border-color: transparent;
+}
+
 @media (max-width: 768px) {
   .report-header {
     flex-direction: column;
