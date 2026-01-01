@@ -69,6 +69,13 @@ export class ReportService {
     
     return this.http.post<void>(url, calibrationRequest, { headers });
   }
+
+  updateReportDetails(folderId: string, details: Partial<Report>): Observable<void> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/update-report-details?folderId=${folderId}`;
+    
+    return this.http.patch<void>(url, details, { headers });
+  }
   
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();

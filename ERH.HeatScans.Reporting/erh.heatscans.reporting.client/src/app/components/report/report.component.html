@@ -41,7 +41,12 @@
         <strong>Folder ID:</strong> {{ folderId() }}
       </div>
       <div class="info-item" *ngIf="addressReport()">
-        <strong>Total Images:</strong> {{ allIncludedImages().length }}
+        <strong>Total Images:</strong> {{ sortedImages().length }}
+      </div>
+      <div *ngIf="addressReport()" class="edit-report-action">
+        <button class="btn-edit-report" (click)="onShowReportDetailsEditor()">
+          ✏️ Edit Report Details
+        </button>
       </div>
     </div>
 
@@ -130,5 +135,18 @@
       (saveCalibration)="onBatchCalibrationSave($event)"
       (cancel)="onBatchCalibrationCancel()">
     </app-batch-indoor-calibration>
+  </app-modal>
+
+  <!-- Report Details Editor Modal -->
+  <app-modal 
+    [isOpen]="showReportDetailsEditor()" 
+    title="📝 Edit Report Details"
+    (close)="onReportDetailsCancel()">
+    <app-report-details-editor
+      *ngIf="addressReport()"
+      [report]="addressReport()!"
+      (save)="onReportDetailsSave($event)"
+      (cancel)="onReportDetailsCancel()">
+    </app-report-details-editor>
   </app-modal>
 </div>

@@ -285,6 +285,48 @@
   transform: translateY(0);
 }
 
+.info-section .info-item {
+  margin-bottom: 10px;
+}
+
+.info-section .info-item:last-child {
+  margin-bottom: 0;
+}
+
+.edit-report-action {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-edit-report {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-edit-report:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-edit-report:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 768px) {
   .report-header {
     flex-direction: column;

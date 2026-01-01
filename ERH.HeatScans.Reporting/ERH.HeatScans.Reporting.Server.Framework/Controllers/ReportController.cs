@@ -155,11 +155,98 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        /// <summary>
+        /// Update image temperature calibration
+        /// </summary>
+        /// <param name="imageId">Image file ID to update</param>
+        /// <param name="temperatureMin">Minimum temperature in Celsius</param>
+        /// <param name="temperatureMax">Maximum temperature in Celsius</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Success status</returns>
+        [HttpPost]
+        [Route("update-image-calibration")]
+        public async Task<IHttpActionResult> UpdateImageCalibration(string imageId, double temperatureMin, double temperatureMax, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = AccessToken.Get(Request);
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+
+                if (string.IsNullOrWhiteSpace(imageId))
+                {
+                    return BadRequest("imageId is required");
+                }
+
+                if (temperatureMin >= temperatureMax)
+                {
+                    return BadRequest("temperatureMin must be less than temperatureMax");
+                }
+
+                await storageService.UpdateImageCalibrationAsync(accessToken, imageId, temperatureMin, temperatureMax, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Update report details (address, weather conditions, etc.)
+        /// </summary>
+        /// <param name="folderId">Folder ID</param>
+        /// <param name="reportDetails">Report details to update</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Success status</returns>
+        [HttpPatch]
+        [Route("update-report-details")]
+        public async Task<IHttpActionResult> UpdateReportDetails(string folderId, [FromBody] ReportDetailsUpdate reportDetails, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var accessToken = AccessToken.Get(Request);
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return Unauthorized();
+                }
+
+                if (string.IsNullOrWhiteSpace(folderId))
+                {
+                    return BadRequest("folderId is required");
+                }
+
+                if (reportDetails == null)
+                {
+                    return BadRequest("reportDetails is required");
+                }
+
+                await storageService.UpdateReportDetailsAsync(accessToken, folderId, reportDetails, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 
     public class ImageIndexUpdate
     {
         public string Id { get; set; }
         public int Index { get; set; }
+    }
+
+    public class ReportDetailsUpdate
+    {
+        public string Address { get; set; }
+        public double? Temperature { get; set; }
+        public double? WindSpeed { get; set; }
+        public string WindDirection { get; set; }
+        public double? HoursOfSunshine { get; set; }
+        public string FrontDoorDirection { get; set; }
     }
 }

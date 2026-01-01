@@ -6,6 +6,7 @@ import { ImageCardComponent } from '../image-card/image-card.component';
 import { BatchOutdoorCalibrationComponent } from '../batch-outdoor-calibration/batch-outdoor-calibration.component';
 import { BatchIndoorCalibrationComponent } from '../batch-indoor-calibration/batch-indoor-calibration.component';
 import { ModalComponent } from '../modal/modal.component';
+import { ReportDetailsEditorComponent } from '../report-details-editor/report-details-editor.component';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { Report } from '../../models/report.model';
 import { ImageInfo } from "../../models/image.model";
@@ -15,7 +16,7 @@ import { ReportService } from '../../services/report.service';
 @Component({
   selector: 'app-report',
   standalone: true,
-  imports: [CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent],
+  imports: [CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent, ReportDetailsEditorComponent],
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css']
 })
@@ -40,6 +41,7 @@ export class ReportComponent implements OnInit {
   // Batch calibration state
   showBatchOutdoorCalibration = signal<boolean>(false);
   showBatchIndoorCalibration = signal<boolean>(false);
+  showReportDetailsEditor = signal<boolean>(false);
 
   // Computed signal for sorted images
   sortedImages = computed(() => {
@@ -330,5 +332,34 @@ export class ReportComponent implements OnInit {
   onBatchCalibrationCancel(): void {
     this.showBatchOutdoorCalibration.set(false);
     this.showBatchIndoorCalibration.set(false);
+  }
+
+  onShowReportDetailsEditor(): void {
+    this.showReportDetailsEditor.set(true);
+  }
+
+  onReportDetailsSave(updatedDetails: Partial<Report>): void {
+    const currentReport = this.addressReport();
+    if (!currentReport) return;
+
+    this.reportService.updateReportDetails(this.folderId(), updatedDetails).subscribe({
+      next: () => {
+        console.log('Report details updated successfully');
+        // Update local state
+        this.addressReport.set({
+          ...currentReport,
+          ...updatedDetails
+        });
+        this.showReportDetailsEditor.set(false);
+      },
+      error: (err) => {
+        console.error('Error updating report details:', err);
+        alert('Failed to update report details. Please try again.');
+      }
+    });
+  }
+
+  onReportDetailsCancel(): void {
+    this.showReportDetailsEditor.set(false);
   }
 }

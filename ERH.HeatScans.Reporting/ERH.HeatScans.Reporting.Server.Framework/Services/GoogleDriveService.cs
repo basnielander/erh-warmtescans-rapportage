@@ -710,5 +710,80 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 throw new Exception($"Error batch updating image calibration in report", ex);
             }
         }
+
+        public async Task UpdateReportDetailsAsync(string accessToken, string folderId, Controllers.ReportDetailsUpdate reportDetails, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var driveService = CreateDriveService(accessToken);
+
+                // Get all items in the folder
+                var folderItems = await GetChildrenAsync(driveService, folderId, cancellationToken);
+
+                // Find "2. Bewerkt" subfolder
+                var bewerktFolder = folderItems.FirstOrDefault(item =>
+                    item.IsFolder && item.Name == "2. Bewerkt");
+
+                if (bewerktFolder == null)
+                {
+                    throw new Exception($"Subfolder '2. Bewerkt' not found in folder {folderId}");
+                }
+
+                string bewerktFolderId = bewerktFolder.Id;
+
+                // Get all items in "2. Bewerkt" folder
+                var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                // Look for report.json file
+                var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                    !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                if (reportFile == null)
+                {
+                    throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                }
+
+                // Read existing report
+                var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                // Update report details
+                if (!string.IsNullOrWhiteSpace(reportDetails.Address))
+                {
+                    report.Address = reportDetails.Address;
+                }
+
+                if (reportDetails.Temperature.HasValue)
+                {
+                    report.Temperature = reportDetails.Temperature.Value;
+                }
+
+                if (reportDetails.WindSpeed.HasValue)
+                {
+                    report.WindSpeed = reportDetails.WindSpeed.Value;
+                }
+
+                if (!string.IsNullOrWhiteSpace(reportDetails.WindDirection))
+                {
+                    report.WindDirection = reportDetails.WindDirection;
+                }
+
+                if (reportDetails.HoursOfSunshine.HasValue)
+                {
+                    report.HoursOfSunshine = reportDetails.HoursOfSunshine.Value;
+                }
+
+                if (!string.IsNullOrWhiteSpace(reportDetails.FrontDoorDirection))
+                {
+                    report.FrontDoorDirection = reportDetails.FrontDoorDirection;
+                }
+
+                // Save updated report
+                await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating report details for folder ID: {folderId}", ex);
+            }
+        }
     }
 }
