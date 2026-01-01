@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, output, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,9 +9,11 @@ import { CommonModule } from '@angular/common';
   styleUrl: './modal.component.css'
 })
 export class ModalComponent {
-  @Input() isOpen = false;
-  @Input() title = '';
-  @Output() close = new EventEmitter<void>();
+  // Input signals instead of @Input decorators
+  isOpen = input<boolean>(false);
+  title = input<string>('');
+  
+  close = output<void>();
 
   onBackdropClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) {

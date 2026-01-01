@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, OnInit } from '@angular/core';
+import { Component, output, signal, OnInit, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Report } from '../../models/report.model';
@@ -11,9 +11,11 @@ import { Report } from '../../models/report.model';
   styleUrl: './report-details-editor.component.css'
 })
 export class ReportDetailsEditorComponent implements OnInit {
-  @Input() report!: Report;
-  @Output() save = new EventEmitter<Partial<Report>>();
-  @Output() cancel = new EventEmitter<void>();
+  // Input signal instead of @Input decorator
+  report = input.required<Report>();
+  
+  save = output<Partial<Report>>();
+  cancel = output<void>();
   
   // Form fields as signals
   address = signal<string>('');
@@ -49,14 +51,21 @@ export class ReportDetailsEditorComponent implements OnInit {
     { value: 'NW', label: 'Northwest (NW)', icon: '↖️' }
   ];
   
+  constructor() {
+    // Use effect to initialize form fields when report input changes
+    effect(() => {
+      const currentReport = this.report();
+      this.address.set(currentReport.address || '');
+      this.temperature.set(currentReport.temperature);
+      this.windSpeed.set(currentReport.windSpeed);
+      this.windDirection.set(currentReport.windDirection || '');
+      this.hoursOfSunshine.set(currentReport.hoursOfSunshine);
+      this.frontDoorDirection.set(currentReport.frontDoorDirection || '');
+    });
+  }
+  
   ngOnInit(): void {
-    // Initialize form fields with current report values
-    this.address.set(this.report.address || '');
-    this.temperature.set(this.report.temperature);
-    this.windSpeed.set(this.report.windSpeed);
-    this.windDirection.set(this.report.windDirection || '');
-    this.hoursOfSunshine.set(this.report.hoursOfSunshine);
-    this.frontDoorDirection.set(this.report.frontDoorDirection || '');
+    // Initialization now handled in constructor effect
   }
   
   onSave(): void {

@@ -30,8 +30,7 @@
         </label>
         <select
           id="frontDoorDirection"
-          [value]="frontDoorDirection()"
-          (change)="onFrontDoorDirectionChange($any($event.target).value)"
+          [(ngModel)]="frontDoorDirection"
           [disabled]="isSaving()"
           class="form-select">
           <option value="">Select direction...</option>
@@ -115,8 +114,7 @@
           </label>
           <select
             id="windDirection"
-            [value]="windDirection()"
-            (change)="onWindDirectionChange($any($event.target).value)"
+            [(ngModel)]="windDirection"
             [disabled]="isSaving()"
             class="form-select">
             <option value="">Select direction...</option>

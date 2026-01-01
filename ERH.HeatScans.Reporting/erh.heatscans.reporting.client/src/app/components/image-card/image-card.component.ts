@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { Component, output, OnInit, signal, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -14,9 +14,11 @@ import { ImageService } from '../../services/image.service';
   styleUrl: './image-card.component.css'
 })
 export class ImageCardComponent implements OnInit {
-  @Input() image!: ImageInfo;
-  @Output() toggleExclude = new EventEmitter<string>();
-  @Output() updateImageProperties = new EventEmitter<{ imageId: string, comment: string, outdoor: boolean }>();
+  // Input signal instead of @Input decorator
+  image = input.required<ImageInfo>();
+  
+  toggleExclude = output<string>();
+  updateImageProperties = output<{ imageId: string, comment: string, outdoor: boolean }>();
   
   imageUrl = signal<SafeUrl | null>(null);
   isLoading = signal<boolean>(true);
@@ -31,19 +33,25 @@ export class ImageCardComponent implements OnInit {
     private driveService: GoogleDriveService,
     private imageService: ImageService,
     private sanitizer: DomSanitizer
-  ) {}
+  ) {
+    // Use effect to handle image changes
+    effect(() => {
+      const currentImage = this.image();
+      this.editComment.set(currentImage.comments || '');
+      this.editOutdoor.set(currentImage.outdoor ?? true);
+      this.loadImage();
+    });
+  }
 
   ngOnInit(): void {
-    this.loadImage();
-    this.editComment.set(this.image.comments || '');
-    this.editOutdoor.set(this.image.outdoor ?? true);
+    // Initialization now handled in constructor effect
   }
 
   loadImage(): void {
     this.isLoading.set(true);
     this.hasError.set(false);
 
-    this.imageService.getImage(this.image.id).subscribe({
+    this.imageService.getImage(this.image().id).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
@@ -51,7 +59,7 @@ export class ImageCardComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error(`Error loading image ${this.image.name}:`, err);
+        console.error(`Error loading image ${this.image().name}:`, err);
         this.hasError.set(true);
         this.isLoading.set(false);
       }
@@ -65,9 +73,9 @@ export class ImageCardComponent implements OnInit {
     const x = Math.round(event.clientX - rect.left);
     const y = Math.round(event.clientY - rect.top);
 
-    console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image.id}`);
+    console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image().id}`);
 
-    this.imageService.addSpot(this.image.id, x, y).subscribe({
+    this.imageService.addSpot(this.image().id, x, y).subscribe({
       next: () => {
         console.log('Spot added successfully');
       },
@@ -79,20 +87,20 @@ export class ImageCardComponent implements OnInit {
 
   onToggleExcludeClick(event: MouseEvent): void {
     event.stopPropagation();
-    this.toggleExclude.emit(this.image.id);
+    this.toggleExclude.emit(this.image().id);
   }
 
   onEditClick(event: MouseEvent): void {
     event.stopPropagation();
     this.isEditing.set(true);
-    this.editComment.set(this.image.comments || '');
-    this.editOutdoor.set(this.image.outdoor ?? true);
+    this.editComment.set(this.image().comments || '');
+    this.editOutdoor.set(this.image().outdoor ?? true);
   }
 
   onSaveClick(event: MouseEvent): void {
     event.stopPropagation();
     this.updateImageProperties.emit({
-      imageId: this.image.id,
+      imageId: this.image().id,
       comment: this.editComment(),
       outdoor: this.editOutdoor()
     });
@@ -102,8 +110,8 @@ export class ImageCardComponent implements OnInit {
   onCancelClick(event: MouseEvent): void {
     event.stopPropagation();
     this.isEditing.set(false);
-    this.editComment.set(this.image.comments || '');
-    this.editOutdoor.set(this.image.outdoor ?? true);
+    this.editComment.set(this.image().comments || '');
+    this.editOutdoor.set(this.image().outdoor ?? true);
   }
 
   formatFileSize(bytes: number | undefined): string {

@@ -1,4 +1,4 @@
-import { Component, input, Output, EventEmitter, signal, computed, OnInit, effect } from '@angular/core';
+import { Component, input, output, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ImageInfo } from '../../models/image.model';
@@ -13,8 +13,8 @@ import { ImageInfo } from '../../models/image.model';
 export class BatchOutdoorCalibrationComponent implements OnInit {
   images = input<ImageInfo[]>([]);
   
-  @Output() saveCalibration = new EventEmitter<{ imageIds: string[], temperatureMin: number, temperatureMax: number }>();
-  @Output() cancel = new EventEmitter<void>();
+  saveCalibration = output<{ imageIds: string[], temperatureMin: number, temperatureMax: number }>();
+  cancel = output<void>();
   
   temperatureMin = signal<number>(0);
   temperatureMax = signal<number>(30);
