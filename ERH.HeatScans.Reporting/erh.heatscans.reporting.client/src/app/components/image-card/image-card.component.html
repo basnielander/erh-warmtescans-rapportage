@@ -1,28 +1,16 @@
 <div class="image-card">
-  <div class="image-container">
-    <img 
-      *ngIf="imageUrl() && !isLoading() && !hasError()"
-      [src]="imageUrl()!" 
-      [alt]="image().name"
-      [title]="image().name"
-      class="image-thumbnail"
-      loading="lazy"
-      (click)="onImageClick($event)"
-    />
-    <div *ngIf="isLoading()" class="image-loading">
-      <div class="spinner-small"></div>
-      <p>Loading...</p>
-    </div>
-    <div *ngIf="hasError()" class="image-error">
-      <p>⚠️ Failed to load</p>
-    </div>
-  </div>
   <div class="image-info">
     <div class="image-name" [title]="image().name">{{ image().name }}</div>
     <div class="image-meta">
       <span *ngIf="image().size" class="image-size">{{ formatFileSize(image().size) }}</span>
       <span *ngIf="image().modifiedTime" class="image-date">
         {{ image().modifiedTime | date:'short' }}
+      </span>
+      <span *ngIf="currentImage()?.dateTaken" class="image-date-taken">
+        📅 Taken: {{ currentImage()!.dateTaken | date:'short' }}
+      </span>
+      <span *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="image-spots">
+        🎯 Spots: {{ currentImage()!.spots.length }}
       </span>
     </div>
 
@@ -35,6 +23,27 @@
       <div class="detail-item" *ngIf="image().comments">
         <span class="detail-label">Comments:</span>
         <span class="detail-value">{{ image().comments }}</span>
+      </div>
+    </div>
+
+    <!-- Temperature Spots List -->
+    <div *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="spots-list">
+      <div class="spots-header">
+        <span class="spots-title">🌡️ Temperature Spots</span>
+      </div>
+      <div class="spots-items">
+        <div *ngFor="let spot of currentImage()!.spots" class="spot-item">
+          <div class="spot-details">
+            <span class="spot-name">{{ spot.name }}</span>
+            <span class="spot-temperature">{{ spot.temperature }}</span>
+          </div>
+          <button 
+            class="btn-delete-spot"
+            (click)="onDeleteSpotClick($event, spot.name)"
+            title="Delete spot">
+            🗑️
+          </button>
+        </div>
       </div>
     </div>
 
@@ -102,6 +111,24 @@
           ❌ Cancel
         </button>
       </div>
+    </div>
+  </div>
+  <div class="image-container">
+    <img 
+      *ngIf="imageUrl() && !isLoading() && !hasError()"
+      [src]="imageUrl()!" 
+      [alt]="image().name"
+      [title]="image().name"
+      class="image-thumbnail"
+      loading="lazy"
+      (click)="onImageClick($event)"
+    />
+    <div *ngIf="isLoading()" class="image-loading">
+      <div class="spinner-small"></div>
+      <p>Loading...</p>
+    </div>
+    <div *ngIf="hasError()" class="image-error">
+      <p>⚠️ Failed to load</p>
     </div>
   </div>
 </div>

@@ -124,6 +124,26 @@ export class ImageCardComponent implements OnInit {
     this.editOutdoor.set(this.image().outdoor ?? true);
   }
 
+  async onDeleteSpotClick(event: MouseEvent, spotName: string): Promise<void> {
+    event.stopPropagation();
+    
+    console.log(`Deleting spot ${spotName} from image ${this.image().id}`);
+
+    try {
+      const imageData = await this.imageService.deleteSpot(this.image().id, spotName);
+      this.currentImage.set(imageData);
+      console.log('Spot deleted successfully', imageData.spots);
+      
+      // Update the displayed image with the new version using helper method
+      const blob = this.imageService.imageToBlob(imageData);
+      const url = URL.createObjectURL(blob);
+      const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
+      this.imageUrl.set(safeUrl);
+    } catch (err: any) {
+      console.error('Error deleting spot:', err);
+    }
+  }
+
   formatFileSize(bytes: number | undefined): string {
     if (!bytes) return '';
     if (bytes < 1024) return bytes + ' B';

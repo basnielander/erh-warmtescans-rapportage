@@ -32,6 +32,13 @@ export class ImageService {
     return lastValueFrom(this.http.post<Image>(url, null, { headers }));
   }
 
+  deleteSpot(imageFileId: string, spotName: string): Promise<Image> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/${imageFileId}/spots/${spotName}`;
+    
+    return lastValueFrom(this.http.delete<Image>(url, { headers }));
+  }
+
   /**
    * Helper method to convert Image data to Blob for displaying in img tags
    */

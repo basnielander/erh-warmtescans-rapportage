@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: row;
   gap: 15px;
-  align-items: center;
+  align-items: flex-start;
   transition: all 0.3s ease;
 }
 
@@ -17,9 +17,9 @@
 }
 
 .image-container {
-  width: 200px;
-  height: 150px;
-  flex-shrink: 0;
+  flex: 2;
+  min-width: 0;
+  max-height: 600px;
   border-radius: 4px;
   overflow: hidden;
   background-color: #e0e0e0;
@@ -31,9 +31,9 @@
 .image-thumbnail {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-  cursor: pointer;
+  cursor: crosshair;
 }
 
 .image-loading,
@@ -91,9 +91,21 @@
 }
 
 .image-size,
-.image-date {
+.image-date,
+.image-date-taken,
+.image-spots {
   font-size: 11px;
   color: #888;
+}
+
+.image-date-taken {
+  color: #4285f4;
+  font-weight: 500;
+}
+
+.image-spots {
+  color: #f4b400;
+  font-weight: 500;
 }
 
 /* Image Details View Mode */
@@ -124,6 +136,96 @@
 .detail-value {
   color: #333;
   flex: 1;
+}
+
+/* Temperature Spots List */
+.spots-list {
+  margin-top: 8px;
+  padding: 10px;
+  background-color: #fff9e6;
+  border-radius: 4px;
+  border: 1px solid #f4b400;
+  max-width: 33%;
+}
+
+.spots-header {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f4b400;
+}
+
+.spots-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+}
+
+.spots-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spot-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background-color: white;
+  border-radius: 3px;
+  border: 1px solid #ffe8a3;
+  transition: all 0.2s ease;
+}
+
+.spot-item:hover {
+  background-color: #fffbf0;
+  border-color: #f4b400;
+  box-shadow: 0 1px 3px rgba(244, 180, 0, 0.2);
+}
+
+.spot-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.spot-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: #555;
+}
+
+.spot-temperature {
+  font-size: 13px;
+  color: #f4b400;
+  font-weight: 600;
+}
+
+.btn-delete-spot {
+  background-color: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.btn-delete-spot:hover {
+  background-color: #f44336;
+  border-color: #f44336;
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+}
+
+.btn-delete-spot:active {
+  transform: scale(1.05);
 }
 
 /* Image Edit Form */

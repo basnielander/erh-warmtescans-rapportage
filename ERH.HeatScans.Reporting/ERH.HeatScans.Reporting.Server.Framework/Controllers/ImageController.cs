@@ -96,5 +96,37 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 return Ok();
             });
         }
+
+        [HttpDelete]
+        [Route("{imageFileId}/spots/{name}")]
+        public async Task<IHttpActionResult> DeleteSpot(string imageFileId, string name, CancellationToken cancellationToken = default)
+        {
+            return await ExecuteAuthorizedAsync(async accessToken =>
+            {
+                var validationResult = ValidateRequired("imageFileId", imageFileId);
+                if (validationResult != null)
+                {
+                    return validationResult;
+                }
+
+                validationResult = ValidateRequired("name", name);
+                if (validationResult != null)
+                {
+                    return validationResult;
+                }
+
+                var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+
+                var updatedHeatscan = heatScanService.RemoveSpotFromHeatscan(rawFileAsStream, name, cancellationToken);
+
+                _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
+
+                using var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false);
+
+                var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
+
+                return Ok(result);
+            });
+        }
     }
 }

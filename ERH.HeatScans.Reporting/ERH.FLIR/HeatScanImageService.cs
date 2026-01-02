@@ -93,5 +93,31 @@ namespace ERH.FLIR
 
             return ToHeatScanImage(thermalImage, thermalImageStream);
         }
+
+        public static HeatScanImage RemoveSpot(Stream imageStream, string name)
+        {
+            imageStream.Position = 0; // Reset stream position 
+
+            using var thermalImage = new ThermalImageFile(imageStream)
+            {
+                TemperatureUnit = TemperatureUnit.Celsius,
+                DistanceUnit = DistanceUnit.Meter,
+                Palette = PaletteManager.Rainbow
+            };
+
+            // Find the measurement spot with the matching name (which is used as ID)
+            var spotToRemove = thermalImage.Measurements.OfType<MeasurementSpot>()
+                .FirstOrDefault(ms => ms.Name == name);
+
+            if (spotToRemove != null)
+            {
+                thermalImage.Measurements.Remove(spotToRemove);
+            }
+
+            using var thermalImageStream = new MemoryStream();
+            thermalImage.Save(thermalImageStream);
+
+            return ToHeatScanImage(thermalImage, thermalImageStream);
+        }
     }
 }

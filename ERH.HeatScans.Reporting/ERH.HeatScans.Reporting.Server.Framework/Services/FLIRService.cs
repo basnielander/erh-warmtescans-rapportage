@@ -167,6 +167,32 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 throw;
             }
         }
+
+        public Image RemoveSpotFromHeatscan(Stream imageStream, string name, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Get or create the FLIR AppDomain
+                AppDomain flirDomain = GetOrCreateFLIRDomain();
+
+                // Create a proxy to execute code in the FLIR AppDomain
+                FLIRImageProcessor processor = (FLIRImageProcessor)flirDomain.CreateInstanceAndUnwrap(
+                    typeof(FLIRImageProcessor).Assembly.FullName,
+                    typeof(FLIRImageProcessor).FullName
+                );
+
+                // Process the image in the separate AppDomain
+                var imageData = processor.RemoveSpot(imageStream, name);
+
+                return ToImageResult(imageData);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (add logging framework if available)
+                System.Diagnostics.Debug.WriteLine($"Error removing spot from heat scan image: {ex.Message}");
+                throw;
+            }
+        }
     }
 
     [Serializable]
@@ -200,6 +226,17 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             {
                 // This code executes in the separate AppDomain
                 return HeatScanImageService.CalibrateImage(imageStream, temperatureScale);
+            }
+
+            return null;
+        }
+
+        public HeatScanImage? RemoveSpot(Stream imageStream, string name)
+        {
+            if (HeatScanImageService.IsHeatScanImage(imageStream))
+            {
+                // This code executes in the separate AppDomain
+                return HeatScanImageService.RemoveSpot(imageStream, name);
             }
 
             return null;
