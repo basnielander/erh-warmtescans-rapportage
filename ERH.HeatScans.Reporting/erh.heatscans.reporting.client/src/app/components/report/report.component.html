@@ -4,6 +4,35 @@
     <h2>📊 Report: {{ folderName() }}</h2>
   </div>
 
+  <!-- Menu Bar -->
+  <div class="menu-bar" *ngIf="!isSettingUp() && !isLoadingReport() && addressReport()">
+    <div class="menu-section">
+      <h4 class="menu-section-title">🔧 Tools</h4>
+      <div class="menu-buttons">
+        <button 
+          class="menu-btn menu-btn-outdoor" 
+          (click)="onShowBatchOutdoorCalibration()" 
+          *ngIf="outdoorImagesAvailable()"
+          [disabled]="isUpdatingIndices()">
+          🌤️ Calibrate Outdoor Images
+        </button>
+        <button 
+          class="menu-btn menu-btn-indoor" 
+          (click)="onShowBatchIndoorCalibration()" 
+          *ngIf="indoorImagesAvailable()"
+          [disabled]="isUpdatingIndices()">
+          🏠 Calibrate Indoor Images
+        </button>
+        <button 
+          class="menu-btn menu-btn-edit" 
+          (click)="onShowReportDetailsEditor()"
+          [disabled]="isUpdatingIndices()">
+          ✏️ Edit Report Details
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Setup Status -->
   <div *ngIf="isSettingUp()" class="setup-status loading">
     <div class="spinner"></div>
@@ -42,24 +71,6 @@
       </div>
       <div class="info-item" *ngIf="addressReport()">
         <strong>Total Images:</strong> {{ sortedImages().length }}
-      </div>
-      <div *ngIf="addressReport()" class="edit-report-action">
-        <button class="btn-edit-report" (click)="onShowReportDetailsEditor()">
-          ✏️ Edit Report Details
-        </button>
-      </div>
-    </div>
-
-    <!-- Batch Calibration Buttons -->
-    <div class="batch-actions-section" *ngIf="indoorImagesAvailable() || outdoorImagesAvailable()">
-      <h3>🔧 Batch Calibration Tools</h3>
-      <div class="batch-actions">
-        <button class="btn-batch-outdoor" (click)="onShowBatchOutdoorCalibration()" *ngIf="outdoorImagesAvailable()">
-          🌤️ Calibrate All Outdoor Images
-        </button>
-        <button class="btn-batch-indoor" (click)="onShowBatchIndoorCalibration()" *ngIf="indoorImagesAvailable()">
-          🏠 Calibrate All Indoor Images
-        </button>
       </div>
     </div>
 
