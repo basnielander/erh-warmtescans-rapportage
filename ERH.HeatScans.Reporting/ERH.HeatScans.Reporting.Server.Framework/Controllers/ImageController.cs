@@ -55,7 +55,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 var updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, x, y, cancellationToken);
 
-                await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken);
+                _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
 
                 using var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false);
                 var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
@@ -102,7 +102,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                                             calibrationRequest.MaxTemperature,
                                             cancellationToken);
 
-                    await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken);
+                    _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
                 }
 
                 return Ok();

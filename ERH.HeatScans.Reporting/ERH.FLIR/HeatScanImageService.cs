@@ -1,5 +1,6 @@
 ﻿using Flir.Atlas.Image;
 using Flir.Atlas.Image.Measurements;
+using Flir.Atlas.Image.Palettes;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Linq;
 
 namespace ERH.FLIR
 {
-    public class HeatScanImage
+    public class HeatScanImageService
     {
         public static bool IsHeatScanImage(Stream imageStream)
         {
@@ -23,7 +24,8 @@ namespace ERH.FLIR
             using var thermalImage = new ThermalImageFile(imageStream)
             {
                 TemperatureUnit = TemperatureUnit.Celsius,
-                DistanceUnit = DistanceUnit.Meter
+                DistanceUnit = DistanceUnit.Meter,
+                Palette = PaletteManager.Rainbow
             };
             using var bitmap = thermalImage.Image;
 
@@ -44,7 +46,8 @@ namespace ERH.FLIR
             using var thermalImage = new ThermalImageFile(imageStream)
             {
                 TemperatureUnit = TemperatureUnit.Celsius,
-                DistanceUnit = DistanceUnit.Meter
+                DistanceUnit = DistanceUnit.Meter,
+                Palette = PaletteManager.Rainbow
             };
             thermalImage.Measurements.Add(new Point(spot.X, spot.Y));
 
@@ -66,7 +69,8 @@ namespace ERH.FLIR
             using var thermalImage = new ThermalImageFile(imageStream)
             {
                 TemperatureUnit = TemperatureUnit.Celsius,
-                DistanceUnit = DistanceUnit.Meter
+                DistanceUnit = DistanceUnit.Meter,
+                Palette = PaletteManager.Rainbow
             };
 
             thermalImage.Scale.Range = new Range<double>(scale.Min, scale.Max);

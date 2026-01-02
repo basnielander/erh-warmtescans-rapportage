@@ -72,7 +72,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        internal FileDownloadResult GetHeatscanImage(Stream imageStream)
+        internal Image GetHeatscanImage(Stream imageStream)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 // Process the image in the separate AppDomain
                 byte[] imageData = processor.ProcessImage(imageStream);
 
-                return new FileDownloadResult
+                return new Image
                 {
                     Data = imageData,
                     MimeType = "image/jpeg"
@@ -102,7 +102,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        public FileDownloadResult AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
+        public Image AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 // Process the image in the separate AppDomain
                 byte[] imageData = processor.AddSpot(imageStream, new FLIR.Spot(x, y));
 
-                return new FileDownloadResult
+                return new Image
                 {
                     Data = imageData,
                     MimeType = "image/jpeg"
@@ -132,7 +132,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        public FileDownloadResult CalibrateHeatscan(Stream imageStream, double temperatureMin, double temperatureMax, CancellationToken cancellationToken)
+        public Image CalibrateHeatscan(Stream imageStream, double temperatureMin, double temperatureMax, CancellationToken cancellationToken)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 // Process the image in the separate AppDomain
                 byte[] imageData = processor.CalibrateImage(imageStream, new TemperatureScale(temperatureMin, temperatureMax));
 
-                return new FileDownloadResult
+                return new Image
                 {
                     Data = imageData,
                     MimeType = "image/jpeg"
@@ -168,10 +168,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
     {
         public byte[] ProcessImage(Stream imageStream)
         {
-            if (HeatScanImage.IsHeatScanImage(imageStream))
+            if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
                 // This code executes in the separate AppDomain
-                return HeatScanImage.ImageInBytes(imageStream, true);
+                return HeatScanImageService.ImageInBytes(imageStream, true);
             }
 
             return [];
@@ -179,10 +179,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
         public byte[] AddSpot(Stream imageStream, FLIR.Spot spot)
         {
-            if (HeatScanImage.IsHeatScanImage(imageStream))
+            if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
                 // This code executes in the separate AppDomain
-                return HeatScanImage.AddSpot(imageStream, spot);
+                return HeatScanImageService.AddSpot(imageStream, spot);
             }
 
             return [];
@@ -190,10 +190,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
         public byte[] CalibrateImage(Stream imageStream, TemperatureScale temperatureScale)
         {
-            if (HeatScanImage.IsHeatScanImage(imageStream))
+            if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
                 // This code executes in the separate AppDomain
-                return HeatScanImage.CalibrateImage(imageStream, temperatureScale);
+                return HeatScanImageService.CalibrateImage(imageStream, temperatureScale);
             }
 
             return [];
