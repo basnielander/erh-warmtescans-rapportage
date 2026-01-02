@@ -75,8 +75,8 @@ export class ImageCardComponent implements OnInit {
     const imgElement = event.target as HTMLImageElement;
     const rect = imgElement.getBoundingClientRect();
     
-    const x = Math.round(event.clientX - rect.left);
-    const y = Math.round(event.clientY - rect.top);
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
 
     console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image().id}`);
 

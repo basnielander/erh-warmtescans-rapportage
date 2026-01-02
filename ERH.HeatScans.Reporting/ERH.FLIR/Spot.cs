@@ -1,32 +1,19 @@
-﻿using Flir.Atlas.Image.Measurements;
-using System;
+﻿using System;
 
 namespace ERH.FLIR
 {
     [Serializable]
-    public class Spot
+    public class NewSpot
     {
-        public Spot(int x, int y)
+        public NewSpot(double relativeX, double relativeY)
         {
-            X = x;
-            Y = y;
+            RelativeX = relativeX;
+            RelativeY = relativeY;
         }
 
-        public Spot(MeasurementSpot spot)
-        {
-            Id = spot.Identity.ToString();
-            Name = spot.Name;
-            Temperature = $"{spot.Value.Value.ToString("F1")}⁰C";
-            X = spot.X;
-            Y = spot.Y;
-        }
+        public double RelativeX { get; }
+        public double RelativeY { get; }
 
-        public int X { get; }
-        public int Y { get; }
-
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Temperature { get; set; }
 
     }
 }

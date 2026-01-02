@@ -1,6 +1,7 @@
 ﻿using Flir.Atlas.Image;
 using Flir.Atlas.Image.Measurements;
 using Flir.Atlas.Image.Palettes;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -52,7 +53,7 @@ namespace ERH.FLIR
             };
         }
 
-        public static HeatScanImage AddSpot(Stream imageStream, Spot spot)
+        public static HeatScanImage AddSpot(Stream imageStream, NewSpot spot)
         {
             imageStream.Position = 0; // Reset stream position 
 
@@ -62,7 +63,8 @@ namespace ERH.FLIR
                 DistanceUnit = DistanceUnit.Meter,
                 Palette = PaletteManager.Rainbow
             };
-            thermalImage.Measurements.Add(new Point(spot.X, spot.Y));
+
+            thermalImage.Measurements.Add(new Point(Convert.ToInt32(thermalImage.Width * spot.RelativeX), Convert.ToInt32(thermalImage.Height * spot.RelativeY)));
 
             foreach (var measurement in thermalImage.Measurements.OfType<MeasurementSpot>())
             {

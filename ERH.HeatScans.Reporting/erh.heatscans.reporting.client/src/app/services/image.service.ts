@@ -27,7 +27,7 @@ export class ImageService {
 
   addSpot(imageFileId: string, x: number, y: number): Promise<Image> {
     const headers = this.getAuthHeaders();
-    const url = `${this.baseUrl}/${imageFileId}/spots?x=${x}&y=${y}`;
+    const url = `${this.baseUrl}/${imageFileId}/spots?relativeX=${x}&relativeY=${y}`;
     
     return lastValueFrom(this.http.post<Image>(url, null, { headers }));
   }

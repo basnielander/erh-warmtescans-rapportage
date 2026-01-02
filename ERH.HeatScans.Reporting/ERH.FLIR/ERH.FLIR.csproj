@@ -103,6 +103,7 @@
     <Compile Include="Overlay.cs" />
     <Compile Include="Scale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NewSpot.cs" />
     <Compile Include="Spot.cs" />
     <Compile Include="TemperatureScale.cs" />
   </ItemGroup>

@@ -38,15 +38,23 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             });
         }
 
+        /// <summary>
+        /// Adds a new spot to the specified heatscan image at the given coordinates.
+        /// </summary>
+        /// <param name="imageFileId">The unique identifier of the image file to which the spot will be added. Cannot be null or empty.</param>
+        /// <param name="relativeX">X, relative to the width of the image</param>
+        /// <param name="relativeY">y, relative to the width of the image</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+        /// <returns>An HTTP response containing the updated heatscan image with the new spot applied.</returns>
         [HttpPost]
         [Route("{imageFileId}/spots")]
-        public async Task<IHttpActionResult> AddSpot(string imageFileId, int x, int y, CancellationToken cancellationToken = default)
+        public async Task<IHttpActionResult> AddSpot(string imageFileId, double relativeX, double relativeY, CancellationToken cancellationToken = default)
         {
             return await ExecuteAuthorizedAsync(async accessToken =>
             {
                 var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
 
-                var updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, x, y, cancellationToken);
+                var updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, relativeX, relativeY, cancellationToken);
 
                 _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
 

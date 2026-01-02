@@ -116,7 +116,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             };
         }
 
-        public Image AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
+        public Image AddSpotToHeatscan(Stream imageStream, double relativeX, double relativeY, CancellationToken cancellationToken)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 );
 
                 // Process the image in the separate AppDomain
-                var imageData = processor.AddSpot(imageStream, new FLIR.Spot(x, y));
+                var imageData = processor.AddSpot(imageStream, new NewSpot(relativeX, relativeY));
 
                 return ToImageResult(imageData);
             }
@@ -209,7 +209,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             return null;
         }
 
-        public HeatScanImage? AddSpot(Stream imageStream, FLIR.Spot spot)
+        public HeatScanImage? AddSpot(Stream imageStream, NewSpot spot)
         {
             if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
