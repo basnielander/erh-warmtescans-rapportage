@@ -40,7 +40,6 @@ export class AuthService {
     // Effect to log authentication state changes
     effect(() => {
       const user = this.userSignal();
-      console.log('Auth state changed:', user ? 'Logged in' : 'Logged out');
     });
 
     // Restore authentication state from session storage

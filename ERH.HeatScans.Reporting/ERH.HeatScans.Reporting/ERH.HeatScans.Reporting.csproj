@@ -69,5 +69,12 @@
     <Compile Include="Spot.cs" />
     <Compile Include="Spots.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="IDisposableAnalyzers">
+      <Version>4.0.8</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

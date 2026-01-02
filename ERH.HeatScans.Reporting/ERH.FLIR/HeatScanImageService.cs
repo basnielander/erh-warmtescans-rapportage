@@ -1,5 +1,6 @@
 ﻿using Flir.Atlas.Image;
 using Flir.Atlas.Image.Palettes;
+using Flir.Cronos.IR;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -67,7 +68,7 @@ namespace ERH.FLIR
 
             foreach (var measurement in thermalImage.Measurements.MeasurementSpots)
             {
-                Debug.WriteLine($"Spot {measurement.Name}, temp: {measurement.ThermalParameters.ReflectedTemperature}, x: {measurement.X}, y: {measurement.Y}");
+                Debug.WriteLine($"Spot {measurement.Name}, temp: {measurement.Value.Value}, x: {measurement.X}, y: {measurement.Y}");
             }
 
             using var thermalImageStream = new MemoryStream();
@@ -106,6 +107,11 @@ namespace ERH.FLIR
                 Palette = PaletteManager.Rainbow
             };
 
+            foreach (var measurement in thermalImage.Measurements.MeasurementSpots)
+            {
+                Debug.WriteLine($"Before Spot {measurement.Name}, temp: {measurement.Value.Value}, x: {measurement.X}, y: {measurement.Y}, point: ({measurement.Point.X}, {measurement.Point.Y})");
+            }
+
             // Find the measurement spot with the matching name (which is used as ID)
             var spotToRemove = thermalImage.Measurements.MeasurementSpots
                 .FirstOrDefault(ms => ms.Name == name);
@@ -114,6 +120,11 @@ namespace ERH.FLIR
             if (spotToRemove != null)
             {
                 thermalImage.Measurements.Remove(spotToRemove);
+            }
+
+            foreach (var measurement in thermalImage.Measurements.MeasurementSpots)
+            {
+                Debug.WriteLine($"After Spot {measurement.Name}, temp: {measurement.Value.Value}, x: {measurement.X}, y: {measurement.Y}, point: ({measurement.Point.X}, {measurement.Point.Y})");
             }
 
             using var thermalImageStream = new MemoryStream();
