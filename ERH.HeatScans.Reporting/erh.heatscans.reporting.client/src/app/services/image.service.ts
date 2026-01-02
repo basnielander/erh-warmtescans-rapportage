@@ -27,16 +27,19 @@ export class ImageService {
     }));
   }
 
-  addSpot(imageFileId: string, x: number, y: number): Promise<void> {
+  addSpot(imageFileId: string, x: number, y: number): Promise<Blob> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}/${imageFileId}/spots?x=${x}&y=${y}`;
     
-    return lastValueFrom(this.http.post<void>(url, null, { headers }));
+    return lastValueFrom(this.http.post(url, null, { 
+      headers, 
+      responseType: 'blob' 
+    }));
   }
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
-    console.log("token", token);
+
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });

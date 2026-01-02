@@ -74,8 +74,13 @@ export class ImageCardComponent implements OnInit {
     console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image().id}`);
 
     try {
-      await this.imageService.addSpot(this.image().id, x, y);
+      const blob = await this.imageService.addSpot(this.image().id, x, y);
       console.log('Spot added successfully');
+      
+      // Update the displayed image with the new version
+      const url = URL.createObjectURL(blob);
+      const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
+      this.imageUrl.set(safeUrl);
     } catch (err: any) {
       console.error('Error adding spot:', err);
     }

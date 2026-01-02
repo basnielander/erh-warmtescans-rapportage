@@ -1,6 +1,6 @@
 ﻿using ERH.HeatScans.Reporting.Server.Framework.Models;
 using ERH.HeatScans.Reporting.Server.Framework.Services;
-using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -57,11 +57,16 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 FileDownloadResult updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, x, y, cancellationToken);
 
+                await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken);
+
+                using var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false);
+                var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
+
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {
-                    Content = new ByteArrayContent(updatedHeatscan.Data)
+                    Content = new ByteArrayContent(result.Data)
                 };
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(updatedHeatscan.MimeType);
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(result.MimeType);
 
                 return ResponseMessage(response);
             });
@@ -90,10 +95,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 }
 
                 await storageService.BatchUpdateImageCalibrationAsync(
-                    accessToken, 
-                    calibrationRequest.ImageFileIds.ToList(), 
-                    calibrationRequest.MinTemperature, 
-                    calibrationRequest.MaxTemperature, 
+                    accessToken,
+                    calibrationRequest.ImageFileIds.ToList(),
+                    calibrationRequest.MinTemperature,
+                    calibrationRequest.MaxTemperature,
                     cancellationToken);
 
                 return Ok();

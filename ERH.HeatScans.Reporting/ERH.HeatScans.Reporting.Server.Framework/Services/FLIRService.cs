@@ -50,6 +50,28 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
+        public static void UnloadFLIRDomain()
+        {
+            lock (_domainLock)
+            {
+                if (_flirDomain != null)
+                {
+                    try
+                    {
+                        AppDomain.Unload(_flirDomain);
+                    }
+                    catch
+                    {
+                        // Ignore unload errors
+                    }
+                    finally
+                    {
+                        _flirDomain = null;
+                    }
+                }
+            }
+        }
+
         internal FileDownloadResult GetHeatscanImage(Stream imageStream)
         {
             try
@@ -77,28 +99,6 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 // Log the exception (add logging framework if available)
                 System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
                 throw;
-            }
-        }
-
-        public static void UnloadFLIRDomain()
-        {
-            lock (_domainLock)
-            {
-                if (_flirDomain != null)
-                {
-                    try
-                    {
-                        AppDomain.Unload(_flirDomain);
-                    }
-                    catch
-                    {
-                        // Ignore unload errors
-                    }
-                    finally
-                    {
-                        _flirDomain = null;
-                    }
-                }
             }
         }
 

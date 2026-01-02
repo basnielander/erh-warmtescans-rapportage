@@ -1,6 +1,9 @@
 ﻿using Flir.Atlas.Image;
+using Flir.Atlas.Image.Measurements;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace ERH.FLIR
 {
@@ -37,10 +40,15 @@ namespace ERH.FLIR
             using var thermalImage = new ThermalImageFile(imageStream);
             thermalImage.Measurements.Add(new Point(spot.X, spot.Y));
 
+            foreach (var measurement in thermalImage.Measurements.OfType<MeasurementSpot>())
+            {
+                Debug.WriteLine($"Spot {measurement.Name}, temp: {measurement.ThermalParameters.ReflectedTemperature}, x: {measurement.X}, y: {measurement.Y}");
+            }
+
             using var thermalImageStream = new MemoryStream();
             thermalImage.Save(thermalImageStream);
 
-            return ImageInBytes(thermalImageStream);
+            return thermalImageStream.ToArray();
         }
 
         public static byte[] CalibrateImage(Stream imageStream, TemperatureScale scale)

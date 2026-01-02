@@ -42,7 +42,7 @@ export class GoogleDriveService {
   
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getAccessToken();
-    console.log("token", token);
+
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });

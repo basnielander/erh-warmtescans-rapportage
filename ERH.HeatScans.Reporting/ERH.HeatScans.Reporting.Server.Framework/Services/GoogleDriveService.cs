@@ -785,5 +785,16 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 throw new Exception($"Error updating report details for folder ID: {folderId}", ex);
             }
         }
+
+        internal async Task SaveFile(string imageFileId, byte[] data, string accessToken, CancellationToken cancellationToken)
+        {
+            // Upload updated file content
+            var driveService = CreateDriveService(accessToken);
+            using (var stream = new MemoryStream(data))
+            {
+                var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), imageFileId, stream, null);
+                await request.UploadAsync(cancellationToken);
+            }
+        }
     }
 }
