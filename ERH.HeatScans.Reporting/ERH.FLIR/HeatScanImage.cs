@@ -20,7 +20,11 @@ namespace ERH.FLIR
         {
             imageStream.Position = 0; // Reset stream position 
 
-            using var thermalImage = new ThermalImageFile(imageStream);
+            using var thermalImage = new ThermalImageFile(imageStream)
+            {
+                TemperatureUnit = TemperatureUnit.Celsius,
+                DistanceUnit = DistanceUnit.Meter
+            };
             using var bitmap = thermalImage.Image;
 
             using var graphics = Graphics.FromImage(bitmap);
@@ -37,7 +41,11 @@ namespace ERH.FLIR
         {
             imageStream.Position = 0; // Reset stream position 
 
-            using var thermalImage = new ThermalImageFile(imageStream);
+            using var thermalImage = new ThermalImageFile(imageStream)
+            {
+                TemperatureUnit = TemperatureUnit.Celsius,
+                DistanceUnit = DistanceUnit.Meter
+            };
             thermalImage.Measurements.Add(new Point(spot.X, spot.Y));
 
             foreach (var measurement in thermalImage.Measurements.OfType<MeasurementSpot>())
@@ -55,10 +63,18 @@ namespace ERH.FLIR
         {
             imageStream.Position = 0; // Reset stream position 
 
-            using var thermalImage = new ThermalImageFile(imageStream);
+            using var thermalImage = new ThermalImageFile(imageStream)
+            {
+                TemperatureUnit = TemperatureUnit.Celsius,
+                DistanceUnit = DistanceUnit.Meter
+            };
 
-            throw new System.NotImplementedException();
+            thermalImage.Scale.Range = new Range<double>(scale.Min, scale.Max);
 
+            using var thermalImageStream = new MemoryStream();
+            thermalImage.Save(thermalImageStream);
+
+            return thermalImageStream.ToArray();
         }
     }
 }

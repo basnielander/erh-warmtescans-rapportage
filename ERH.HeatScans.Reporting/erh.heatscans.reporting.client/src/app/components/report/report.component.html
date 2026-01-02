@@ -119,6 +119,7 @@
     title="🌤️ Batch Calibrate Outdoor Images"
     (close)="onBatchCalibrationCancel()">
     <app-batch-outdoor-calibration
+      *ngIf="showBatchOutdoorCalibration()"
       [images]="allIncludedImages()"
       (saveCalibration)="onBatchCalibrationSave($event)"
       (cancel)="onBatchCalibrationCancel()">
@@ -131,6 +132,7 @@
     title="🏠 Batch Calibrate Indoor Images"
     (close)="onBatchCalibrationCancel()">
     <app-batch-indoor-calibration
+      *ngIf="showBatchIndoorCalibration()"
       [images]="allIncludedImages()"
       (saveCalibration)="onBatchCalibrationSave($event)"
       (cancel)="onBatchCalibrationCancel()">

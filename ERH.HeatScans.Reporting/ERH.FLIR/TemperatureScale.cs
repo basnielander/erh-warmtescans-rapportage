@@ -1,5 +1,8 @@
-﻿namespace ERH.FLIR;
+﻿using System;
 
+namespace ERH.FLIR;
+
+[Serializable]
 public class TemperatureScale(double min, double max)
 {
     public double Max { get; set; } = max;

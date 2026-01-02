@@ -1,7 +1,5 @@
-﻿using ERH.HeatScans.Reporting.Server.Framework.Models;
-using ERH.HeatScans.Reporting.Server.Framework.Services;
+﻿using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,7 +53,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             {
                 var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
 
-                FileDownloadResult updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, x, y, cancellationToken);
+                var updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, x, y, cancellationToken);
 
                 await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken);
 
@@ -94,12 +92,18 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return BadRequest("MinTemperature must be less than MaxTemperature");
                 }
 
-                await storageService.BatchUpdateImageCalibrationAsync(
-                    accessToken,
-                    calibrationRequest.ImageFileIds.ToList(),
-                    calibrationRequest.MinTemperature,
-                    calibrationRequest.MaxTemperature,
-                    cancellationToken);
+                foreach (var imageFileId in calibrationRequest.ImageFileIds)
+                {
+                    var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+
+                    var updatedHeatscan = heatScanService.CalibrateHeatscan(
+                                            rawFileAsStream,
+                                            calibrationRequest.MinTemperature,
+                                            calibrationRequest.MaxTemperature,
+                                            cancellationToken);
+
+                    await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken);
+                }
 
                 return Ok();
             });

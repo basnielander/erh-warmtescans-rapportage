@@ -131,6 +131,36 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 throw;
             }
         }
+
+        public FileDownloadResult CalibrateHeatscan(Stream imageStream, double temperatureMin, double temperatureMax, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Get or create the FLIR AppDomain
+                AppDomain flirDomain = GetOrCreateFLIRDomain();
+
+                // Create a proxy to execute code in the FLIR AppDomain
+                FLIRImageProcessor processor = (FLIRImageProcessor)flirDomain.CreateInstanceAndUnwrap(
+                    typeof(FLIRImageProcessor).Assembly.FullName,
+                    typeof(FLIRImageProcessor).FullName
+                );
+
+                // Process the image in the separate AppDomain
+                byte[] imageData = processor.CalibrateImage(imageStream, new TemperatureScale(temperatureMin, temperatureMax));
+
+                return new FileDownloadResult
+                {
+                    Data = imageData,
+                    MimeType = "image/jpeg"
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (add logging framework if available)
+                System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
+                throw;
+            }
+        }
     }
 
     [Serializable]
