@@ -500,7 +500,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
                 if (imageFile.Parents == null || !imageFile.Parents.Any())
                 {
-                    throw new Exception($"Image with ID {imageId} has no parent folder");
+                    throw new Exception($"HeatScanImage with ID {imageId} has no parent folder");
                 }
 
                 // Get the "2. Bewerkt" folder ID (parent of the image)
@@ -525,7 +525,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 var image = report.Images.FirstOrDefault(img => img.Id == imageId);
                 if (image == null)
                 {
-                    throw new Exception($"Image with ID {imageId} not found in report");
+                    throw new Exception($"HeatScanImage with ID {imageId} not found in report");
                 }
 
                 image.ExcludeFromReport = exclude;
@@ -552,7 +552,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
                 if (imageFile.Parents == null || !imageFile.Parents.Any())
                 {
-                    throw new Exception($"Image with ID {imageId} has no parent folder");
+                    throw new Exception($"HeatScanImage with ID {imageId} has no parent folder");
                 }
 
                 // Get the "2. Bewerkt" folder ID (parent of the image)
@@ -577,7 +577,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 var image = report.Images.FirstOrDefault(img => img.Id == imageId);
                 if (image == null)
                 {
-                    throw new Exception($"Image with ID {imageId} not found in report");
+                    throw new Exception($"HeatScanImage with ID {imageId} not found in report");
                 }
 
                 image.Comments = comment;
@@ -605,7 +605,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
                 if (imageFile.Parents == null || !imageFile.Parents.Any())
                 {
-                    throw new Exception($"Image with ID {imageId} has no parent folder");
+                    throw new Exception($"HeatScanImage with ID {imageId} has no parent folder");
                 }
 
                 // Get the "2. Bewerkt" folder ID (parent of the image)
@@ -630,7 +630,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 var image = report.Images.FirstOrDefault(img => img.Id == imageId);
                 if (image == null)
                 {
-                    throw new Exception($"Image with ID {imageId} not found in report");
+                    throw new Exception($"HeatScanImage with ID {imageId} not found in report");
                 }
 
                 image.TemperatureMin = temperatureMin;

@@ -2,7 +2,7 @@ import { Component, output, OnInit, signal, input, effect } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ImageInfo } from "../../models/image.model";
+import { ImageInfo, Image } from "../../models/image.model";
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { ImageService } from '../../services/image.service';
 
@@ -29,6 +29,9 @@ export class ImageCardComponent implements OnInit {
   editComment = signal<string>('');
   editOutdoor = signal<boolean>(true);
 
+  // Store image data for displaying spots
+  currentImage = signal<Image | null>(null);
+
   constructor(
     private driveService: GoogleDriveService,
     private imageService: ImageService,
@@ -52,7 +55,11 @@ export class ImageCardComponent implements OnInit {
     this.hasError.set(false);
 
     try {
-      const blob = await this.imageService.getImage(this.image().id);
+      const imageData = await this.imageService.getImage(this.image().id);
+      this.currentImage.set(imageData);
+      
+      // Convert Image to Blob using helper method
+      const blob = this.imageService.imageToBlob(imageData);
       const url = URL.createObjectURL(blob);
       const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
       this.imageUrl.set(safeUrl);
@@ -74,10 +81,12 @@ export class ImageCardComponent implements OnInit {
     console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image().id}`);
 
     try {
-      const blob = await this.imageService.addSpot(this.image().id, x, y);
-      console.log('Spot added successfully');
+      const imageData = await this.imageService.addSpot(this.image().id, x, y);
+      this.currentImage.set(imageData);
+      console.log('Spot added successfully', imageData.spots);
       
-      // Update the displayed image with the new version
+      // Update the displayed image with the new version using helper method
+      const blob = this.imageService.imageToBlob(imageData);
       const url = URL.createObjectURL(blob);
       const safeUrl = this.sanitizer.bypassSecurityTrustUrl(url);
       this.imageUrl.set(safeUrl);

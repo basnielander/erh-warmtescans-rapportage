@@ -1,6 +1,5 @@
 ﻿using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System.IO;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -31,17 +30,11 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return validationResult;
                 }
 
-                var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+                using var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
 
                 var result = heatScanService.GetHeatscanImage(rawFileAsStream);
 
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new ByteArrayContent(result.Data)
-                };
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(result.MimeType);
-
-                return ResponseMessage(response);
+                return Ok(result);
             });
         }
 
@@ -58,15 +51,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
 
                 using var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false);
+
                 var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
 
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new ByteArrayContent(result.Data)
-                };
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(result.MimeType);
-
-                return ResponseMessage(response);
+                return Ok(result);
             });
         }
 

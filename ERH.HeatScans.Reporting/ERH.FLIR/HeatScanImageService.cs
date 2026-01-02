@@ -17,7 +17,7 @@ namespace ERH.FLIR
             return ThermalImageFile.IsThermalImage(imageStream);
         }
 
-        public static byte[] ImageInBytes(Stream imageStream, bool includeSpotNames = true)
+        public static HeatScanImage ImageInBytes(Stream imageStream, bool includeSpotNames = true)
         {
             imageStream.Position = 0; // Reset stream position 
 
@@ -27,6 +27,7 @@ namespace ERH.FLIR
                 DistanceUnit = DistanceUnit.Meter,
                 Palette = PaletteManager.Rainbow
             };
+
             using var bitmap = thermalImage.Image;
 
             using var graphics = Graphics.FromImage(bitmap);
@@ -34,12 +35,24 @@ namespace ERH.FLIR
             overlay.Draw(graphics);
 
             // convert to byte array
-            using var ms = new MemoryStream();
-            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            return ms.ToArray();
+            using var thermalImageStream = new MemoryStream();
+            bitmap.Save(thermalImageStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+            return ToHeatScanImage(thermalImage, thermalImageStream);
         }
 
-        public static byte[] AddSpot(Stream imageStream, Spot spot)
+        private static HeatScanImage ToHeatScanImage(ThermalImageFile thermalImage, MemoryStream thermalImageStream)
+        {
+            return new HeatScanImage()
+            {
+                Data = thermalImageStream.ToArray(),
+                MimeType = "image/jpeg",
+                DateTaken = thermalImage.DateTaken,
+                Spots = [.. thermalImage.Measurements.OfType<MeasurementSpot>().Select(ms => new Spot(ms))]
+            };
+        }
+
+        public static HeatScanImage AddSpot(Stream imageStream, Spot spot)
         {
             imageStream.Position = 0; // Reset stream position 
 
@@ -59,10 +72,10 @@ namespace ERH.FLIR
             using var thermalImageStream = new MemoryStream();
             thermalImage.Save(thermalImageStream);
 
-            return thermalImageStream.ToArray();
+            return ToHeatScanImage(thermalImage, thermalImageStream);
         }
 
-        public static byte[] CalibrateImage(Stream imageStream, TemperatureScale scale)
+        public static HeatScanImage CalibrateImage(Stream imageStream, TemperatureScale scale)
         {
             imageStream.Position = 0; // Reset stream position 
 
@@ -78,7 +91,7 @@ namespace ERH.FLIR
             using var thermalImageStream = new MemoryStream();
             thermalImage.Save(thermalImageStream);
 
-            return thermalImageStream.ToArray();
+            return ToHeatScanImage(thermalImage, thermalImageStream);
         }
     }
 }

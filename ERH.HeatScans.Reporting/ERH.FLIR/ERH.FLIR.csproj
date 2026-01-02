@@ -99,12 +99,12 @@
   <ItemGroup>
     <Compile Include="DaylightImage.cs" />
     <Compile Include="HeatScanImageService.cs" />
+    <Compile Include="HeatScanImage.cs" />
     <Compile Include="Overlay.cs" />
     <Compile Include="Scale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spot.cs" />
     <Compile Include="TemperatureScale.cs" />
-    <Compile Include="ThermalImageFileMetaData.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Flir.Atlas.Cronos">

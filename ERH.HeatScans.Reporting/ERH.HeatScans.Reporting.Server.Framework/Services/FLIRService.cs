@@ -2,6 +2,7 @@
 using ERH.HeatScans.Reporting.Server.Framework.Models;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Services
@@ -86,13 +87,9 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 );
 
                 // Process the image in the separate AppDomain
-                byte[] imageData = processor.ProcessImage(imageStream);
+                var imageData = processor.ProcessImage(imageStream);
 
-                return new Image
-                {
-                    Data = imageData,
-                    MimeType = "image/jpeg"
-                };
+                return ToImageResult(imageData);
             }
             catch (Exception ex)
             {
@@ -100,6 +97,23 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
                 throw;
             }
+        }
+
+        private static Image ToImageResult(HeatScanImage image)
+        {
+            return new Image
+            {
+                Data = image.Data,
+                MimeType = image.MimeType,
+                DateTaken = image.DateTaken,
+                Spots = image.Spots.Select(spot => new ImageSpot()
+                {
+                    Id = spot.Id,
+                    Name = spot.Name,
+                    Temperature = spot.Temperature,
+                    Point = new ImageSpotPoint() { X = spot.X, Y = spot.Y }
+                }).ToList()
+            };
         }
 
         public Image AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
@@ -116,13 +130,9 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 );
 
                 // Process the image in the separate AppDomain
-                byte[] imageData = processor.AddSpot(imageStream, new FLIR.Spot(x, y));
+                var imageData = processor.AddSpot(imageStream, new FLIR.Spot(x, y));
 
-                return new Image
-                {
-                    Data = imageData,
-                    MimeType = "image/jpeg"
-                };
+                return ToImageResult(imageData);
             }
             catch (Exception ex)
             {
@@ -146,13 +156,9 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 );
 
                 // Process the image in the separate AppDomain
-                byte[] imageData = processor.CalibrateImage(imageStream, new TemperatureScale(temperatureMin, temperatureMax));
+                var imageData = processor.CalibrateImage(imageStream, new TemperatureScale(temperatureMin, temperatureMax));
 
-                return new Image
-                {
-                    Data = imageData,
-                    MimeType = "image/jpeg"
-                };
+                return ToImageResult(imageData);
             }
             catch (Exception ex)
             {
@@ -166,7 +172,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
     [Serializable]
     public class FLIRImageProcessor : MarshalByRefObject
     {
-        public byte[] ProcessImage(Stream imageStream)
+        public HeatScanImage? ProcessImage(Stream imageStream)
         {
             if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
@@ -174,10 +180,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 return HeatScanImageService.ImageInBytes(imageStream, true);
             }
 
-            return [];
+            return null;
         }
 
-        public byte[] AddSpot(Stream imageStream, FLIR.Spot spot)
+        public HeatScanImage? AddSpot(Stream imageStream, FLIR.Spot spot)
         {
             if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
@@ -185,10 +191,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 return HeatScanImageService.AddSpot(imageStream, spot);
             }
 
-            return [];
+            return null;
         }
 
-        public byte[] CalibrateImage(Stream imageStream, TemperatureScale temperatureScale)
+        public HeatScanImage? CalibrateImage(Stream imageStream, TemperatureScale temperatureScale)
         {
             if (HeatScanImageService.IsHeatScanImage(imageStream))
             {
@@ -196,7 +202,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 return HeatScanImageService.CalibrateImage(imageStream, temperatureScale);
             }
 
-            return [];
+            return null;
         }
 
         public override object InitializeLifetimeService()

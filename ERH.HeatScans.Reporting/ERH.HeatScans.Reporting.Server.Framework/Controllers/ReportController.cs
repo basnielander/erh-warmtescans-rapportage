@@ -73,7 +73,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <summary>
         /// Toggle image exclusion from the report
         /// </summary>
-        /// <param name="imageId">Image file ID to toggle</param>
+        /// <param name="imageId">HeatScanImage file ID to toggle</param>
         /// <param name="exclude">True to exclude, false to include</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Success status</returns>
@@ -97,7 +97,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <summary>
         /// Update image properties (comment and outdoor)
         /// </summary>
-        /// <param name="imageId">Image file ID to update</param>
+        /// <param name="imageId">HeatScanImage file ID to update</param>
         /// <param name="comment">Comment text</param>
         /// <param name="outdoor">True if outdoor, false if indoor</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -122,7 +122,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <summary>
         /// Update image temperature calibration
         /// </summary>
-        /// <param name="imageId">Image file ID to update</param>
+        /// <param name="imageId">HeatScanImage file ID to update</param>
         /// <param name="temperatureMin">Minimum temperature in Celsius</param>
         /// <param name="temperatureMax">Maximum temperature in Celsius</param>
         /// <param name="cancellationToken">Cancellation token</param>

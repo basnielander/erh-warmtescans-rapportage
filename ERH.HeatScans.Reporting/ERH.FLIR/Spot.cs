@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Flir.Atlas.Image.Measurements;
+using System;
 
 namespace ERH.FLIR
 {
@@ -11,17 +12,21 @@ namespace ERH.FLIR
             Y = y;
         }
 
+        public Spot(MeasurementSpot spot)
+        {
+            Id = spot.Identity.ToString();
+            Name = spot.Name;
+            Temperature = $"{spot.Value.Value.ToString("F1")}⁰C";
+            X = spot.X;
+            Y = spot.Y;
+        }
+
         public int X { get; }
         public int Y { get; }
-        //public MeasurementShape Shape;
 
-        //public Spot(MeasurementShape shape)
-        //{
-        //    Shape = shape;
-        //}
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Temperature { get; set; }
 
-        //public string Name => Shape.Name;
-
-        //public string Temperature => $"{Shape.GetValues()[0].ToString("F1")}⁰C";
     }
 }
