@@ -26,6 +26,18 @@
       </div>
     </div>
 
+    <!-- Action Buttons (View Mode - Edit button shown before spots list) -->
+    <div *ngIf="!isEditing()" class="image-actions">
+      <div class="action-buttons">
+        <button 
+          class="btn-edit" 
+          (click)="onEditClick($event)"
+          title="Edit properties">
+          ✏️ Edit
+        </button>
+      </div>
+    </div>
+
     <!-- Temperature Spots List -->
     <div *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="spots-list">
       <div class="spots-header">
@@ -73,31 +85,9 @@
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="image-actions">
-      <div *ngIf="!isEditing()" class="action-buttons">
-        <button 
-          class="btn-edit" 
-          (click)="onEditClick($event)"
-          title="Edit properties">
-          ✏️ Edit
-        </button>
-        <button 
-          *ngIf="!image().excludeFromReport"
-          class="btn-exclude" 
-          (click)="onToggleExcludeClick($event)"
-          title="Exclude from report">
-          🗑️ Exclude
-        </button>
-        <button 
-          *ngIf="image().excludeFromReport"
-          class="btn-include" 
-          (click)="onToggleExcludeClick($event)"
-          title="Include in report">
-          ↩️ Include
-        </button>
-      </div>
-      <div *ngIf="isEditing()" class="action-buttons">
+    <!-- Action Buttons (Edit Mode) -->
+    <div *ngIf="isEditing()" class="image-actions">
+      <div class="action-buttons">
         <button 
           class="btn-save" 
           (click)="onSaveClick($event)"
@@ -113,22 +103,45 @@
       </div>
     </div>
   </div>
-  <div class="image-container">
-    <img 
-      *ngIf="imageUrl() && !isLoading() && !hasError()"
-      [src]="imageUrl()!" 
-      [alt]="image().name"
-      [title]="image().name"
-      class="image-thumbnail"
-      loading="lazy"
-      (click)="onImageClick($event)"
-    />
-    <div *ngIf="isLoading()" class="image-loading">
-      <div class="spinner-small"></div>
-      <p>Loading...</p>
+  
+  <div class="image-section">
+    <div class="image-container">
+      <img 
+        *ngIf="imageUrl() && !isLoading() && !hasError()"
+        [src]="imageUrl()!" 
+        [alt]="image().name"
+        [title]="image().name"
+        class="image-thumbnail"
+        loading="lazy"
+        (click)="onImageClick($event)"
+      />
+      <div *ngIf="isLoading()" class="image-loading">
+        <div class="spinner-small"></div>
+        <p>Loading...</p>
+      </div>
+      <div *ngIf="hasError()" class="image-error">
+        <p>⚠️ Failed to load</p>
+      </div>
     </div>
-    <div *ngIf="hasError()" class="image-error">
-      <p>⚠️ Failed to load</p>
+
+    <!-- Exclude/Include Button (View Mode - shown below image) -->
+    <div *ngIf="!isEditing()" class="image-actions-below">
+      <div class="action-buttons">
+        <button 
+          *ngIf="!image().excludeFromReport"
+          class="btn-exclude" 
+          (click)="onToggleExcludeClick($event)"
+          title="Exclude from report">
+          🗑️ Exclude
+        </button>
+        <button 
+          *ngIf="image().excludeFromReport"
+          class="btn-include" 
+          (click)="onToggleExcludeClick($event)"
+          title="Include in report">
+          ↩️ Include
+        </button>
+      </div>
     </div>
   </div>
 </div>

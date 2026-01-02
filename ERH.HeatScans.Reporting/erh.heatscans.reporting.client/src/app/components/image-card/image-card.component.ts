@@ -78,12 +78,9 @@ export class ImageCardComponent implements OnInit {
     const x = (event.clientX - rect.left) / rect.width;
     const y = (event.clientY - rect.top) / rect.height;
 
-    console.log(`Adding spot at coordinates: x=${x}, y=${y} for image ${this.image().id}`);
-
     try {
       const imageData = await this.imageService.addSpot(this.image().id, x, y);
       this.currentImage.set(imageData);
-      console.log('Spot added successfully', imageData.spots);
       
       // Update the displayed image with the new version using helper method
       const blob = this.imageService.imageToBlob(imageData);
