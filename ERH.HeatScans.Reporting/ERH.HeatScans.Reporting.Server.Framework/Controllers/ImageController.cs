@@ -107,7 +107,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
         [HttpDelete]
         [Route("{imageFileId}/spots/{name}")]
-        public async Task<IHttpActionResult> DeleteSpot(string imageFileId, string name, CancellationToken cancellationToken = default)
+        public async Task<IHttpActionResult> RemoveSpot(string imageFileId, string name, CancellationToken cancellationToken = default)
         {
             return await ExecuteAuthorizedAsync(async accessToken =>
             {

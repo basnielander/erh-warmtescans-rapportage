@@ -1,5 +1,4 @@
 ﻿using Flir.Atlas.Image;
-using Flir.Atlas.Image.Measurements;
 using Flir.Atlas.Image.Palettes;
 using System;
 using System.Diagnostics;
@@ -49,7 +48,7 @@ namespace ERH.FLIR
                 Data = thermalImageStream.ToArray(),
                 MimeType = "image/jpeg",
                 DateTaken = thermalImage.DateTaken,
-                Spots = [.. thermalImage.Measurements.OfType<MeasurementSpot>().Select(ms => new Spot(ms))]
+                Spots = [.. thermalImage.Measurements.MeasurementSpots.Select(ms => new Spot(ms))]
             };
         }
 
@@ -66,7 +65,7 @@ namespace ERH.FLIR
 
             thermalImage.Measurements.Add(new Point(Convert.ToInt32(thermalImage.Width * spot.RelativeX), Convert.ToInt32(thermalImage.Height * spot.RelativeY)));
 
-            foreach (var measurement in thermalImage.Measurements.OfType<MeasurementSpot>())
+            foreach (var measurement in thermalImage.Measurements.MeasurementSpots)
             {
                 Debug.WriteLine($"Spot {measurement.Name}, temp: {measurement.ThermalParameters.ReflectedTemperature}, x: {measurement.X}, y: {measurement.Y}");
             }
@@ -108,8 +107,9 @@ namespace ERH.FLIR
             };
 
             // Find the measurement spot with the matching name (which is used as ID)
-            var spotToRemove = thermalImage.Measurements.OfType<MeasurementSpot>()
+            var spotToRemove = thermalImage.Measurements.MeasurementSpots
                 .FirstOrDefault(ms => ms.Name == name);
+
 
             if (spotToRemove != null)
             {
