@@ -1,4 +1,4 @@
-﻿namespace ERH.HeatScans.Reporting;
+﻿namespace ERH.FLIR;
 
 public class TemperatureScale(double min, double max)
 {

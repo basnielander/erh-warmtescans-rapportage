@@ -21,9 +21,5 @@ namespace ERH.HeatScans.Reporting
         public double? HoursOfSunshine { get; set; }
 
         public string? FrontDoorDirection { get; set; }
-
-        //public TemperatureScale TemperatureScale { get; set; }
-
-        //public string TemperatureScaleImage { get; set; }
     }
 }

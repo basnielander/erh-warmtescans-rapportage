@@ -29,5 +29,28 @@ namespace ERH.FLIR
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
             return ms.ToArray();
         }
+
+        public static byte[] AddSpot(Stream imageStream, Spot spot)
+        {
+            imageStream.Position = 0; // Reset stream position 
+
+            using var thermalImage = new ThermalImageFile(imageStream);
+            thermalImage.Measurements.Add(new Point(spot.X, spot.Y));
+
+            using var thermalImageStream = new MemoryStream();
+            thermalImage.Save(thermalImageStream);
+
+            return ImageInBytes(thermalImageStream);
+        }
+
+        public static byte[] CalibrateImage(Stream imageStream, TemperatureScale scale)
+        {
+            imageStream.Position = 0; // Reset stream position 
+
+            using var thermalImage = new ThermalImageFile(imageStream);
+
+            throw new System.NotImplementedException();
+
+        }
     }
 }

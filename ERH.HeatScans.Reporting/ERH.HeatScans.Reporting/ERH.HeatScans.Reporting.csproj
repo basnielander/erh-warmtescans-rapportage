@@ -68,7 +68,6 @@
     <Compile Include="ReportImage.cs" />
     <Compile Include="Spot.cs" />
     <Compile Include="Spots.cs" />
-    <Compile Include="TemperatureScale.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

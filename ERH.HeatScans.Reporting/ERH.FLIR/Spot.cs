@@ -1,18 +1,27 @@
-﻿using Flir.Atlas.Image.Measurements;
+﻿using System;
 
 namespace ERH.FLIR
 {
+    [Serializable]
     public class Spot
     {
-        public MeasurementShape Shape;
-
-        public Spot(MeasurementShape shape)
+        public Spot(int x, int y)
         {
-            Shape = shape;
+            X = x;
+            Y = y;
         }
 
-        public string Name => Shape.Name;
+        public int X { get; }
+        public int Y { get; }
+        //public MeasurementShape Shape;
 
-        public string Temperature => $"{Shape.GetValues()[0].ToString("F1")}⁰C";
+        //public Spot(MeasurementShape shape)
+        //{
+        //    Shape = shape;
+        //}
+
+        //public string Name => Shape.Name;
+
+        //public string Temperature => $"{Shape.GetValues()[0].ToString("F1")}⁰C";
     }
 }

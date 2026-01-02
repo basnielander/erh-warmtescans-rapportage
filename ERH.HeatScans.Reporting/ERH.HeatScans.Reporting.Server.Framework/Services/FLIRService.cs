@@ -102,7 +102,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        internal FileDownloadResult AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
+        public FileDownloadResult AddSpotToHeatscan(Stream imageStream, int x, int y, CancellationToken cancellationToken)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 );
 
                 // Process the image in the separate AppDomain
-                byte[] imageData = processor.ProcessImage(imageStream);
+                byte[] imageData = processor.AddSpot(imageStream, new FLIR.Spot(x, y));
 
                 return new FileDownloadResult
                 {
@@ -142,6 +142,28 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             {
                 // This code executes in the separate AppDomain
                 return HeatScanImage.ImageInBytes(imageStream, true);
+            }
+
+            return [];
+        }
+
+        public byte[] AddSpot(Stream imageStream, FLIR.Spot spot)
+        {
+            if (HeatScanImage.IsHeatScanImage(imageStream))
+            {
+                // This code executes in the separate AppDomain
+                return HeatScanImage.AddSpot(imageStream, spot);
+            }
+
+            return [];
+        }
+
+        public byte[] CalibrateImage(Stream imageStream, TemperatureScale temperatureScale)
+        {
+            if (HeatScanImage.IsHeatScanImage(imageStream))
+            {
+                // This code executes in the separate AppDomain
+                return HeatScanImage.CalibrateImage(imageStream, temperatureScale);
             }
 
             return [];

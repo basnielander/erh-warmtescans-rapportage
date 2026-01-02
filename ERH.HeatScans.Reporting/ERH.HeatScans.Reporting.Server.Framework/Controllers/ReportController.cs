@@ -50,7 +50,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <returns>Success status</returns>
         [HttpPost]
         [Route("update-indices")]
-        public async Task<IHttpActionResult> UpdateImageIndices(string folderId, [FromBody] List<ImageIndexUpdate> indexUpdates, CancellationToken cancellationToken = default)
+        public async Task<IHttpActionResult> UpdateImageIndices(string folderId, [FromBody] List<ImageIndexUpdateRequest> indexUpdates, CancellationToken cancellationToken = default)
         {
             return await ExecuteAuthorizedAsync(async accessToken =>
             {
@@ -158,7 +158,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <returns>Success status</returns>
         [HttpPatch]
         [Route("update-report-details")]
-        public async Task<IHttpActionResult> UpdateReportDetails(string folderId, [FromBody] ReportDetailsUpdate reportDetails, CancellationToken cancellationToken = default)
+        public async Task<IHttpActionResult> UpdateReportDetails(string folderId, [FromBody] ReportDetailsUpdateRequest reportDetails, CancellationToken cancellationToken = default)
         {
             return await ExecuteAuthorizedAsync(async accessToken =>
             {

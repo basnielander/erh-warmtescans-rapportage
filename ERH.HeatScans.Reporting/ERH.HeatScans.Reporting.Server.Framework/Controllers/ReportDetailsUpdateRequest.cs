@@ -1,6 +1,6 @@
 ﻿namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
-    public class ReportDetailsUpdate
+    public class ReportDetailsUpdateRequest
     {
         public string Address { get; set; }
         public double? Temperature { get; set; }

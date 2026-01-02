@@ -433,7 +433,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        public async Task UpdateImageIndicesAsync(string accessToken, string addressFolderId, List<Controllers.ImageIndexUpdate> indexUpdates, CancellationToken cancellationToken = default)
+        public async Task UpdateImageIndicesAsync(string accessToken, string addressFolderId, List<Controllers.ImageIndexUpdateRequest> indexUpdates, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -711,7 +711,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        public async Task UpdateReportDetailsAsync(string accessToken, string folderId, Controllers.ReportDetailsUpdate reportDetails, CancellationToken cancellationToken = default)
+        public async Task UpdateReportDetailsAsync(string accessToken, string folderId, Controllers.ReportDetailsUpdateRequest reportDetails, CancellationToken cancellationToken = default)
         {
             try
             {
