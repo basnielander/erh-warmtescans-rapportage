@@ -50,16 +50,7 @@ export class FoldersAndFileService {
       this.isLoadingSignal.set(false);
     }
   }
-
-  getFiles(folderId?: string): Promise<GoogleDriveItem[]> {
-    const headers = this.getAuthHeaders();
-    const url = folderId 
-      ? `${this.baseUrl}/files?folderId=${folderId}`
-      : `${this.baseUrl}/files`;
-    
-    return lastValueFrom(this.http.get<GoogleDriveItem[]>(url, { headers }));
-  }
-
+  
   setupAddressFolder(addressFolderId: string): Promise<void> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}?addressFolderId=${addressFolderId}`;
