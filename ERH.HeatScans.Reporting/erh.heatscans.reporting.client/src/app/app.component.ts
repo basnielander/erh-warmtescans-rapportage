@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { FoldersAndFileService } from './services/folders-and-files.service';
+import { UserComponent } from './components/user/user.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, UserComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -34,9 +35,5 @@ export class AppComponent {
 
   async onSignIn() {
     await this.authService.signIn();
-  }
-
-  async onSignOut() {
-    await this.authService.signOut();
-  }
+  }  
 }

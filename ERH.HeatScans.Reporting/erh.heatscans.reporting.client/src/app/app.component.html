@@ -1,11 +1,5 @@
 <main class="main">
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1>{{ title }}</h1>
-      <p>Sign in with Google to access your Drive files</p>
-    </div>
-
+  <div class="container">    
     <!-- Authentication Section -->
     <div class="auth-section">
       @if (isAuthLoading()) {
@@ -15,18 +9,15 @@
       }
 
       @if (!isAuthenticated()) {
+      <p>
+        Voor het beheren van de EnergieRijk Houten' warmtescan rapportages is het nodig om in te loggen met het e-mail adres waarmee je toegang hebt tot de Warmtescan bestanden op Google Drive.
+      </p>
+      <br/>
       <button class="btn btn-primary" (click)="onSignIn()" [disabled]="isAuthLoading()">
         Sign in with Google
       </button>
       } @else {
-      <div class="user-info">
-        <img [src]="user()?.picture" [alt]="user()?.name" class="user-avatar" />
-        <div class="user-details">
-          <p class="user-name">{{ user()?.name }}</p>
-          <p class="user-email">{{ user()?.email }}</p>
-        </div>
-      </div>
-      <button class="btn btn-secondary" (click)="onSignOut()">Sign Out</button>
+      <app-user></app-user>
       }
     </div>    
 

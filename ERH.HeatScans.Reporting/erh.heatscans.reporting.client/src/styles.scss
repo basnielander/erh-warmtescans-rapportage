@@ -35,10 +35,14 @@ header {
   max-height: 60px;
 }
 
+$container-padding: 1rem;
+$container-height: 100%;
+
 .logo-container {
   @include flex-center;
   justify-content: flex-end;
-  padding: 2rem;
+  height: $container-height;
+  padding: $container-padding;
 }
 
 .site-logo-img {
@@ -49,7 +53,8 @@ header {
 .branding-container {
   @include flex-center;
   justify-content: flex-start;
-  padding: 2rem;
+  height: $container-height;
+  padding: $container-padding;
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
 }
