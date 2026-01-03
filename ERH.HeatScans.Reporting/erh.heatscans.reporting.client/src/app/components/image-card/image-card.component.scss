@@ -1,0 +1,375 @@
+@import '../../../styles/variables-mixins';
+
+.image-card {
+  background-color: $color-gray-50;
+  border: 1px solid $color-gray-300;
+  border-radius: $border-radius-lg;
+  padding: 15px;
+  @include flex-row;
+  gap: 15px;
+  align-items: flex-start;
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: $shadow-md;
+    border-color: $color-primary-blue;
+  }
+}
+
+.image-section {
+  flex: 2;
+  min-width: 0;
+  @include flex-column;
+  gap: $spacing-sm;
+}
+
+.image-and-scale-wrapper {
+  @include flex-row;
+  gap: 12px;
+  align-items: stretch;
+  min-height: 0;
+  max-height: 600px;
+}
+
+.image-container {
+  flex: 1;
+  min-width: 0;
+  border-radius: $border-radius-base;
+  overflow: hidden;
+  background-color: $color-gray-300;
+  @include flex-center;
+}
+
+.scale-container {
+  display: flex;
+  align-items: stretch;
+  min-width: fit-content;
+
+  app-image-scale {
+    display: flex;
+    height: 100%;
+  }
+}
+
+.image-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  cursor: crosshair;
+}
+
+.image-loading,
+.image-error {
+  @include flex-center;
+  flex-direction: column;
+  gap: 10px;
+  color: $color-gray-800;
+  font-size: $font-size-sm;
+}
+
+.image-error {
+  color: $color-error;
+}
+
+.spinner-small {
+  @include spinner(30px, 3px, $color-primary-blue);
+}
+
+.image-info {
+  flex: 1;
+  min-width: 0;
+  @include flex-column;
+  gap: $spacing-sm;
+}
+
+.image-name {
+  font-weight: $font-weight-semibold;
+  color: $color-gray-950;
+  font-size: $font-size-base;
+  @include text-truncate;
+}
+
+.image-meta {
+  @include flex-column;
+  gap: 3px;
+  font-size: $font-size-sm;
+  color: $color-gray-800;
+}
+
+.image-size,
+.image-date,
+.image-date-taken,
+.image-spots {
+  font-size: $font-size-xs;
+  color: $color-gray-700;
+}
+
+.image-date-taken {
+  color: $color-primary-blue;
+  font-weight: $font-weight-medium;
+}
+
+.image-spots {
+  color: $color-yellow;
+  font-weight: $font-weight-medium;
+}
+
+.image-details {
+  @include flex-column;
+  gap: 6px;
+  margin-top: $spacing-xs;
+  padding: $spacing-sm;
+  background-color: $color-gray-100;
+  border-radius: $border-radius-base;
+  border: 1px solid $color-gray-200;
+}
+
+.detail-item {
+  display: flex;
+  gap: $spacing-sm;
+  font-size: $font-size-sm;
+  line-height: 1.4;
+}
+
+.detail-label {
+  font-weight: $font-weight-semibold;
+  color: $color-gray-900;
+  min-width: 70px;
+}
+
+.detail-value {
+  color: $color-gray-950;
+  flex: 1;
+}
+
+.spots-list {
+  margin-top: $spacing-sm;
+  padding: 10px;
+  background-color: $color-yellow-lightest;
+  border-radius: $border-radius-base;
+  border: 1px solid $color-yellow;
+}
+
+.spots-header {
+  margin-bottom: $spacing-sm;
+  padding-bottom: 6px;
+  border-bottom: 1px solid $color-yellow;
+}
+
+.spots-title {
+  font-weight: $font-weight-semibold;
+  font-size: 13px;
+  color: $color-gray-950;
+}
+
+.spots-items {
+  @include flex-column;
+  gap: 6px;
+}
+
+.spot-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background-color: $color-white;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-yellow-light;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: $color-yellow-lighter;
+    border-color: $color-yellow;
+    box-shadow: 0 1px 3px rgba($color-yellow, 0.2);
+  }
+}
+
+.spot-details {
+  @include flex-column;
+  gap: 2px;
+  flex: 1;
+}
+
+.spot-name {
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
+  color: $color-gray-900;
+}
+
+.spot-temperature {
+  font-size: 13px;
+  color: $color-yellow;
+  font-weight: $font-weight-semibold;
+}
+
+.btn-delete-spot {
+  @include button-base;
+  background-color: transparent;
+  border: 1px solid $color-gray-300;
+  border-radius: $border-radius-sm;
+  padding: $spacing-xs $spacing-sm;
+  font-size: $font-size-base;
+  min-width: 32px;
+  height: 32px;
+
+  &:hover {
+    background-color: $color-red;
+    border-color: $color-red;
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba($color-red, 0.3);
+  }
+
+  &:active {
+    transform: scale(1.05);
+  }
+}
+
+.image-edit-form {
+  @include flex-column;
+  gap: 10px;
+  margin-top: $spacing-xs;
+  padding: 10px;
+  background-color: $color-info-bg;
+  border-radius: $border-radius-base;
+  border: 1px solid #d0d8e8;
+}
+
+.form-group {
+  @include flex-column;
+  gap: $spacing-xs;
+}
+
+.form-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-gray-900;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  font-weight: $font-weight-medium;
+  user-select: none;
+}
+
+.form-textarea {
+  @include form-input-base;
+  resize: vertical;
+  min-height: 60px;
+  font-size: $font-size-sm;
+}
+
+.image-actions {
+  margin-top: $spacing-sm;
+}
+
+.image-actions-below {
+  display: flex;
+  justify-content: flex-end;
+  padding: $spacing-sm;
+}
+
+.action-buttons {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.btn-exclude,
+.btn-include,
+.btn-edit,
+.btn-save,
+.btn-cancel {
+  @include button-base;
+  padding: 6px 12px;
+  font-size: $font-size-sm;
+}
+
+.btn-exclude {
+  background-color: $color-red;
+  color: white;
+
+  &:hover {
+    background-color: $color-red-dark;
+    @include button-hover-lift;
+  }
+}
+
+.btn-include {
+  background-color: $color-green;
+  color: white;
+
+  &:hover {
+    background-color: $color-green-dark;
+    @include button-hover-lift;
+  }
+}
+
+.btn-edit {
+  background-color: $color-primary-blue-dark;
+  color: white;
+
+  &:hover {
+    background-color: $color-primary-blue-darker;
+    @include button-hover-lift;
+  }
+}
+
+.btn-save {
+  background-color: $color-green;
+  color: white;
+
+  &:hover {
+    background-color: $color-green-dark;
+    @include button-hover-lift;
+  }
+}
+
+.btn-cancel {
+  background-color: #757575;
+  color: white;
+
+  &:hover {
+    background-color: #616161;
+    @include button-hover-lift;
+  }
+}
+
+@include mobile {
+  .image-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .image-and-scale-wrapper {
+    flex-direction: column;
+    max-height: none;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 200px;
+  }
+
+  .scale-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .image-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .action-buttons {
+    justify-content: flex-start;
+  }
+}

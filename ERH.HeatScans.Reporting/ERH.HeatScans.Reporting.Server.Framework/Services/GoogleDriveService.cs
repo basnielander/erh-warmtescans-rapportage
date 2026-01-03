@@ -1,0 +1,748 @@
+using ERH.HeatScans.Reporting.Server.Framework.Models;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ERH.HeatScans.Reporting.Server.Framework.Services
+{
+    public class GoogleDriveService
+    {
+        public async Task<GoogleDriveItem> GetFolderStructureAsync(string accessToken, string folderId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    var folder = await GetFileMetadataAsync(driveService, folderId, cancellationToken);
+                    folder.Children = await GetChildrenAsync(driveService, folderId, cancellationToken);
+                    return folder;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving folder structure for folder ID: {folderId}", ex);
+            }
+        }
+
+        public async Task<List<GoogleDriveItem>> GetFlatFileListAsync(string accessToken, string folderId = null, CancellationToken cancellationToken = default)
+        {
+            folderId = folderId ?? "1A9-OGvD5LDPzFggsPNG7PF3pKl9xcHvQ";
+
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    var allItems = new List<GoogleDriveItem>();
+                    await GetAllFilesRecursiveAsync(driveService, folderId, allItems, cancellationToken);
+                    return allItems;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving flat file list for folder ID: {folderId}", ex);
+            }
+        }
+
+        private DriveService CreateDriveService(string accessToken)
+        {
+            var credential = GoogleCredential.FromAccessToken(accessToken);
+
+            return new DriveService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "ERH Heat Scans Reporting"
+            });
+        }
+
+        private async Task<GoogleDriveItem> GetFileMetadataAsync(DriveService driveService, string fileId, CancellationToken cancellationToken)
+        {
+            var request = driveService.Files.Get(fileId);
+            request.Fields = "id, name, mimeType, modifiedTime, size";
+
+            var file = await request.ExecuteAsync(cancellationToken);
+
+            return new GoogleDriveItem
+            {
+                Id = file.Id,
+                Name = file.Name,
+                MimeType = file.MimeType,
+                IsFolder = file.MimeType == "application/vnd.google-apps.folder",
+                ModifiedTime = file.ModifiedTimeDateTimeOffset?.DateTime,
+                Size = file.Size
+            };
+        }
+
+        private async Task<List<GoogleDriveItem>> GetChildrenAsync(DriveService driveService, string folderId, CancellationToken cancellationToken)
+        {
+            var children = new List<GoogleDriveItem>();
+
+            var request = driveService.Files.List();
+            request.Q = $"'{folderId}' in parents and trashed = false";
+            request.Fields = "nextPageToken, files(id, name, mimeType, modifiedTime, size, trashed)";
+            request.PageSize = 500;
+
+            do
+            {
+                var result = await request.ExecuteAsync(cancellationToken);
+
+                if (result.Files != null)
+                {
+                    foreach (var file in result.Files.OrderBy(f => f.Name))
+                    {
+                        var item = new GoogleDriveItem
+                        {
+                            Id = file.Id,
+                            Name = file.Name,
+                            MimeType = file.MimeType,
+                            IsFolder = file.MimeType == "application/vnd.google-apps.folder",
+                            ModifiedTime = file.ModifiedTimeDateTimeOffset?.DateTime,
+                            Size = file.Size
+                        };
+
+                        if (item.IsFolder)
+                        {
+                            item.Children = await GetChildrenAsync(driveService, file.Id, cancellationToken);
+                        }
+
+                        children.Add(item);
+                    }
+                }
+
+                request.PageToken = result.NextPageToken;
+            } while (!string.IsNullOrEmpty(request.PageToken));
+
+            return children;
+        }
+
+        private async Task GetAllFilesRecursiveAsync(DriveService driveService, string folderId, List<GoogleDriveItem> allItems, CancellationToken cancellationToken)
+        {
+            var request = driveService.Files.List();
+            request.Q = $"'{folderId}' in parents and trashed = false";
+            request.Fields = "nextPageToken, files(id, name, mimeType, modifiedTime, size)";
+            request.PageSize = 1000;
+
+            do
+            {
+                var result = await request.ExecuteAsync(cancellationToken);
+
+                if (result.Files != null)
+                {
+                    foreach (var file in result.Files)
+                    {
+                        var item = new GoogleDriveItem
+                        {
+                            Id = file.Id,
+                            Name = file.Name,
+                            MimeType = file.MimeType,
+                            IsFolder = file.MimeType == "application/vnd.google-apps.folder",
+                            ModifiedTime = file.ModifiedTimeDateTimeOffset?.DateTime,
+                            Size = file.Size
+                        };
+
+                        allItems.Add(item);
+
+                        if (item.IsFolder)
+                        {
+                            await GetAllFilesRecursiveAsync(driveService, file.Id, allItems, cancellationToken);
+                        }
+                    }
+                }
+
+                request.PageToken = result.NextPageToken;
+            } while (!string.IsNullOrEmpty(request.PageToken));
+        }
+
+        internal async Task SetupAddressFolderAsync(string accessToken, string addressFolderId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    // Get all items in the address folder
+                    var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                    // Check if "1. Origineel" subfolder exists
+                    var origineelFolder = addressFolderItems.FirstOrDefault(item =>
+                        item.IsFolder && item.Name == "1. Origineel");
+
+                    string origineelFolderId;
+                    if (origineelFolder == null)
+                    {
+                        // Create "1. Origineel" subfolder
+                        origineelFolderId = await CreateFolderAsync(driveService, "1. Origineel", addressFolderId, cancellationToken);
+                    }
+                    else
+                    {
+                        origineelFolderId = origineelFolder.Id;
+                    }
+
+                    // Check if "2. Bewerkt" subfolder exists
+                    var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                        item.IsFolder && item.Name == "2. Bewerkt");
+
+                    string bewerktFolderId;
+                    if (bewerktFolder == null)
+                    {
+                        // Create "2. Bewerkt" subfolder
+                        bewerktFolderId = await CreateFolderAsync(driveService, "2. Bewerkt", addressFolderId, cancellationToken);
+                    }
+                    else
+                    {
+                        bewerktFolderId = bewerktFolder.Id;
+                    }
+
+                    // Find image files in the address folder (not in subfolders)
+                    var imageExtensions = new[] { ".jpg", ".jpeg" };
+                    var imageFiles = addressFolderItems.Where(item =>
+                        !item.IsFolder &&
+                        imageExtensions.Any(ext => item.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                    ).ToList();
+
+                    if (imageFiles.Any())
+                    {
+                        // Move image files to "1. Origineel" subfolder
+                        foreach (var imageFile in imageFiles)
+                        {
+                            await MoveFileAsync(driveService, imageFile.Id, addressFolderId, origineelFolderId, cancellationToken);
+                        }
+
+                        // Refresh the folder items after moving files
+                        addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                        // Get the files from "1. Origineel" folder
+                        var origineelFolderItems = await GetChildrenAsync(driveService, origineelFolderId, cancellationToken);
+
+                        // Copy all files from "1. Origineel" to "2. Bewerkt"
+                        foreach (var file in origineelFolderItems.Where(item => !item.IsFolder))
+                        {
+                            await CopyFileAsync(driveService, file.Id, bewerktFolderId, file.Name, cancellationToken);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error setting up address folder with ID: {addressFolderId}", ex);
+            }
+        }
+
+        private async Task<string> CreateFolderAsync(DriveService driveService, string folderName, string parentFolderId, CancellationToken cancellationToken)
+        {
+            var folderMetadata = new Google.Apis.Drive.v3.Data.File()
+            {
+                Name = folderName,
+                MimeType = "application/vnd.google-apps.folder",
+                Parents = new List<string> { parentFolderId }
+            };
+
+            var request = driveService.Files.Create(folderMetadata);
+            request.Fields = "id";
+
+            var folder = await request.ExecuteAsync(cancellationToken);
+            return folder.Id;
+        }
+
+        private async Task MoveFileAsync(DriveService driveService, string fileId, string oldParentId, string newParentId, CancellationToken cancellationToken)
+        {
+            var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), fileId);
+            request.AddParents = newParentId;
+            request.RemoveParents = oldParentId;
+            request.Fields = "id, parents";
+
+            await request.ExecuteAsync(cancellationToken);
+        }
+
+        private async Task<string> CopyFileAsync(DriveService driveService, string fileId, string destinationFolderId, string fileName, CancellationToken cancellationToken)
+        {
+            var copyMetadata = new Google.Apis.Drive.v3.Data.File()
+            {
+                Name = fileName,
+                Parents = new List<string> { destinationFolderId }
+            };
+
+            var request = driveService.Files.Copy(copyMetadata, fileId);
+            request.Fields = "id";
+
+            var copiedFile = await request.ExecuteAsync(cancellationToken);
+            return copiedFile.Id;
+        }
+
+        public async Task<Report> GetReportAsync(string accessToken, string addressFolderId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    var addressFolder = await GetFileMetadataAsync(driveService, addressFolderId, cancellationToken);
+
+                    // Get all items in the address folder
+                    var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                    // Find "2. Bewerkt" subfolder
+                    var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                        item.IsFolder && item.Name == "2. Bewerkt");
+
+                    if (bewerktFolder == null)
+                    {
+                        throw new Exception($"Subfolder '2. Bewerkt' not found in folder {addressFolderId}");
+                    }
+
+                    string bewerktFolderId = bewerktFolder.Id;
+
+                    // Get all items in "2. Bewerkt" folder
+                    var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                    // Look for report.json file
+                    var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                        !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                    Report report;
+
+                    if (reportFile != null)
+                    {
+                        // Read existing report.json
+                        report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+                    }
+                    else
+                    {
+                        // Create new report
+                        report = new Report(addressFolder.Id, addressFolder.Name);
+
+                        // Get all image files from "2. Bewerkt" folder
+                        var imageExtensions = new[] { ".jpg", ".jpeg" };
+                        var imageFiles = bewerktFolderItems.Where(item =>
+                            !item.IsFolder &&
+                            imageExtensions.Any(ext => item.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                        ).ToList();
+
+                        // Update report with current images
+                        report.Images = [];
+
+                        var index = 0;
+                        foreach (var heatScan in imageFiles)
+                        {
+                            report.Images.Add(new ReportImage(heatScan.Id, index)
+                            {
+                                Name = heatScan.Name,
+                                MimeType = heatScan.MimeType,
+                                Size = heatScan.Size,
+                                ModifiedTime = heatScan.ModifiedTime?.ToString("o"), // ISO 8601 format
+                                ExcludeFromReport = false,
+                                Outdoor = true,
+
+                            });
+
+                            index++;
+                        }
+
+                        // Save report.json
+                        await CreateReportFileAsync(driveService, bewerktFolderId, report, cancellationToken);
+                    }
+
+                    return report;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting report for folder ID: {addressFolderId}", ex);
+            }
+        }
+
+
+        internal async Task<Stream> GetFileBytesAsync(string accessToken, string fileId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    var metadataRequest = driveService.Files.Get(fileId);
+                    metadataRequest.Fields = "id, name, mimeType";
+                    var fileMetadata = await metadataRequest.ExecuteAsync(cancellationToken);
+
+                    var request = driveService.Files.Get(fileId);
+                    var stream = new MemoryStream();
+                    await request.DownloadAsync(stream, cancellationToken);
+
+                    return stream;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error downloading file with ID: {fileId}", ex);
+            }
+        }
+
+        private async Task<Report> ReadReportFileAsync(DriveService driveService, string fileId, CancellationToken cancellationToken)
+        {
+            var request = driveService.Files.Get(fileId);
+            var stream = new MemoryStream();
+            await request.DownloadAsync(stream, cancellationToken);
+
+            stream.Position = 0;
+            using (var reader = new StreamReader(stream))
+            {
+                var json = await reader.ReadToEndAsync();
+                return JsonConvert.DeserializeObject<Report>(json);
+            }
+        }
+
+        private async Task<string> CreateReportFileAsync(DriveService driveService, string parentFolderId, Report report, CancellationToken cancellationToken)
+        {
+            var json = JsonConvert.SerializeObject(report, Formatting.Indented);
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+            {
+                Name = "report.json",
+                MimeType = "application/json",
+                Parents = [parentFolderId]
+            };
+
+            using (var stream = new MemoryStream(bytes))
+            {
+                var request = driveService.Files.Create(fileMetadata, stream, "application/json");
+                request.Fields = "id";
+                var file = await request.UploadAsync(cancellationToken);
+
+                if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
+                {
+                    throw new Exception("Failed to upload report.json file");
+                }
+
+                return request.ResponseBody.Id;
+            }
+        }
+
+        private async Task UpdateReportFileAsync(DriveService driveService, string fileId, Report report, CancellationToken cancellationToken)
+        {
+            var json = JsonConvert.SerializeObject(report, Formatting.Indented);
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            var fileMetadata = new Google.Apis.Drive.v3.Data.File();
+
+            using (var stream = new MemoryStream(bytes))
+            {
+                var request = driveService.Files.Update(fileMetadata, fileId, stream, "application/json");
+                var file = await request.UploadAsync(cancellationToken);
+
+                if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
+                {
+                    throw new Exception("Failed to update report.json file");
+                }
+            }
+        }
+
+        public async Task UpdateImageIndicesAsync(string accessToken, string addressFolderId, List<Controllers.ImageIndexUpdateRequest> indexUpdates, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    // Get all items in the address folder
+                    var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                    // Find "2. Bewerkt" subfolder
+                    var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                        item.IsFolder && item.Name == "2. Bewerkt");
+
+                    if (bewerktFolder == null)
+                    {
+                        throw new Exception($"Subfolder '2. Bewerkt' not found in folder {addressFolderId}");
+                    }
+
+                    string bewerktFolderId = bewerktFolder.Id;
+
+                    // Get all items in "2. Bewerkt" folder
+                    var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                    // Look for report.json file
+                    var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                        !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                    if (reportFile == null)
+                    {
+                        throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                    }
+
+                    // Read existing report
+                    var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                    // Update indices
+                    foreach (var update in indexUpdates)
+                    {
+                        var image = report.Images.FirstOrDefault(img => img.Id == update.Id);
+                        if (image != null)
+                        {
+                            image.Index = update.Index;
+                        }
+                    }
+
+                    // Save updated report
+                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating image indices for folder ID: {addressFolderId}", ex);
+            }
+        }
+
+        public async Task ToggleImageExclusionAsync(string accessToken, string imageId, bool exclude, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    // Get the image file metadata to find its parent folder
+                    var imageRequest = driveService.Files.Get(imageId);
+                    imageRequest.Fields = "id, name, parents";
+                    var imageFile = await imageRequest.ExecuteAsync(cancellationToken);
+
+                    if (imageFile.Parents == null || !imageFile.Parents.Any())
+                    {
+                        throw new Exception($"HeatScanImage with ID {imageId} has no parent folder");
+                    }
+
+                    // Get the "2. Bewerkt" folder ID (parent of the image)
+                    string bewerktFolderId = imageFile.Parents.First();
+
+                    // Get all items in "2. Bewerkt" folder
+                    var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                    // Look for report.json file
+                    var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                        !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                    if (reportFile == null)
+                    {
+                        throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                    }
+
+                    // Read existing report
+                    var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                    // Find and update the image's ExcludeFromReport property
+                    var image = report.Images.FirstOrDefault(img => img.Id == imageId);
+                    if (image == null)
+                    {
+                        throw new Exception($"HeatScanImage with ID {imageId} not found in report");
+                    }
+
+                    image.ExcludeFromReport = exclude;
+
+                    // Save updated report
+                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error toggling image {imageId} exclusion in report", ex);
+            }
+        }
+
+        public async Task UpdateImagePropertiesAsync(string accessToken, string imageId, string comment, bool outdoor, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    // Get the image file metadata to find its parent folder
+                    var imageRequest = driveService.Files.Get(imageId);
+                    imageRequest.Fields = "id, name, parents";
+                    var imageFile = await imageRequest.ExecuteAsync(cancellationToken);
+
+                    if (imageFile.Parents == null || !imageFile.Parents.Any())
+                    {
+                        throw new Exception($"HeatScanImage with ID {imageId} has no parent folder");
+                    }
+
+                    // Get the "2. Bewerkt" folder ID (parent of the image)
+                    string bewerktFolderId = imageFile.Parents.First();
+
+                    // Get all items in "2. Bewerkt" folder
+                    var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                    // Look for report.json file
+                    var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                        !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                    if (reportFile == null)
+                    {
+                        throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                    }
+
+                    // Read existing report
+                    var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                    // Find and update the image's properties
+                    var image = report.Images.FirstOrDefault(img => img.Id == imageId);
+                    if (image == null)
+                    {
+                        throw new Exception($"HeatScanImage with ID {imageId} not found in report");
+                    }
+
+                    image.Comments = comment;
+                    image.Outdoor = outdoor;
+
+                    // Save updated report
+                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating image {imageId} properties in report", ex);
+            }
+        }
+
+        public async Task UpdateImageCalibrationAsync(string accessToken, string imageId, double temperatureMin, double temperatureMax, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    // Get the image file metadata to find its parent folder
+                    var imageRequest = driveService.Files.Get(imageId);
+                    imageRequest.Fields = "id, name, parents";
+                    var imageFile = await imageRequest.ExecuteAsync(cancellationToken);
+
+                    if (imageFile.Parents == null || !imageFile.Parents.Any())
+                    {
+                        throw new Exception($"HeatScanImage with ID {imageId} has no parent folder");
+                    }
+
+                    // Get the "2. Bewerkt" folder ID (parent of the image)
+                    string bewerktFolderId = imageFile.Parents.First();
+
+                    // Get all items in "2. Bewerkt" folder
+                    var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                    // Look for report.json file
+                    var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                        !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                    if (reportFile == null)
+                    {
+                        throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                    }
+
+                    // Read existing report
+                    var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                    // Find and update the image's calibration
+                    var image = report.Images.FirstOrDefault(img => img.Id == imageId);
+                    if (image == null)
+                    {
+                        throw new Exception($"HeatScanImage with ID {imageId} not found in report");
+                    }
+
+                    image.TemperatureMin = temperatureMin;
+                    image.TemperatureMax = temperatureMax;
+
+                    // Save updated report
+                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating image {imageId} calibration in report", ex);
+            }
+        }
+
+        public async Task UpdateReportDetailsAsync(string accessToken, string folderId, Controllers.ReportDetailsUpdateRequest reportDetails, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using (var driveService = CreateDriveService(accessToken))
+                {
+                    // Get all items in the folder
+                    var folderItems = await GetChildrenAsync(driveService, folderId, cancellationToken);
+
+                    // Find "2. Bewerkt" subfolder
+                    var bewerktFolder = folderItems.FirstOrDefault(item =>
+                        item.IsFolder && item.Name == "2. Bewerkt");
+
+                    if (bewerktFolder == null)
+                    {
+                        throw new Exception($"Subfolder '2. Bewerkt' not found in folder {folderId}");
+                    }
+
+                    string bewerktFolderId = bewerktFolder.Id;
+
+                    // Get all items in "2. Bewerkt" folder
+                    var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                    // Look for report.json file
+                    var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                        !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                    if (reportFile == null)
+                    {
+                        throw new Exception($"report.json not found in '2. Bewerkt' folder");
+                    }
+
+                    // Read existing report
+                    var report = await ReadReportFileAsync(driveService, reportFile.Id, cancellationToken);
+
+                    // Update report details
+                    if (!string.IsNullOrWhiteSpace(reportDetails.Address))
+                    {
+                        report.Address = reportDetails.Address;
+                    }
+
+                    if (reportDetails.Temperature.HasValue)
+                    {
+                        report.Temperature = reportDetails.Temperature.Value;
+                    }
+
+                    if (reportDetails.WindSpeed.HasValue)
+                    {
+                        report.WindSpeed = reportDetails.WindSpeed.Value;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(reportDetails.WindDirection))
+                    {
+                        report.WindDirection = reportDetails.WindDirection;
+                    }
+
+                    if (reportDetails.HoursOfSunshine.HasValue)
+                    {
+                        report.HoursOfSunshine = reportDetails.HoursOfSunshine.Value;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(reportDetails.FrontDoorDirection))
+                    {
+                        report.FrontDoorDirection = reportDetails.FrontDoorDirection;
+                    }
+
+                    // Save updated report
+                    await UpdateReportFileAsync(driveService, reportFile.Id, report, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating report details for folder ID: {folderId}", ex);
+            }
+        }
+
+        internal async Task SaveFile(string imageFileId, byte[] data, string accessToken, CancellationToken cancellationToken)
+        {
+            // Upload updated file content
+            using (var driveService = CreateDriveService(accessToken))
+            {
+                using (var stream = new MemoryStream(data))
+                {
+                    var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), imageFileId, stream, null);
+                    await request.UploadAsync(cancellationToken);
+                }
+            }
+        }
+    }
+}

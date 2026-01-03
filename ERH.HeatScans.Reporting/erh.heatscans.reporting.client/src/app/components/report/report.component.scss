@@ -1,0 +1,273 @@
+@import '../../../styles/variables-mixins';
+
+.report-container {
+  padding: $spacing-lg;
+  margin: 0 auto;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  border-bottom: 2px solid $color-gray-300;
+}
+
+.btn-back {
+  @include button-base;
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  font-size: $font-size-base;
+  transition: background-color $transition-base;
+
+  &:hover {
+    background-color: #5a6268;
+  }
+}
+
+.report-header h2 {
+  margin: 0;
+  color: $color-gray-950;
+  font-size: $font-size-3xl;
+}
+
+.menu-bar {
+  @include card-base;
+  background: $bg-gradient-light;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.menu-section {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.menu-section-title {
+  margin: 0;
+  color: $color-gray-900;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.menu-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.menu-btn {
+  @include button-base;
+  @include button-hover-lift;
+  padding: 10px 20px;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  box-shadow: $shadow-base;
+  border-radius: $border-radius-md;
+}
+
+.menu-btn-outdoor {
+  @include button-gradient($color-primary-blue-dark, $color-primary-blue-darker, $color-primary-blue-darker, $color-primary-blue-darker);
+}
+
+.menu-btn-indoor {
+  @include button-gradient($color-orange, $color-orange-dark, $color-orange-dark, $color-orange-darker);
+}
+
+.menu-btn-edit {
+  @include button-gradient($color-purple, $color-purple-dark, $color-purple-dark, $color-purple);
+}
+
+.setup-status {
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  border-radius: $border-radius-lg;
+  text-align: center;
+
+  &.loading {
+    background-color: $color-info-bg;
+    border: 1px solid $color-primary-blue;
+    @include flex-center;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  &.error {
+    background-color: $color-error-light-bg;
+    border: 1px solid $color-red;
+    color: $color-error;
+  }
+}
+
+.spinner {
+  @include spinner(40px, 4px, $color-primary-blue);
+}
+
+.spinner-small {
+  @include spinner(30px, 3px, $color-primary-blue);
+}
+
+.btn-retry {
+  @include button-base;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: $color-red;
+  color: white;
+  font-size: $font-size-base;
+  transition: background-color $transition-base;
+
+  &:hover {
+    background-color: $color-red-dark;
+  }
+}
+
+.report-content {
+  @include flex-column;
+  gap: 30px;
+}
+
+.map-section,
+.info-section,
+.images-section {
+  @include card-base;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: $spacing-lg;
+    color: $color-gray-950;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.info-item {
+  padding: 10px 0;
+  border-bottom: 1px solid $color-gray-100;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  strong {
+    color: $color-gray-900;
+    margin-right: 10px;
+  }
+}
+
+.images-grid {
+  @include flex-column;
+  gap: $spacing-lg;
+  margin-top: 15px;
+}
+
+.image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: $color-white;
+  border: 2px solid transparent;
+  border-radius: $border-radius-lg;
+  transition: all $transition-base;
+  cursor: move;
+
+  &:hover {
+    background-color: $color-gray-50;
+    border-color: $color-gray-300;
+  }
+
+  &.dragging {
+    opacity: 0.5;
+    background-color: $color-info-bg;
+    border-color: $color-primary-blue;
+  }
+
+  app-image-card {
+    flex: 1;
+  }
+}
+
+.drag-handle {
+  font-size: $font-size-2xl;
+  color: $color-gray-600;
+  cursor: grab;
+  user-select: none;
+  padding: 5px;
+  line-height: 1;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.update-status {
+  @include flex-row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: $color-info-bg;
+  border: 1px solid $color-primary-blue;
+  border-radius: $border-radius-base;
+  margin-bottom: 15px;
+  font-size: $font-size-base;
+  color: $color-info;
+}
+
+.no-images {
+  text-align: center;
+  padding: 40px;
+  color: $color-gray-600;
+  font-style: italic;
+  background-color: $color-gray-50;
+  border-radius: $border-radius-lg;
+  border: 1px dashed #ddd;
+
+  p {
+    margin: 0;
+    font-size: $font-size-lg;
+  }
+}
+
+.section-description {
+  margin: 0 0 15px 0;
+  color: $color-gray-800;
+  font-size: $font-size-base;
+  font-style: italic;
+}
+
+@include mobile {
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .report-content {
+    gap: $spacing-lg;
+  }
+
+  .menu-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .menu-section-title {
+    min-width: auto;
+  }
+
+  .menu-buttons {
+    flex-direction: column;
+  }
+
+  .menu-btn {
+    width: 100%;
+  }
+}

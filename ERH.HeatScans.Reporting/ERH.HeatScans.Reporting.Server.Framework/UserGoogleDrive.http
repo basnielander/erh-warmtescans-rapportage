@@ -3,7 +3,7 @@
 ## Setup Address Folder (from Angular app - proxied)
 # When calling from Angular app running on port 49806, use the proxied path
 
-POST {{BaseUrl}}/api/user/googledrive?addressFolderId={{AddressFolderId}}
+POST {{BaseUrl}}/api/folders-and-files?addressFolderId={{AddressFolderId}}
 Authorization: Bearer {{AccessToken}}
 Content-Type: application/json
 
@@ -12,7 +12,7 @@ Content-Type: application/json
 ### Get Folder Structure
 # Gets the hierarchical folder and file structure from Google Drive
 
-GET {{BaseUrl}}/api/user/googledrive/structure
+GET {{BaseUrl}}/api/folders-and-files/structure
 Authorization: Bearer {{AccessToken}}
 
 ###
@@ -20,7 +20,7 @@ Authorization: Bearer {{AccessToken}}
 ### Get Files (Flat List)
 # Gets a flat list of all files from Google Drive folder
 
-GET {{BaseUrl}}/api/user/googledrive/files
+GET {{BaseUrl}}/api/folders-and-files/files
 Authorization: Bearer {{AccessToken}}
 
 ###
@@ -28,7 +28,17 @@ Authorization: Bearer {{AccessToken}}
 ### Get Files from Specific Folder
 # Gets files from a specific folder ID
 
-GET {{BaseUrl}}/api/user/googledrive/files?folderId={{AddressFolderId}}
+GET {{BaseUrl}}/api/folders-and-files/files?folderId={{AddressFolderId}}
+Authorization: Bearer {{AccessToken}}
+
+###
+
+### Get Image by File ID
+# Gets a specific image file by its file ID
+
+@ImageFileId=1WhM09OSSWFh8MZPPkxYjR-J6CdKQzui5
+
+GET {{BaseUrl}}/api/image?fileId={{ImageFileId}}
 Authorization: Bearer {{AccessToken}}
 
 ###

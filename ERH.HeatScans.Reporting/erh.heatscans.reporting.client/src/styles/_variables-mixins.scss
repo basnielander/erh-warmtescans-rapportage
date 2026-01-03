@@ -1,0 +1,327 @@
+// ============================================
+// SCSS Variables - Colors
+// ============================================
+
+// Primary Colors
+$color-primary-blue: #4285f4;
+$color-primary-blue-dark: #1976d2;
+$color-primary-blue-darker: #1565c0;
+
+$color-orange: #ff9800;
+$color-orange-dark: #f57c00;
+$color-orange-darker: #e65100;
+
+$color-purple: #667eea;
+$color-purple-dark: #764ba2;
+
+$color-green: #4caf50;
+$color-green-dark: #45a049;
+$color-green-darker: #388e3c;
+$color-green-darkest: #2e7d32;
+
+$color-red: #f44336;
+$color-red-dark: #d32f2f;
+$color-red-darker: #c62828;
+
+$color-yellow: #f4b400;
+$color-yellow-light: #ffe8a3;
+$color-yellow-lighter: #fffbf0;
+$color-yellow-lightest: #fff9e6;
+
+// Neutral Colors
+$color-gray-50: #f8f9fa;
+$color-gray-100: #f5f5f5;
+$color-gray-200: #e8e8e8;
+$color-gray-300: #e0e0e0;
+$color-gray-400: #d0d0d0;
+$color-gray-500: #bdbdbd;
+$color-gray-600: #999;
+$color-gray-700: #888;
+$color-gray-800: #666;
+$color-gray-900: #555;
+$color-gray-950: #333;
+
+$color-white: #ffffff;
+$color-black: #000000;
+
+// Semantic Colors
+$color-error: #c33;
+$color-error-bg: #fee;
+$color-error-light-bg: #fef0f0;
+
+$color-warning: #e65100;
+$color-warning-bg: #fff3e0;
+$color-warning-light-bg: #ffebee;
+
+$color-info: #1967d2;
+$color-info-bg: #e8f0fe;
+
+$color-success: $color-green;
+$color-success-light: #c8e6c9;
+$color-success-bg: #e8f5e9;
+
+// Background Colors
+$bg-gradient-gray: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+$bg-gradient-light: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+$bg-gradient-orange: linear-gradient(135deg, #fff3e0 0%, #ffb74d 100%);
+$bg-gradient-blue: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%);
+
+// ============================================
+// SCSS Variables - Spacing
+// ============================================
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// ============================================
+// SCSS Variables - Typography
+// ============================================
+$font-size-xs: 11px;
+$font-size-sm: 12px;
+$font-size-base: 14px;
+$font-size-md: 15px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-2xl: 20px;
+$font-size-3xl: 24px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ============================================
+// SCSS Variables - Border Radius
+// ============================================
+$border-radius-sm: 3px;
+$border-radius-base: 4px;
+$border-radius-md: 6px;
+$border-radius-lg: 8px;
+$border-radius-xl: 10px;
+$border-radius-2xl: 12px;
+$border-radius-3xl: 16px;
+$border-radius-full: 50%;
+
+// ============================================
+// SCSS Variables - Shadows
+// ============================================
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+$shadow-base: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+$shadow-hover-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+$shadow-hover-base: 0 4px 8px rgba(0, 0, 0, 0.15);
+$shadow-hover-lg: 0 6px 16px rgba(0, 0, 0, 0.15);
+
+// ============================================
+// SCSS Variables - Transitions
+// ============================================
+$transition-fast: 0.2s ease;
+$transition-base: 0.3s ease;
+$transition-slow: 0.5s ease;
+
+// ============================================
+// SCSS Variables - Breakpoints
+// ============================================
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 1024px;
+$breakpoint-desktop: 1280px;
+
+// ============================================
+// SCSS Mixins - Layout
+// ============================================
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+// ============================================
+// SCSS Mixins - Buttons
+// ============================================
+
+@mixin button-base {
+  border: none;
+  border-radius: $border-radius-base;
+  cursor: pointer;
+  transition: all $transition-fast;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  white-space: nowrap;
+  font-weight: $font-weight-medium;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-hover-lift {
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: $shadow-hover-base;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+@mixin button-gradient($color-start, $color-end, $hover-start, $hover-end) {
+  background: linear-gradient(135deg, $color-start 0%, $color-end 100%);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, $hover-start 0%, $hover-end 100%);
+  }
+}
+
+// ============================================
+// SCSS Mixins - Cards
+// ============================================
+
+@mixin card-base {
+  background: $color-white;
+  border: 1px solid $color-gray-300;
+  border-radius: $border-radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-base;
+}
+
+@mixin card-hover {
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+// ============================================
+// SCSS Mixins - Forms
+// ============================================
+
+@mixin form-input-base {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid $color-gray-400;
+  border-radius: $border-radius-lg;
+  font-size: $font-size-md;
+  font-family: inherit;
+  color: $color-gray-950;
+  transition: all $transition-fast;
+  background: $color-white;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary-blue;
+    box-shadow: 0 0 0 3px rgba($color-primary-blue, 0.1);
+  }
+
+  &:disabled {
+    background-color: $color-gray-50;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &::placeholder {
+    color: $color-gray-600;
+  }
+}
+
+// ============================================
+// SCSS Mixins - Spinner/Loading
+// ============================================
+
+@mixin spinner($size: 40px, $border-width: 4px, $color: $color-primary-blue) {
+  border: $border-width solid #f3f3f3;
+  border-top: $border-width solid $color;
+  border-radius: $border-radius-full;
+  width: $size;
+  height: $size;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// ============================================
+// SCSS Mixins - Responsive
+// ============================================
+
+@mixin mobile {
+  @media (max-width: $breakpoint-mobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+// ============================================
+// SCSS Mixins - Text
+// ============================================
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ============================================
+// SCSS Mixins - Scrollbar
+// ============================================
+
+@mixin custom-scrollbar($width: 10px, $track-color: #f1f1f1, $thumb-color: #888, $thumb-hover-color: #555) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: $width / 2;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $width / 2;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: $thumb-hover-color;
+  }
+}

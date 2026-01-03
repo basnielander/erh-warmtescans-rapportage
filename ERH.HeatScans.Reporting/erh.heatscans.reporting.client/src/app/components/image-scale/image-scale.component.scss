@@ -1,0 +1,125 @@
+.image-scale-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  padding: 0;
+  width: fit-content;
+  height: 100%;
+}
+
+.temperature-display {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.temperature-max {
+  color: #e65100;
+}
+
+.temperature-min {
+  color: #01579b;
+}
+
+.scale-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.scale-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: 30px;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Empty state styles */
+.image-scale-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 120px;
+  height: 100%;
+}
+
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .image-scale-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .temperature-display {
+    font-size: 14px;
+    padding: 6px 12px;
+    min-width: 70px;
+  }
+
+  .scale-image-container {
+    width: 100%;
+  }
+
+  .image-scale-empty {
+    width: 100%;
+    min-width: 100px;
+    padding: 15px;
+  }
+
+  .empty-icon {
+    font-size: 24px;
+  }
+
+  .empty-text {
+    font-size: 11px;
+  }
+}
+
+/* Accessibility - high contrast mode */
+@media (prefers-contrast: high) {
+  .image-scale-container {
+    border-width: 2px;
+    border-color: #000;
+  }
+
+  .temperature-max,
+  .temperature-min {
+    border-width: 3px;
+    font-weight: 700;
+  }
+
+  .image-scale-empty {
+    border-width: 2px;
+    border-color: #666;
+  }
+}

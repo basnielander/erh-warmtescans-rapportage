@@ -1,0 +1,93 @@
+@import '../../../styles/variables-mixins';
+
+.user-info {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  position: absolute;
+  width: 200px;
+  top: 1rem;
+  right: 1rem;
+  flex-direction: column;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-full;
+  border: 2px solid $color-primary-blue;
+  cursor: pointer;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.user-modal {
+  position: absolute;
+  top: 100%;
+  margin-top: 0.5rem;
+  background: $color-white;
+  border: 1px solid $color-gray-400;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  padding: 1rem;
+  z-index: 1000;
+  animation: slideDown $transition-fast;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-details {
+  text-align: left;
+}
+
+.user-name {
+  font-weight: $font-weight-semibold;
+  color: $color-gray-900;
+  margin: 0;
+}
+
+.user-email {
+  font-size: $font-size-sm;
+  color: $color-gray-700;
+  margin: 0;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: $border-radius-lg;
+  font-size: 1rem;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-secondary {
+  background: $color-gray-400;
+  color: $color-gray-900;
+
+  &:hover {
+    background: $color-gray-700;
+    color: $color-white;
+  }
+}

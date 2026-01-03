@@ -1,7 +1,23 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="ERH.FLIR/ERH.FLIR.csproj" Id="1dc4cf1a-ac29-4acd-97ba-d228dc353bbe">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
   <Project Path="erh.heatscans.reporting.client/erh.heatscans.reporting.client.esproj">
     <Build />
     <Deploy />
   </Project>
-  <Project Path="ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj" Id="8b5e5f7d-9c4a-4e2b-8f3d-1a2b3c4d5e6f" />
+  <Project Path="ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj" Id="8b5e5f7d-9c4a-4e2b-8f3d-1a2b3c4d5e6f">
+    <Platform Solution="Debug|x64" Project="x64" />
+  </Project>
+  <Project Path="ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.csproj" Id="1149835a-85e5-4d0f-b3e5-4d1753a06aa3">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
 </Solution>

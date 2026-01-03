@@ -1,0 +1,161 @@
+<div class="report-editor-container">
+  <div class="editor-sections">
+    <!-- Address Section -->
+    <div class="editor-section">
+      <div class="section-header">
+        <span class="section-icon">📍</span>
+        <h3 class="section-title">Location Information</h3>
+      </div>
+      
+      <div class="form-group">
+        <label for="address" class="form-label required">
+          Address
+        </label>
+        <input
+          id="address"
+          type="text"
+          [value]="address()"
+          (input)="onAddressChange($any($event.target).value)"
+          [disabled]="isSaving()"
+          class="form-input"
+          placeholder="Enter the property address"
+          required
+        />
+        <span class="field-hint">Full address of the property being surveyed</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="frontDoorDirection" class="form-label">
+          Front Door Direction
+        </label>
+        <select
+          id="frontDoorDirection"
+          [(ngModel)]="frontDoorDirection"
+          [disabled]="isSaving()"
+          class="form-select">
+          <option value="">Select direction...</option>
+          <option *ngFor="let option of doorDirectionOptions" [value]="option.value">
+            {{ option.icon }} {{ option.label }}
+          </option>
+        </select>
+        <span class="field-hint">Cardinal direction the front door faces</span>
+      </div>
+    </div>
+    
+    <!-- Weather Conditions Section -->
+    <div class="editor-section">
+      <div class="section-header">
+        <span class="section-icon">🌤️</span>
+        <h3 class="section-title">Weather Conditions</h3>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="temperature" class="form-label">
+            🌡️ Temperature (°C)
+          </label>
+          <input
+            id="temperature"
+            type="number"
+            step="0.1"
+            [value]="temperature()"
+            (input)="onTemperatureChange($any($event.target).value)"
+            [disabled]="isSaving()"
+            class="form-input"
+            placeholder="e.g., 12.5"
+            min="-50"
+            max="60"
+          />
+          <span class="field-hint">Outdoor temperature during scan (-50°C to 60°C)</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="hoursOfSunshine" class="form-label">
+            ☀️ Hours of Sunshine
+          </label>
+          <input
+            id="hoursOfSunshine"
+            type="number"
+            step="0.5"
+            [value]="hoursOfSunshine()"
+            (input)="onHoursOfSunshineChange($any($event.target).value)"
+            [disabled]="isSaving()"
+            class="form-input"
+            placeholder="e.g., 6.5"
+            min="0"
+            max="24"
+          />
+          <span class="field-hint">Sunshine duration on scan day (0-24 hours)</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="windSpeed" class="form-label">
+            💨 Wind Speed (km/h)
+          </label>
+          <input
+            id="windSpeed"
+            type="number"
+            step="0.1"
+            [value]="windSpeed()"
+            (input)="onWindSpeedChange($any($event.target).value)"
+            [disabled]="isSaving()"
+            class="form-input"
+            placeholder="e.g., 15.5"
+            min="0"
+          />
+          <span class="field-hint">Wind speed during scan</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="windDirection" class="form-label">
+            🧭 Wind Direction
+          </label>
+          <select
+            id="windDirection"
+            [(ngModel)]="windDirection"
+            [disabled]="isSaving()"
+            class="form-select">
+            <option value="">Select direction...</option>
+            <option *ngFor="let option of windDirectionOptions" [value]="option.value">
+              {{ option.icon }} {{ option.label }}
+            </option>
+          </select>
+          <span class="field-hint">Cardinal direction of wind</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Weather Impact Info -->
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-content">
+        <strong>Weather Impact on Thermal Imaging</strong>
+        <ul>
+          <li>Wind can affect surface temperatures and create false positives</li>
+          <li>Recent sunshine can heat surfaces, masking thermal issues</li>
+          <li>Temperature affects the thermal gradient between inside and outside</li>
+          <li>Best conditions: Overcast day, no recent sun, minimal wind</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Action Buttons -->
+  <div class="editor-actions">
+    <button 
+      class="btn-save" 
+      (click)="onSave()"
+      [disabled]="isSaving() || !isValid()">
+      <span *ngIf="!isSaving()">✅ Save Report Details</span>
+      <span *ngIf="isSaving()">⏳ Saving...</span>
+    </button>
+    <button 
+      class="btn-cancel" 
+      (click)="onCancel()"
+      [disabled]="isSaving()">
+      ❌ Cancel
+    </button>
+  </div>
+</div>

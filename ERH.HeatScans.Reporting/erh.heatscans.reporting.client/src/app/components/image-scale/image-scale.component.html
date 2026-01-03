@@ -1,0 +1,29 @@
+<div class="image-scale-container" *ngIf="hasValidScale()">
+  <!-- Maximum Temperature -->
+  <div class="temperature-display temperature-max">
+    {{ formatTemperature(imageScale()?.maxTemperature) }}
+  </div>
+
+  <!-- Scale Image -->
+  <div class="scale-image-container">
+    <img 
+      *ngIf="getImageUrl()"
+      [src]="getImageUrl()!" 
+      [alt]="'Temperature scale from ' + formatTemperature(imageScale()?.minTemperature) + ' to ' + formatTemperature(imageScale()?.maxTemperature)"
+      class="scale-image"
+    />
+  </div>
+
+  <!-- Minimum Temperature -->
+  <div class="temperature-display temperature-min">
+    {{ formatTemperature(imageScale()?.minTemperature) }}
+  </div>
+</div>
+
+<!-- Fallback when no scale data is available -->
+<div class="image-scale-empty" *ngIf="!hasValidScale()">
+  <div class="empty-message">
+    <span class="empty-icon">📊</span>
+    <span class="empty-text">No scale data</span>
+  </div>
+</div>

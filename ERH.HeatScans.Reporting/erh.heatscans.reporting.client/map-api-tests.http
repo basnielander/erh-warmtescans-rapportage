@@ -1,0 +1,23 @@
+### Get Map Image - Pruimengaarde 8, Houten
+GET https://localhost:44300/api/maps/image?address=Pruimengaarde 8, Houten, Netherlands&zoom=16&size=600x400
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
+
+### Get Map Image - Amsterdam
+GET https://localhost:44300/api/maps/image?address=Amsterdam, Netherlands&zoom=12&size=800x600
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
+
+### Get Map Image - Rotterdam with higher zoom
+GET https://localhost:44300/api/maps/image?address=Rotterdam Centraal, Netherlands&zoom=18&size=1024x768
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
+
+### Get Map Image - Default size and zoom
+GET https://localhost:44300/api/maps/image?address=Utrecht, Netherlands
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
