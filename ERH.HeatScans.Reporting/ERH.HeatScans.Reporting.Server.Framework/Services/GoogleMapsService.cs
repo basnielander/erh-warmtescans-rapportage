@@ -23,14 +23,18 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
             var response = client.SearchText(request, new Google.Api.Gax.Grpc.CallSettings(cancellationToken, null, null, header => header.Add(new("X-Goog-FieldMask", "*")), null, null, null, null));
             if (response?.Places == null || response.Places.Count == 0)
+            {
                 throw new ArgumentException("Address not found");
+            }
 
             var place = response.Places[0];
             LatLng latLng = place.Location;
 
             // Validate coordinates
             if (latLng == null || (latLng.Latitude == 0 && latLng.Longitude == 0))
+            {
                 throw new ArgumentException("Address coordinates not found");
+            }
 
             // Build Google Static Maps URL
             var marker = $"color:red|{latLng.Latitude},{latLng.Longitude}";
@@ -42,7 +46,9 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
             var httpResponse = await httpClient.GetAsync(url, cancellationToken);
             if (!httpResponse.IsSuccessStatusCode)
+            {
                 throw new HttpRequestException($"Failed to download map image: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
+            }
 
             return await httpResponse.Content.ReadAsByteArrayAsync();
         }

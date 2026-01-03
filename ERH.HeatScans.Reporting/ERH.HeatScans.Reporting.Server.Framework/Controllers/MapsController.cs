@@ -24,7 +24,9 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         public async Task<IHttpActionResult> GetStaticMapImage(string address, int zoom = 19, string size = "600x400", CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(address))
+            {
                 return BadRequest("Address is required.");
+            }
 
             if (!address.Contains(","))
             {
@@ -41,7 +43,10 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(apiKey))
+            {
                 return InternalServerError(new InvalidOperationException("Google Maps API key is missing in configuration (appSettings: GoogleMapsApiKey) and environment variables."));
+            }
+
             try
             {
                 var bytes = await mapsService.GetStaticMapImage(address, zoom, size, apiKey, cancellationToken);

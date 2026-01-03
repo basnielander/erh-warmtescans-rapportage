@@ -1,6 +1,6 @@
+using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System.Web;
 using System.Web.Http;
-using ERH.HeatScans.Reporting.Server.Framework.Services;
 
 namespace ERH.HeatScans.Reporting.Server.Framework;
 

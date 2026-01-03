@@ -6,7 +6,7 @@ namespace ERH.FLIR;
 
 public class Overlay
 {
-    private readonly static int fontSize = 8;
+    private static readonly int fontSize = 8;
 
     public Overlay(ThermalImageFile image, bool includeSpotName)
     {
@@ -155,7 +155,7 @@ public class Overlay
         DrawLineSelection(line, graphics);
     }
 
-    private ThermalImageFile _image;
+    private readonly ThermalImageFile _image;
     private readonly bool includeSpotName;
     protected Pen _pen = Pens.White;
     protected Brush _textBrush = Brushes.White;

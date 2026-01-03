@@ -4,6 +4,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
   <Project Path="ERH.FLIR/ERH.FLIR.csproj" Id="1dc4cf1a-ac29-4acd-97ba-d228dc353bbe">
     <Platform Solution="*|x64" Project="x64" />
   </Project>
