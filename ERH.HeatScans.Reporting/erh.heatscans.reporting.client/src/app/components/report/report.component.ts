@@ -7,7 +7,7 @@ import { BatchOutdoorCalibrationComponent } from '../batch-outdoor-calibration/b
 import { BatchIndoorCalibrationComponent } from '../batch-indoor-calibration/batch-indoor-calibration.component';
 import { ModalComponent } from '../modal/modal.component';
 import { ReportDetailsEditorComponent } from '../report-details-editor/report-details-editor.component';
-import { GoogleDriveService } from '../../services/folders-and-files.service';
+import { FoldersAndFileService } from '../../services/folders-and-files.service';
 import { Report } from '../../models/report.model';
 import { ImageInfo } from "../../models/image-info.model";
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -77,7 +77,7 @@ export class ReportComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private driveService: GoogleDriveService,
+    private driveService: FoldersAndFileService,
     private reportService: ReportService
   ) {
     this.params.set(toSignal(this.route?.paramMap)() ?? null);

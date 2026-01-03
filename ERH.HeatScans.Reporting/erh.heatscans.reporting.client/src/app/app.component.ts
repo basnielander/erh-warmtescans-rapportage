@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { GoogleDriveService } from './services/folders-and-files.service';
+import { FoldersAndFileService } from './services/folders-and-files.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +20,7 @@ export class AppComponent {
 
   constructor(
     public authService: AuthService,
-    public driveService: GoogleDriveService
+    public foldersAndFileService: FoldersAndFileService
   ) {
     this.user = this.authService.user;
     this.isAuthenticated = this.authService.isAuthenticated;

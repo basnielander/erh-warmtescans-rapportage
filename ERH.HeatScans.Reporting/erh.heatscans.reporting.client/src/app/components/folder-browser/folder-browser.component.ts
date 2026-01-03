@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { GoogleDriveService } from '../../services/folders-and-files.service';
+import { FoldersAndFileService } from '../../services/folders-and-files.service';
 import { GoogleDriveItem } from '../../models/google-drive.model';
 
 @Component({
@@ -12,14 +12,17 @@ import { GoogleDriveItem } from '../../models/google-drive.model';
   styleUrl: './folder-browser.component.css'
 })
 export class FolderBrowserComponent implements OnInit {
-  // State signals
-  folderStructure = signal<GoogleDriveItem | null>(null);
-  isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
+  // Use state from service
+  folderStructure = computed(() => this.googleDriveService.folderStructure());
+  isLoading = computed(() => this.googleDriveService.isLoading());
+  error = computed(() => this.googleDriveService.error());
+  hasFolderStructure = computed(() => this.googleDriveService.hasFolderStructure());
+  
+  // Local UI state
   expandedFolders = signal<Set<string>>(new Set());
 
   constructor(
-    private googleDriveService: GoogleDriveService,
+    private googleDriveService: FoldersAndFileService,
     private router: Router
   ) {}
 
@@ -28,12 +31,25 @@ export class FolderBrowserComponent implements OnInit {
   }
 
   async loadFolderStructure(): Promise<void> {
-    this.isLoading.set(true);
-    this.error.set(null);
+    // Check if folder structure is already available in state
+    if (this.hasFolderStructure()) {
+      console.log('Using folder structure from state');
+      const structure = this.folderStructure();
+      // Expand root folder by default if not already expanded
+      if (structure?.id && !this.expandedFolders().has(structure.id)) {
+        this.expandedFolders.update(folders => {
+          const newSet = new Set(folders);
+          newSet.add(structure.id);
+          return newSet;
+        });
+      }
+      return;
+    }
 
+    // Only fetch from API if state is empty
     try {
+      console.log('Fetching folder structure from API');
       const data = await this.googleDriveService.getFolderStructure();
-      this.folderStructure.set(data);
       // Expand root folder by default
       if (data?.id) {
         this.expandedFolders.update(folders => {
@@ -43,10 +59,24 @@ export class FolderBrowserComponent implements OnInit {
         });
       }
     } catch (err: any) {
-      this.error.set('Failed to load folder structure: ' + (err.message || 'Unknown error'));
       console.error('Error loading folder structure:', err);
-    } finally {
-      this.isLoading.set(false);
+    }
+  }
+
+  async refreshFolderStructure(): Promise<void> {
+    try {
+      console.log('Fetching folder structure from API');
+      const data = await this.googleDriveService.getFolderStructure();
+      // Expand root folder by default
+      if (data?.id) {
+        this.expandedFolders.update(folders => {
+          const newSet = new Set(folders);
+          newSet.add(data.id);
+          return newSet;
+        });
+      }
+    } catch (err: any) {
+      console.error('Error loading folder structure:', err);
     }
   }
 

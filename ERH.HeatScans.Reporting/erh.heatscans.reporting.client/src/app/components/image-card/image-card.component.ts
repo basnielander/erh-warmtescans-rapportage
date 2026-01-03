@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ImageInfo } from "../../models/image-info.model";
 import { Image } from "../../models/image.model";
-import { GoogleDriveService } from '../../services/folders-and-files.service';
+import { FoldersAndFileService } from '../../services/folders-and-files.service';
 import { ImageService } from '../../services/image.service';
 import { ImageScaleComponent } from '../image-scale/image-scale.component';
 
@@ -35,7 +35,7 @@ export class ImageCardComponent implements OnInit {
   currentImage = signal<Image | null>(null);
 
   constructor(
-    private driveService: GoogleDriveService,
+    private driveService: FoldersAndFileService,
     private imageService: ImageService,
     private sanitizer: DomSanitizer
   ) {
