@@ -48,7 +48,8 @@ main {
 }
 
 .container {
-  max-width: 1200px;
+  min-width: 800px;
+  width: 90%;
   margin: 0 auto;
   background: white;
   border-radius: 12px;
