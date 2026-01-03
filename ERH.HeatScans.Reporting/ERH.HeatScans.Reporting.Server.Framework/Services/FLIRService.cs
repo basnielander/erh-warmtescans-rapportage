@@ -144,7 +144,14 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                     Name = spot.Name,
                     Temperature = spot.Temperature,
                     Point = new ImageSpotPoint() { X = spot.X, Y = spot.Y }
-                }).ToList()
+                }).ToList(),
+                Scale = image.ScaleImage != null ? new ImageScale()
+                {
+                    Data = image.ScaleImage.Data,
+                    MimeType = image.ScaleImage.MimeType,
+                    MinTemperature = image.ScaleImage.MinTemperature,
+                    MaxTemperature = image.ScaleImage.MaxTemperature
+                } : null
             };
         }
     }

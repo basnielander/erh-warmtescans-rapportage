@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace ERH.HeatScans.Reporting.Server.Framework.Models;
 
-namespace ERH.FLIR;
-
-[Serializable]
-public class HeatScanScale
+public class ImageScale
 {
     public byte[] Data { get; set; }
     public string MimeType { get; set; }

@@ -91,6 +91,24 @@ public class HeatScanImageService
         };
     }
 
+    private static HeatScanScale CreateThermalScaleImage(Stream imageStream)
+    {
+        using var thermalImage = CreateThermalImage(imageStream);
+
+        var bmp = thermalImage.Scale.Image;
+
+        using var ms = new MemoryStream();
+        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+
+        return new HeatScanScale()
+        {
+            Data = ms.ToArray(),
+            MimeType = "image/png",
+            MinTemperature = thermalImage.Scale.Range.Minimum,
+            MaxTemperature = thermalImage.Scale.Range.Maximum
+        };
+    }
+
     private static HeatScanImage SaveAndConvert(ThermalImageFile thermalImage)
     {
         using var thermalImageStream = new MemoryStream();
@@ -105,7 +123,8 @@ public class HeatScanImageService
             Data = thermalImageStream.ToArray(),
             MimeType = "image/jpeg",
             DateTaken = thermalImage.DateTaken,
-            Spots = [.. thermalImage.Measurements.MeasurementSpots.Select(ms => new Spot(ms))]
+            Spots = [.. thermalImage.Measurements.MeasurementSpots.Select(ms => new Spot(ms))],
+            ScaleImage = CreateThermalScaleImage(thermalImageStream)
         };
     }
 }

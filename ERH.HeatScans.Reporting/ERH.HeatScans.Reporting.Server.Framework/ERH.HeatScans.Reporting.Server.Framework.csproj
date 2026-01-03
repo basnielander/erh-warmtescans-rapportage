@@ -183,6 +183,7 @@
     </Compile>
     <Compile Include="Models\Image.cs" />
     <Compile Include="Models\GoogleDriveItem.cs" />
+    <Compile Include="Models\ImageScale.cs" />
     <Compile Include="Models\ImageSpot.cs" />
     <Compile Include="Services\FLIRService.cs" />
     <Compile Include="Services\GoogleDriveService.cs" />

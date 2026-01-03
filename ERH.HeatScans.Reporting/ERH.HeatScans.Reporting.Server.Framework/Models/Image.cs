@@ -12,11 +12,14 @@ public class Image
 
     public DateTimeOffset DateTaken { get; set; }
 
+    public ImageScale? Scale { get; set; }
+
     public Image()
     {
         Data = [];
         Spots = [];
         MimeType = string.Empty;
         DateTaken = DateTimeOffset.UtcNow;
+        Scale = null;
     }
 }
