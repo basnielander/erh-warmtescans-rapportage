@@ -95,8 +95,25 @@ public class HeatScanImageService
     {
         var bmp = thermalImage.Scale.Image;
 
+        // Resize to 20px width, keep original height
+        int newWidth = 20;
+        int originalHeight = bmp.Height;
+
+        // Create a new bitmap with the target size
+        using var resizedBmp = new Bitmap(newWidth, originalHeight);
+        using var graphics = Graphics.FromImage(resizedBmp);
+        
+        // Set high-quality rendering
+        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+        graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+        graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+        // Draw the resized image
+        graphics.DrawImage(bmp, 0, 0, newWidth, originalHeight);
+
         using var ms = new MemoryStream();
-        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+        resizedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
 
         return new HeatScanScale()
         {
