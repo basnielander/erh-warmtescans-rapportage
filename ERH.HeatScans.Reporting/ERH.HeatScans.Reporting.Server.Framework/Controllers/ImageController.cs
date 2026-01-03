@@ -32,8 +32,11 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
                 {
-                    var result = heatScanService.GetHeatscanImage(rawFileAsStream);
-                    return Ok(result);
+                    var heatScan = heatScanService.GetHeatscanImage(rawFileAsStream);
+
+                    heatScan.Id = imageFileId;
+
+                    return Ok(heatScan);
                 }
             });
         }
@@ -60,8 +63,11 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                     using (var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false))
                     {
-                        var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
-                        return Ok(result);
+                        var heatScan = heatScanService.GetHeatscanImage(updatedFileAsStream);
+
+                        heatScan.Id = imageFileId;
+
+                        return Ok(heatScan);
                     }
                 }
             });
@@ -133,8 +139,11 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                     using (var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false))
                     {
-                        var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
-                        return Ok(result);
+                        var heatScan = heatScanService.GetHeatscanImage(updatedFileAsStream);
+
+                        heatScan.Id = imageFileId;
+
+                        return Ok(heatScan);
                     }
                 }
             });

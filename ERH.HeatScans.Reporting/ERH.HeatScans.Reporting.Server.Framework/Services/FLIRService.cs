@@ -99,7 +99,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        internal Image GetHeatscanImage(Stream imageStream)
+        public Image GetHeatscanImage(Stream imageStream)
         {
             return ExecuteInFLIRDomain(
                 processor => processor.ProcessImage(imageStream),
