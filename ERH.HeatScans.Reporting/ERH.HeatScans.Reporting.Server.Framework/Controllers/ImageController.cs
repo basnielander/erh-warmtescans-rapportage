@@ -30,11 +30,11 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return validationResult;
                 }
 
-                using var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
-
-                var result = heatScanService.GetHeatscanImage(rawFileAsStream);
-
-                return Ok(result);
+                using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
+                {
+                    var result = heatScanService.GetHeatscanImage(rawFileAsStream);
+                    return Ok(result);
+                }
             });
         }
 
@@ -52,17 +52,18 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         {
             return await ExecuteAuthorizedAsync(async accessToken =>
             {
-                var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+                using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
+                {
+                    var updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, relativeX, relativeY, cancellationToken);
 
-                var updatedHeatscan = heatScanService.AddSpotToHeatscan(rawFileAsStream, relativeX, relativeY, cancellationToken);
+                    _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
 
-                _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
-
-                using var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false);
-
-                var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
-
-                return Ok(result);
+                    using (var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false))
+                    {
+                        var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
+                        return Ok(result);
+                    }
+                }
             });
         }
 
@@ -90,15 +91,16 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 foreach (var imageFileId in calibrationRequest.ImageFileIds)
                 {
-                    var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+                    using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
+                    {
+                        var updatedHeatscan = heatScanService.CalibrateHeatscan(
+                                                rawFileAsStream,
+                                                calibrationRequest.MinTemperature,
+                                                calibrationRequest.MaxTemperature,
+                                                cancellationToken);
 
-                    var updatedHeatscan = heatScanService.CalibrateHeatscan(
-                                            rawFileAsStream,
-                                            calibrationRequest.MinTemperature,
-                                            calibrationRequest.MaxTemperature,
-                                            cancellationToken);
-
-                    _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
+                        _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
+                    }
                 }
 
                 return Ok();
@@ -123,17 +125,18 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                     return validationResult;
                 }
 
-                var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken);
+                using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
+                {
+                    var updatedHeatscan = heatScanService.RemoveSpotFromHeatscan(rawFileAsStream, name, cancellationToken);
 
-                var updatedHeatscan = heatScanService.RemoveSpotFromHeatscan(rawFileAsStream, name, cancellationToken);
+                    _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
 
-                _ = Task.Run(async () => await storageService.SaveFile(imageFileId, updatedHeatscan.Data, accessToken, cancellationToken));
-
-                using var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false);
-
-                var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
-
-                return Ok(result);
+                    using (var updatedFileAsStream = new MemoryStream(updatedHeatscan.Data, false))
+                    {
+                        var result = heatScanService.GetHeatscanImage(updatedFileAsStream);
+                        return Ok(result);
+                    }
+                }
             });
         }
     }

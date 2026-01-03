@@ -1,7 +1,6 @@
 ﻿using ERH.HeatScans.Reporting.Server.Framework.Services;
 using System;
 using System.Configuration;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -50,13 +49,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             try
             {
                 var bytes = await mapsService.GetStaticMapImage(address, zoom, size, apiKey, cancellationToken);
-
-                var result = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new ByteArrayContent(bytes)
-                };
-                result.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                return ResponseMessage(result);
+                return new ImageResult(bytes, "image/png");
             }
             catch (ArgumentException)
             {
@@ -65,6 +58,28 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
             catch (Exception exc)
             {
                 return InternalServerError(exc);
+            }
+        }
+
+        private class ImageResult : IHttpActionResult
+        {
+            private readonly byte[] _imageBytes;
+            private readonly string _contentType;
+
+            public ImageResult(byte[] imageBytes, string contentType)
+            {
+                _imageBytes = imageBytes;
+                _contentType = contentType;
+            }
+
+            public Task<System.Net.Http.HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+            {
+                var response = new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new System.Net.Http.ByteArrayContent(_imageBytes)
+                };
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_contentType);
+                return Task.FromResult(response);
             }
         }
     }

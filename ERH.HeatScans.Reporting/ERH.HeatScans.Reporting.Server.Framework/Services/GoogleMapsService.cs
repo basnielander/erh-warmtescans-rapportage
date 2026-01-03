@@ -9,6 +9,8 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 {
     public class GoogleMapsService
     {
+        private static readonly HttpClient httpClient = new HttpClient();
+
         public async Task<byte[]> GetStaticMapImage(string address, int zoom, string size, string apiKey, CancellationToken cancellationToken = default)
         {
             // Create Places client using API key
@@ -42,15 +44,15 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 $"https://maps.googleapis.com/maps/api/staticmap?center={latLng.Latitude},{latLng.Longitude}&zoom={zoom}&size={size}&markers={Uri.EscapeDataString(marker)}&key={Uri.EscapeDataString(apiKey)}";
 
             // Download the image and return bytes
-            using var httpClient = new HttpClient();
-
-            var httpResponse = await httpClient.GetAsync(url, cancellationToken);
-            if (!httpResponse.IsSuccessStatusCode)
+            using (var httpResponse = await httpClient.GetAsync(url, cancellationToken))
             {
-                throw new HttpRequestException($"Failed to download map image: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
-            }
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Failed to download map image: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
+                }
 
-            return await httpResponse.Content.ReadAsByteArrayAsync();
+                return await httpResponse.Content.ReadAsByteArrayAsync();
+            }
         }
     }
 }
