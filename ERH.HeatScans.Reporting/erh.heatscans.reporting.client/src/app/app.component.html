@@ -1,40 +1,30 @@
 <main class="main">
   <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1>{{ title }}</h1>
-      <p>Sign in with Google to access your Drive files</p>
-    </div>
-
     <!-- Authentication Section -->
-    <div class="auth-section">
-      @if (isAuthLoading()) {
-      <div class="loading">Initializing authentication...</div>
-      } @else if (authError()) {
-      <div class="error">{{ authError() }}</div>
-      }
-
-      @if (!isAuthenticated()) {
-      <button class="btn btn-primary" (click)="onSignIn()" [disabled]="isAuthLoading()">
-        Sign in with Google
-      </button>
-      } @else {
-      <div class="user-info">
-        <img [src]="user()?.picture" [alt]="user()?.name" class="user-avatar" />
-        <div class="user-details">
-          <p class="user-name">{{ user()?.name }}</p>
-          <p class="user-email">{{ user()?.email }}</p>
-        </div>
+    @if (!isAuthenticated()) {
+      <div class="auth-section">
+        @if (isAuthLoading()) {
+          <div class="loading">Initializing authentication...</div>
+        } @else if (authError()) {
+          <div class="error">{{ authError() }}</div>
+        }
+        <p>
+          Voor het beheren van de EnergieRijk Houten' warmtescan rapportages is het nodig om in te loggen met het e-mail adres waarmee je toegang hebt tot de Warmtescan bestanden op Google Drive.
+        </p>
+        <br />
+        <button class="btn btn-primary" (click)="onSignIn()" [disabled]="isAuthLoading()">
+          Sign in with Google
+        </button>
       </div>
-      <button class="btn btn-secondary" (click)="onSignOut()">Sign Out</button>
-      }
-    </div>    
+    } @else {
+      <app-user></app-user>
+    }
 
-    <!-- Google Drive Browser Section -->
+    <!-- Router Outlet for Navigation -->
     @if (isAuthenticated()) {
-    <div class="drive-section">
-      <app-google-drive-browser></app-google-drive-browser>
-    </div>
+      <div class="content-section">
+        <router-outlet></router-outlet>
+      </div>
     }
   </div>
 </main>

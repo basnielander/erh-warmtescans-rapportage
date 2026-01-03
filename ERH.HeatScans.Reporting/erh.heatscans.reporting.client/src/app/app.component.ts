@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { GoogleDriveService } from './services/google-drive.service';
-import { GoogleDriveBrowserComponent } from './components/google-drive-browser/google-drive-browser.component';
+import { FoldersAndFileService } from './services/folders-and-files.service';
+import { UserComponent } from './components/user/user.component';
 
 @Component({
   selector: 'app-root',
-  imports: [GoogleDriveBrowserComponent],
+  imports: [RouterOutlet, UserComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'erh.heatscans.reporting.client';
@@ -20,7 +21,7 @@ export class AppComponent {
 
   constructor(
     public authService: AuthService,
-    public driveService: GoogleDriveService
+    public foldersAndFileService: FoldersAndFileService
   ) {
     this.user = this.authService.user;
     this.isAuthenticated = this.authService.isAuthenticated;
@@ -34,9 +35,5 @@ export class AppComponent {
 
   async onSignIn() {
     await this.authService.signIn();
-  }
-
-  async onSignOut() {
-    await this.authService.signOut();
-  }
+  }  
 }

@@ -16,6 +16,10 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
+  // Session storage keys
+  private readonly ACCESS_TOKEN_KEY = 'google_access_token';
+  private readonly USER_KEY = 'google_user';
+
   // Signals for state management
   private userSignal = signal<User | null>(null);
   private isLoadingSignal = signal<boolean>(false);
@@ -36,8 +40,64 @@ export class AuthService {
     // Effect to log authentication state changes
     effect(() => {
       const user = this.userSignal();
-      console.log('Auth state changed:', user ? 'Logged in' : 'Logged out');
     });
+
+    // Restore authentication state from session storage
+    this.restoreAuthState();
+  }
+
+  /**
+   * Restore authentication state from session storage
+   */
+  private restoreAuthState(): void {
+    try {
+      const storedToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+      const storedUser = localStorage.getItem(this.USER_KEY);
+
+      if (storedToken && storedUser) {
+        this.accessToken = storedToken;
+        this.userSignal.set(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error('Failed to restore auth state:', error);
+      this.clearLocalStorage();
+    }
+  }
+
+  /**
+   * Save access token to session storage
+   */
+  private saveAccessToken(token: string): void {
+    try {
+      localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+      this.accessToken = token;
+    } catch (error) {
+      console.error('Failed to save access token:', error);
+    }
+  }
+
+  /**
+   * Save user to session storage
+   */
+  private saveUser(user: User): void {
+    try {
+      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      this.userSignal.set(user);
+    } catch (error) {
+      console.error('Failed to save user:', error);
+    }
+  }
+
+  /**
+   * Clear session storage
+   */
+  private clearLocalStorage(): void {
+    try {
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(this.USER_KEY);
+    } catch (error) {
+      console.error('Failed to clear local storage:', error);
+    }
   }
 
   /**
@@ -112,7 +172,7 @@ export class AuthService {
           console.error('Token error:', response);
           return;
         }
-        this.accessToken = response.access_token;
+        this.saveAccessToken(response.access_token);
         this.fetchUserInfo();
       },
     });
@@ -165,7 +225,7 @@ export class AuthService {
         picture: data.picture
       };
 
-      this.userSignal.set(user);
+      this.saveUser(user);
       this.errorSignal.set(null);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch user info';
@@ -202,5 +262,6 @@ export class AuthService {
   private handleSignOut(): void {
     this.userSignal.set(null);
     this.accessToken = null;
+    this.clearLocalStorage();
   }
 }
