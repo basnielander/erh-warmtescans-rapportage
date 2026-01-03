@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ERH.HeatScans.Reporting
-{
-    public class Spots : List<Spot>
-    {
+namespace ERH.HeatScans.Reporting;
 
-    }
+public class Spots : List<Spot>
+{
+
 }

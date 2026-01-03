@@ -100,6 +100,7 @@
     <Compile Include="DaylightImage.cs" />
     <Compile Include="HeatScanImageService.cs" />
     <Compile Include="HeatScanImage.cs" />
+    <Compile Include="HeatScanScale.cs" />
     <Compile Include="Overlay.cs" />
     <Compile Include="Scale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

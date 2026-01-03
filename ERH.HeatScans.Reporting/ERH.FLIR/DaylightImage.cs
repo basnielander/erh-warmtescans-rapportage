@@ -1,17 +1,16 @@
 ﻿using Flir.Atlas.Image;
 using System.Drawing;
 
-namespace ERH.FLIR
+namespace ERH.FLIR;
+
+public class DaylightImage
 {
-    public class DaylightImage
+    public DaylightImage(ThermalImageFile thermalImageFile)
     {
-        public DaylightImage(ThermalImageFile thermalImageFile)
-        {
-            thermalImageFile.Fusion.Mode = thermalImageFile.Fusion.VisualOnly;
+        thermalImageFile.Fusion.Mode = thermalImageFile.Fusion.VisualOnly;
 
-            GetDaylightImage = thermalImageFile.Fusion.VisualImage;
-        }
-
-        public Bitmap GetDaylightImage { get; private set; }
+        GetDaylightImage = thermalImageFile.Fusion.VisualImage;
     }
+
+    public Bitmap GetDaylightImage { get; private set; }
 }

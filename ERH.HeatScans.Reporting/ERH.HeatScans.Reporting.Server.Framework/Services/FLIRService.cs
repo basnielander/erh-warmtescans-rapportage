@@ -73,7 +73,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        internal Image GetHeatscanImage(Stream imageStream)
+        private Image ExecuteInFLIRDomain(Func<FLIRImageProcessor, HeatScanImage> processorAction, string errorContext)
         {
             try
             {
@@ -87,16 +87,48 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 );
 
                 // Process the image in the separate AppDomain
-                var imageData = processor.ProcessImage(imageStream);
+                var imageData = processorAction(processor);
 
                 return ToImageResult(imageData);
             }
             catch (Exception ex)
             {
                 // Log the exception (add logging framework if available)
-                System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error {errorContext}: {ex.Message}");
                 throw;
             }
+        }
+
+        internal Image GetHeatscanImage(Stream imageStream)
+        {
+            return ExecuteInFLIRDomain(
+                processor => processor.ProcessImage(imageStream),
+                "processing heat scan image"
+            );
+        }
+
+        public Image AddSpotToHeatscan(Stream imageStream, double relativeX, double relativeY, CancellationToken cancellationToken)
+        {
+            return ExecuteInFLIRDomain(
+                processor => processor.AddSpot(imageStream, new NewSpot(relativeX, relativeY)),
+                "adding a spot to heat scan image"
+            );
+        }
+
+        public Image CalibrateHeatscan(Stream imageStream, double temperatureMin, double temperatureMax, CancellationToken cancellationToken)
+        {
+            return ExecuteInFLIRDomain(
+                processor => processor.CalibrateImage(imageStream, new TemperatureScale(temperatureMin, temperatureMax)),
+                "calibrate (set scale of) heat scan image "
+            );
+        }
+
+        public Image RemoveSpotFromHeatscan(Stream imageStream, string name, CancellationToken cancellationToken)
+        {
+            return ExecuteInFLIRDomain(
+                processor => processor.RemoveSpot(imageStream, name),
+                "removing spot from heat scan image"
+            );
         }
 
         private static Image ToImageResult(HeatScanImage image)
@@ -114,84 +146,6 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                     Point = new ImageSpotPoint() { X = spot.X, Y = spot.Y }
                 }).ToList()
             };
-        }
-
-        public Image AddSpotToHeatscan(Stream imageStream, double relativeX, double relativeY, CancellationToken cancellationToken)
-        {
-            try
-            {
-                // Get or create the FLIR AppDomain
-                AppDomain flirDomain = GetOrCreateFLIRDomain();
-
-                // Create a proxy to execute code in the FLIR AppDomain
-                FLIRImageProcessor processor = (FLIRImageProcessor)flirDomain.CreateInstanceAndUnwrap(
-                    typeof(FLIRImageProcessor).Assembly.FullName,
-                    typeof(FLIRImageProcessor).FullName
-                );
-
-                // Process the image in the separate AppDomain
-                var imageData = processor.AddSpot(imageStream, new NewSpot(relativeX, relativeY));
-
-                return ToImageResult(imageData);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (add logging framework if available)
-                System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
-                throw;
-            }
-        }
-
-        public Image CalibrateHeatscan(Stream imageStream, double temperatureMin, double temperatureMax, CancellationToken cancellationToken)
-        {
-            try
-            {
-                // Get or create the FLIR AppDomain
-                AppDomain flirDomain = GetOrCreateFLIRDomain();
-
-                // Create a proxy to execute code in the FLIR AppDomain
-                FLIRImageProcessor processor = (FLIRImageProcessor)flirDomain.CreateInstanceAndUnwrap(
-                    typeof(FLIRImageProcessor).Assembly.FullName,
-                    typeof(FLIRImageProcessor).FullName
-                );
-
-                // Process the image in the separate AppDomain
-                var imageData = processor.CalibrateImage(imageStream, new TemperatureScale(temperatureMin, temperatureMax));
-
-                return ToImageResult(imageData);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (add logging framework if available)
-                System.Diagnostics.Debug.WriteLine($"Error processing heat scan image: {ex.Message}");
-                throw;
-            }
-        }
-
-        public Image RemoveSpotFromHeatscan(Stream imageStream, string name, CancellationToken cancellationToken)
-        {
-            try
-            {
-                // Get or create the FLIR AppDomain
-                AppDomain flirDomain = GetOrCreateFLIRDomain();
-
-                // Create a proxy to execute code in the FLIR AppDomain
-                FLIRImageProcessor processor = (FLIRImageProcessor)flirDomain.CreateInstanceAndUnwrap(
-                    typeof(FLIRImageProcessor).Assembly.FullName,
-                    typeof(FLIRImageProcessor).FullName
-                );
-
-                // Process the image in the separate AppDomain
-                var imageData = processor.RemoveSpot(imageStream, name);
-
-                return ToImageResult(imageData);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (add logging framework if available)
-                System.Diagnostics.Debug.WriteLine($"Error removing spot from heat scan image: {ex.Message}");
-                throw;
-            }
         }
     }
 
