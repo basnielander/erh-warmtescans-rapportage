@@ -1,4 +1,4 @@
-import { ImageInfo } from "./image.model";
+import { ImageInfo } from "./image-info.model";
 
 export interface Report {
   folderId: string;

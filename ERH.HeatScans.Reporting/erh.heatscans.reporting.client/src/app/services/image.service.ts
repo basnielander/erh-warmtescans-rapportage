@@ -4,7 +4,7 @@ import { lastValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GoogleDriveItem } from '../models/google-drive.model';
 import { Report } from '../models/report.model';
-import { Image } from "../models/image-model";
+import { Image } from "../models/image.model";
 import { environment } from '../../environments/environment';
 
 @Injectable({

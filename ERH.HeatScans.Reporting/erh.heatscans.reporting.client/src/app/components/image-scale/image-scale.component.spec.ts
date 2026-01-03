@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImageScaleComponent } from './image-scale.component';
-import { ImageScale } from '../../models/image-scale-model';
+import { ImageScale } from '../../models/image-scale.model';
 import { signal } from '@angular/core';
 
 describe('ImageScaleComponent', () => {

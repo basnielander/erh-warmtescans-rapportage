@@ -1,7 +1,7 @@
 import { Component, output, signal, computed, OnInit, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ImageInfo } from '../../models/image.model';
+import { ImageInfo } from '../../models/image-info.model';
 
 @Component({
   selector: 'app-batch-indoor-calibration',
@@ -35,11 +35,13 @@ export class BatchIndoorCalibrationComponent implements OnInit {
       );
       
       if (calibratedImages.length > 0) {
-        const avgMin = calibratedImages.reduce((sum, img) => sum + (img.temperatureMin ?? 15), 0) / calibratedImages.length;
-        const avgMax = calibratedImages.reduce((sum, img) => sum + (img.temperatureMax ?? 25), 0) / calibratedImages.length;
-        
-        this.temperatureMin.set(Math.round(avgMin * 10) / 10);
-        this.temperatureMax.set(Math.round(avgMax * 10) / 10);
+        // Use the lowest temperatureMin from all calibrated images
+        const minTemp = Math.min(...calibratedImages.map(img => img.temperatureMin ?? 15));
+        // Use the highest temperatureMax from all calibrated images
+        const maxTemp = Math.max(...calibratedImages.map(img => img.temperatureMax ?? 25));
+
+        this.temperatureMin.set(minTemp);
+        this.temperatureMax.set(maxTemp);
       }
     });
   }

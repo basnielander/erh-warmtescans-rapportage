@@ -9,7 +9,7 @@ import { ModalComponent } from '../modal/modal.component';
 import { ReportDetailsEditorComponent } from '../report-details-editor/report-details-editor.component';
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { Report } from '../../models/report.model';
-import { ImageInfo } from "../../models/image.model";
+import { ImageInfo } from "../../models/image-info.model";
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReportService } from '../../services/report.service';
 

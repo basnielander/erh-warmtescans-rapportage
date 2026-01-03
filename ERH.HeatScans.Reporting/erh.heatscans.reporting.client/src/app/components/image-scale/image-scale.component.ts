@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ImageScale } from '../../models/image-scale-model';
+import { ImageScale } from '../../models/image-scale.model';
 
 @Component({
   selector: 'app-image-scale',

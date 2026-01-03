@@ -2,8 +2,8 @@ import { Component, output, OnInit, signal, input, effect } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ImageInfo } from "../../models/image.model";
-import { Image } from "../../models/image-model";
+import { ImageInfo } from "../../models/image-info.model";
+import { Image } from "../../models/image.model";
 import { GoogleDriveService } from '../../services/folders-and-files.service';
 import { ImageService } from '../../services/image.service';
 import { ImageScaleComponent } from '../image-scale/image-scale.component';

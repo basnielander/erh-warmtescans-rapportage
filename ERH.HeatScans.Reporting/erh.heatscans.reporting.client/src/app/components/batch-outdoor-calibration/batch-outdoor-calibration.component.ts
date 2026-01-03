@@ -1,7 +1,7 @@
 import { Component, input, output, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ImageInfo } from '../../models/image.model';
+import { ImageInfo } from '../../models/image-info.model';
 
 @Component({
   selector: 'app-batch-outdoor-calibration',
@@ -16,8 +16,8 @@ export class BatchOutdoorCalibrationComponent implements OnInit {
   saveCalibration = output<{ imageIds: string[], temperatureMin: number, temperatureMax: number }>();
   cancel = output<void>();
   
-  temperatureMin = signal<number>(0);
-  temperatureMax = signal<number>(30);
+  temperatureMin = signal<number>(-5);
+  temperatureMax = signal<number>(10);
   isProcessing = signal<boolean>(false);
   
   // Computed values - now properly reactive
@@ -28,18 +28,21 @@ export class BatchOutdoorCalibrationComponent implements OnInit {
   imageCount = computed(() => this.outdoorImages().length);
   
   constructor() {
-    // Use effect to recalculate averages when images change
+    // Use effect to recalculate when images change
     effect(() => {
-      const calibratedImages = this.outdoorImages().filter(img => 
-        img.temperatureMin !== undefined && img.temperatureMax !== undefined
-      );
       
+      const calibratedImages = this.outdoorImages().filter(img => 
+        img.temperatureMin != null && img.temperatureMax != null
+      );
+
       if (calibratedImages.length > 0) {
-        const avgMin = calibratedImages.reduce((sum, img) => sum + (img.temperatureMin ?? 0), 0) / calibratedImages.length;
-        const avgMax = calibratedImages.reduce((sum, img) => sum + (img.temperatureMax ?? 30), 0) / calibratedImages.length;
+        // Use the lowest temperatureMin from all calibrated images
+        const minTemp = Math.min(...calibratedImages.map(img => img.temperatureMin ?? -5));
+        // Use the highest temperatureMax from all calibrated images
+        const maxTemp = Math.max(...calibratedImages.map(img => img.temperatureMax ?? 10));
         
-        this.temperatureMin.set(Math.round(avgMin * 10) / 10);
-        this.temperatureMax.set(Math.round(avgMax * 10) / 10);
+        this.temperatureMin.set(minTemp);
+        this.temperatureMax.set(maxTemp);
       }
     });
   }
