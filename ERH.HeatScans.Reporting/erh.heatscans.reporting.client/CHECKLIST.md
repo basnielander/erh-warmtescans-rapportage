@@ -146,7 +146,7 @@ Frontend:
 [System.Environment]::GetEnvironmentVariable('GoogleMapsApiKey', 'User')
 
 # Should output:
-# AIzaSyBD9-4_WGqDtFbMV687eQe9hag3CcY1PCc
+# ****************
 
 # If empty, set it:
 [System.Environment]::SetEnvironmentVariable('GoogleMapsApiKey', 'AIzaSyBD9-4_WGqDtFbMV687eQe9hag3CcY1PCc', 'User')
@@ -229,7 +229,7 @@ When everything works, you should see:
 ### Issue: "API key is missing"
 **Solution:**
 ```powershell
-[System.Environment]::SetEnvironmentVariable('GoogleMapsApiKey', 'AIzaSyBD9-4_WGqDtFbMV687eQe9hag3CcY1PCc', 'User')
+[System.Environment]::SetEnvironmentVariable('GoogleMapsApiKey', '************************', 'User')
 # Restart Visual Studio completely
 ```
 
