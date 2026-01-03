@@ -1,16 +1,16 @@
+@import '../../../styles/variables-mixins';
+
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba($color-black, 0.7);
   backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   z-index: 9999;
-  padding: 20px;
+  padding: $spacing-lg;
   animation: fadeIn 0.2s ease-out;
 }
 
@@ -24,14 +24,13 @@
 }
 
 .modal-container {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: $color-white;
+  border-radius: $border-radius-3xl;
+  box-shadow: $shadow-xl;
   max-width: 900px;
   width: 100%;
   max-height: 90vh;
-  display: flex;
-  flex-direction: column;
+  @include flex-column;
   animation: slideUp 0.3s ease-out;
   overflow: hidden;
 }
@@ -51,89 +50,68 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 32px;
-  border-bottom: 2px solid #e0e0e0;
-  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 2px solid $color-gray-300;
+  background: linear-gradient(135deg, $color-gray-100 0%, $color-gray-200 100%);
 }
 
 .modal-title {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #333;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $color-gray-950;
 }
 
 .modal-close {
+  @include button-base;
   background: none;
-  border: none;
   font-size: 32px;
   line-height: 1;
-  color: #666;
-  cursor: pointer;
+  color: $color-gray-800;
   padding: 0;
   width: 40px;
   height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-}
+  border-radius: $border-radius-full;
+  transition: all $transition-fast;
 
-.modal-close:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #333;
-  transform: rotate(90deg);
-}
+  &:hover {
+    background: rgba($color-black, 0.1);
+    color: $color-gray-950;
+    transform: rotate(90deg);
+  }
 
-.modal-close:active {
-  transform: rotate(90deg) scale(0.95);
+  &:active {
+    transform: rotate(90deg) scale(0.95);
+  }
 }
 
 .modal-content {
-  padding: 32px;
+  padding: $spacing-xl;
   overflow-y: auto;
   flex: 1;
+  @include custom-scrollbar(10px, #f1f1f1, #888, #555);
 }
 
-.modal-content::-webkit-scrollbar {
-  width: 10px;
-}
-
-.modal-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-@media (max-width: 768px) {
+@include mobile {
   .modal-backdrop {
     padding: 10px;
   }
 
   .modal-container {
     max-height: 95vh;
-    border-radius: 12px;
+    border-radius: $border-radius-2xl;
   }
 
   .modal-header {
-    padding: 16px 20px;
+    padding: $spacing-md $spacing-lg;
   }
 
   .modal-title {
-    font-size: 20px;
+    font-size: $font-size-2xl;
   }
 
   .modal-content {
-    padding: 20px;
+    padding: $spacing-lg;
   }
 
   .modal-close {
