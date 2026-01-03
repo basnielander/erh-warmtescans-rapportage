@@ -2,11 +2,14 @@
 
 .user-info {
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 1rem;
-  position: relative;
+  position: absolute;
+  width: 200px;
+  top: 1rem;
+  right: 1rem;
   flex-direction: column;
 }
 

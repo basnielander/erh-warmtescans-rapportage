@@ -1,31 +1,30 @@
 <main class="main">
-  <div class="container">    
+  <div class="container">
     <!-- Authentication Section -->
-    <div class="auth-section">
-      @if (isAuthLoading()) {
-      <div class="loading">Initializing authentication...</div>
-      } @else if (authError()) {
-      <div class="error">{{ authError() }}</div>
-      }
-
-      @if (!isAuthenticated()) {
-      <p>
-        Voor het beheren van de EnergieRijk Houten' warmtescan rapportages is het nodig om in te loggen met het e-mail adres waarmee je toegang hebt tot de Warmtescan bestanden op Google Drive.
-      </p>
-      <br/>
-      <button class="btn btn-primary" (click)="onSignIn()" [disabled]="isAuthLoading()">
-        Sign in with Google
-      </button>
-      } @else {
+    @if (!isAuthenticated()) {
+      <div class="auth-section">
+        @if (isAuthLoading()) {
+          <div class="loading">Initializing authentication...</div>
+        } @else if (authError()) {
+          <div class="error">{{ authError() }}</div>
+        }
+        <p>
+          Voor het beheren van de EnergieRijk Houten' warmtescan rapportages is het nodig om in te loggen met het e-mail adres waarmee je toegang hebt tot de Warmtescan bestanden op Google Drive.
+        </p>
+        <br />
+        <button class="btn btn-primary" (click)="onSignIn()" [disabled]="isAuthLoading()">
+          Sign in with Google
+        </button>
+      </div>
+    } @else {
       <app-user></app-user>
-      }
-    </div>    
+    }
 
     <!-- Router Outlet for Navigation -->
     @if (isAuthenticated()) {
-    <div class="content-section">
-      <router-outlet></router-outlet>
-    </div>
+      <div class="content-section">
+        <router-outlet></router-outlet>
+      </div>
     }
   </div>
 </main>
