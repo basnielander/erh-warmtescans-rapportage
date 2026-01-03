@@ -13,7 +13,7 @@ import { ImageScaleComponent } from '../image-scale/image-scale.component';
   standalone: true,
   imports: [CommonModule, FormsModule, ImageScaleComponent],
   templateUrl: './image-card.component.html',
-  styleUrl: './image-card.component.css'
+  styleUrl: './image-card.component.scss'
 })
 export class ImageCardComponent implements OnInit {
   // Input signal instead of @Input decorator

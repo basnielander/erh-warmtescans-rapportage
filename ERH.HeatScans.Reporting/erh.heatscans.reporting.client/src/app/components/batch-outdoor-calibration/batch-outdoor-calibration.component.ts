@@ -8,7 +8,7 @@ import { ImageInfo } from '../../models/image-info.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './batch-outdoor-calibration.component.html',
-  styleUrl: './batch-outdoor-calibration.component.css'
+  styleUrl: './batch-outdoor-calibration.component.scss'
 })
 export class BatchOutdoorCalibrationComponent implements OnInit {
   images = input<ImageInfo[]>([]);

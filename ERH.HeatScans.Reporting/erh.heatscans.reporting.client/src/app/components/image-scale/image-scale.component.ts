@@ -8,7 +8,7 @@ import { ImageScale } from '../../models/image-scale.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './image-scale.component.html',
-  styleUrl: './image-scale.component.css'
+  styleUrl: './image-scale.component.scss'
 })
 export class ImageScaleComponent {
   // Input signal for the image scale data - now optional

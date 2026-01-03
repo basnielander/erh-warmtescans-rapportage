@@ -8,7 +8,7 @@ import { Report } from '../../models/report.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './report-details-editor.component.html',
-  styleUrl: './report-details-editor.component.css'
+  styleUrl: './report-details-editor.component.scss'
 })
 export class ReportDetailsEditorComponent implements OnInit {
   // Input signal instead of @Input decorator

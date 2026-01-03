@@ -9,7 +9,7 @@ import { GoogleDriveItem } from '../../models/google-drive.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './folder-browser.component.html',
-  styleUrl: './folder-browser.component.css'
+  styleUrl: './folder-browser.component.scss'
 })
 export class FolderBrowserComponent implements OnInit {
   // Use state from service

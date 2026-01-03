@@ -7,7 +7,7 @@ import { FoldersAndFileService } from './services/folders-and-files.service';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'erh.heatscans.reporting.client';

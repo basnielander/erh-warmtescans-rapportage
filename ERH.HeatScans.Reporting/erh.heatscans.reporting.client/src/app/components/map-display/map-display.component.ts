@@ -8,7 +8,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './map-display.component.html',
-  styleUrls: ['./map-display.component.css']
+  styleUrls: ['./map-display.component.scss']
 })
 export class MapDisplayComponent implements OnInit {
   // Input signals

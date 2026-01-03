@@ -62,12 +62,12 @@ main {
   color: white;
   padding: 2rem;
   text-align: center;
-}
 
-  .header h1 {
+  h1 {
     color: white;
     margin: 0;
   }
+}
 
 .auth-section {
   padding: 2rem;
@@ -114,31 +114,31 @@ main {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .btn-primary {
   background: var(--bright-blue);
   color: white;
-}
 
-  .btn-primary:hover {
+  &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(51, 110, 255, 0.4);
   }
+}
 
 .btn-secondary {
   background: var(--gray-400);
   color: var(--gray-900);
-}
 
-  .btn-secondary:hover {
+  &:hover {
     background: var(--gray-700);
     color: white;
   }
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .content-section {
@@ -172,12 +172,12 @@ main {
   border-radius: 8px;
   transition: transform 0.2s;
   cursor: pointer;
-}
 
-  .file-card:hover {
+  &:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
+}
 
 .file-icon {
   font-size: 2rem;
@@ -202,14 +202,14 @@ main {
   text-align: center;
   padding: 3rem;
   color: var(--gray-700);
-}
 
-  .empty-state svg {
+  svg {
     width: 100px;
     height: 100px;
     margin-bottom: 1rem;
     opacity: 0.3;
   }
+}
 
 .drive-section {
   padding: 2rem;
