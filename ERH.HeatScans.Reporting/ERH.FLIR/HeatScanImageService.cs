@@ -91,10 +91,8 @@ public class HeatScanImageService
         };
     }
 
-    private static HeatScanScale CreateThermalScaleImage(Stream imageStream)
+    private static HeatScanScale CreateThermalScaleImage(ThermalImageFile thermalImage)
     {
-        using var thermalImage = CreateThermalImage(imageStream);
-
         var bmp = thermalImage.Scale.Image;
 
         using var ms = new MemoryStream();
@@ -124,7 +122,7 @@ public class HeatScanImageService
             MimeType = "image/jpeg",
             DateTaken = thermalImage.DateTaken,
             Spots = [.. thermalImage.Measurements.MeasurementSpots.Select(ms => new Spot(ms))],
-            ScaleImage = CreateThermalScaleImage(thermalImageStream)
+            ScaleImage = CreateThermalScaleImage(thermalImage)
         };
     }
 }
