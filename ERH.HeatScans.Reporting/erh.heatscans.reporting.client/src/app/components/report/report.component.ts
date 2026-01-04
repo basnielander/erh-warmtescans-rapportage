@@ -42,6 +42,7 @@ export class ReportComponent implements OnInit {
   showBatchOutdoorCalibration = signal<boolean>(false);
   showBatchIndoorCalibration = signal<boolean>(false);
   showReportDetailsEditor = signal<boolean>(false);
+  isExportingReport = signal<boolean>(false);
 
   // Computed signal for sorted images
   sortedImages = computed(() => {
@@ -345,5 +346,36 @@ export class ReportComponent implements OnInit {
 
   onReportDetailsCancel(): void {
     this.showReportDetailsEditor.set(false);
+  }
+
+  async onExportReport(): Promise<void> {
+    this.isExportingReport.set(true);
+
+    try {
+      const blob = await this.reportService.createReport(this.folderId());
+      console.log('Report exported successfully:');
+     
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `report-${this.folderName()}-${new Date().toISOString().split('T')[0]}.docx`;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      console.log('Report file downloaded');
+    } catch (err: any) {
+      console.error('Error exporting report:', err);
+      alert('Failed to export report. Please try again.');
+    } finally {
+      this.isExportingReport.set(false);
+    }
   }
 }

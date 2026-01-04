@@ -203,28 +203,24 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 }
 
                 var heatScans = new List<Models.Image>();
-                foreach (var image in report.Images)
+
+                var orderedIncludedImages = report.Images.Where(img => !img.ExcludeFromReport).OrderBy(img => img.Index).ToList();
+
+                foreach (var image in orderedIncludedImages)
                 {
-                    if (!image.ExcludeFromReport)
-                    {
-                        var imageFileId = image.Id;
+                    using var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, image.Id, cancellationToken);
 
-                        using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
-                        {
-                            var heatScan = heatScanService.GetHeatscanImage(rawFileAsStream);
+                    var heatScan = heatScanService.GetHeatscanImage(rawFileAsStream);
+                    heatScan.Id = image.Id;
 
-                            heatScan.Id = imageFileId;
-
-                            return Ok(heatScan);
-                        }
-                    }
+                    heatScans.Add(heatScan);
                 }
 
-                var reportDocument = await reportService.CreateReportDocumentAsync(folderId, report, heatScans, cancellationToken);
+                var reportDocument = reportService.CreateReportDocumentAsync(folderId, report, heatScans);
 
                 _ = Task.Run(async () => await storageService.CreateOrUpdateFile($"{report.Address} - Warmtescanrapport {report.PhotosTakenAt.Value.ToString("dd-MM-yyyy")}.docx", folderId, reportDocument, accessToken, cancellationToken));
 
-                return Ok();
+                return Ok(reportDocument);
             });
         }
     }

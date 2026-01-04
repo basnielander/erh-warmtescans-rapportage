@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ERH.HeatScans.Reporting.Word;
 
-public class PageProperties
+public sealed class PageProperties
 {
     public string ImageName { get; set; }
     public ImageSize ImageSize { get; set; }
@@ -13,4 +13,6 @@ public class PageProperties
     public Stream TemperatureScaleStream { get; set; } = null;
     public Dictionary<string, string> Measurements { get; set; } = [];
     public string Comments { get; set; }
+
+
 }

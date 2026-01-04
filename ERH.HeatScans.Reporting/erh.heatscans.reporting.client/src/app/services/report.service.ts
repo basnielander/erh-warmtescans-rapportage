@@ -29,6 +29,13 @@ export class ReportService {
     return lastValueFrom(this.http.get<Report>(url, { headers }));
   }
 
+  createReport(folderId: string): Promise<Blob> {
+    const headers = this.getAuthHeaders();
+    const url = `${this.baseUrl}/document?folderId=${folderId}`;
+
+    return lastValueFrom(this.http.post<Blob>(url, {}, { headers }));
+  }
+
   updateImageIndices(folderId: string, indexUpdates: ImageIndexUpdate[]): Promise<void> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}/update-indices?folderId=${folderId}`;

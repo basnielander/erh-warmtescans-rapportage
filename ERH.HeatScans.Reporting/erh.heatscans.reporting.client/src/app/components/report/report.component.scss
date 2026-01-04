@@ -85,6 +85,10 @@
   @include button-gradient($color-purple, $color-purple-dark, $color-purple-dark, $color-purple);
 }
 
+.menu-btn-export {
+  @include button-gradient($color-green, $color-green-dark, $color-green-dark, $color-green);
+}
+
 .setup-status {
   padding: $spacing-lg;
   margin-bottom: $spacing-lg;

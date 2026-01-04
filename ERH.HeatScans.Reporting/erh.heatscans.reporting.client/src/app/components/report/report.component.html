@@ -29,6 +29,12 @@
           [disabled]="isUpdatingIndices()">
           ✏️ Edit Report Details
         </button>
+        <button 
+          class="menu-btn menu-btn-export" 
+          (click)="onExportReport()"
+          [disabled]="isUpdatingIndices() || isExportingReport()">
+          {{ isExportingReport() ? '⏳ Exporting...' : '📥 Export Report' }}
+        </button>
       </div>
     </div>
   </div>

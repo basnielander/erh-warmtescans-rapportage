@@ -10,6 +10,8 @@ namespace ERH.HeatScans.Reporting
         private bool disposed;
 
         private WordDocument? wordDocument = null;
+        private readonly MemoryStream frontPageWritable = new();
+        private readonly MemoryStream pageTemplateWritable = new();
 
         public void CreateDocumentWithoutTheImages(Report report, Stream frontPageImageStream)
         {
@@ -18,9 +20,16 @@ namespace ERH.HeatScans.Reporting
                 using var frontPage = GetType().Assembly.GetManifestResourceStream("ERH.HeatScans.Reporting.Word.ERH-voorblad.docx");
                 using var pageTemplate = GetType().Assembly.GetManifestResourceStream("ERH.HeatScans.Reporting.Word.ERH-pagina.docx");
 
+                // create a writable memory stream from frontpage and pagetemplate
+                frontPage?.CopyTo(frontPageWritable);
+                frontPageWritable.Position = 0;
+
+                pageTemplate?.CopyTo(pageTemplateWritable);
+                pageTemplateWritable.Position = 0;
+
                 wordDocument?.Dispose();
 
-                wordDocument = new WordDocument(frontPage, pageTemplate);
+                wordDocument = new WordDocument(frontPageWritable, pageTemplateWritable);
                 wordDocument.Init();
                 wordDocument.SetReportValue("Object", report.Address);
                 wordDocument.SetReportValue("Datum opname", report.PhotosTakenAt.Value.Date.ToShortDateString() ?? "");
@@ -31,8 +40,6 @@ namespace ERH.HeatScans.Reporting
                 wordDocument.SetReportValue("Zonuren", $"{report.HoursOfSunshine} uur");
 
                 wordDocument.SetFrontPageImage(frontPageImageStream);
-
-                wordDocument.Save();
             }
             catch (Exception exc)
             {
@@ -52,6 +59,17 @@ namespace ERH.HeatScans.Reporting
             wordDocument.AddPage(page);
         }
 
+        public MemoryStream Save()
+        {
+            ThrowIfDisposed();
+            if (wordDocument == null)
+            {
+                throw new ApplicationException("First Create Document Without The Images, to initiate the Word document, before adding pages, after which Save can be called");
+            }
+
+            return wordDocument.Save();
+        }
+
         public void Dispose()
         {
             if (disposed)
@@ -59,7 +77,10 @@ namespace ERH.HeatScans.Reporting
                 return;
             }
 
+            frontPageWritable.Dispose();
+            pageTemplateWritable.Dispose();
             wordDocument.Dispose();
+
             disposed = true;
         }
 
@@ -70,5 +91,6 @@ namespace ERH.HeatScans.Reporting
                 throw new ObjectDisposedException(GetType().FullName);
             }
         }
+
     }
 }

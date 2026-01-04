@@ -3,22 +3,26 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace ERH.HeatScans.Reporting.Word;
 
-public class WordDocument(Stream frontPagesStream, Stream pageTemplateStream) : IDisposable
+public class WordDocument(MemoryStream frontPagesStream, MemoryStream pageTemplateStream) : IDisposable
 {
-    private readonly Stream frontPagesStream = frontPagesStream;
-    private readonly Stream pageTemplateStream = pageTemplateStream;
+    private readonly MemoryStream frontPagesStream = frontPagesStream;
+    private readonly MemoryStream pageTemplateStream = pageTemplateStream;
     private WordprocessingDocument? wordDocument = null;
+    private readonly MemoryStream newDocumentStream = new MemoryStream();
     private bool disposedValue;
 
     public void Init()
     {
-        using var document = WordprocessingDocument.Open(frontPagesStream, true);
-        wordDocument = document.Clone();
+        wordDocument?.Dispose();
+        var template = WordprocessingDocument.Open(frontPagesStream, true);
+
+        wordDocument = template.Clone(newDocumentStream, true);
     }
 
     public void SetReportValue(string property, string value)
@@ -161,9 +165,14 @@ public class WordDocument(Stream frontPagesStream, Stream pageTemplateStream) : 
         measurementCell.AppendChild(paragraph);
     }
 
-    public void Save()
+    public MemoryStream Save()
     {
-        wordDocument?.Save();
+        if (wordDocument.CanSave)
+        {
+            wordDocument.Save();
+        }
+
+        return newDocumentStream;
     }
 
     private Table GetPageTemplateParagraph()
@@ -184,10 +193,19 @@ public class WordDocument(Stream frontPagesStream, Stream pageTemplateStream) : 
         {
             if (disposing)
             {
-                wordDocument?.Dispose();
-            }
+                try
+                {
+                    wordDocument?.Dispose();
+                }
+                catch (Exception ex)
+                {
 
-            disposedValue = true;
+                    Debug.WriteLine(ex.Message);
+                    // ignore dispose exceptions
+                }
+
+                disposedValue = true;
+            }
         }
     }
 
