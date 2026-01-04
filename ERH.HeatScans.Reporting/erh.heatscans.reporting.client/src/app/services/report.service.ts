@@ -24,7 +24,7 @@ export class ReportService {
   
   getReport(folderId: string): Promise<Report> {
     const headers = this.getAuthHeaders();
-    const url = `${this.baseUrl}/report?folderId=${folderId}`;
+    const url = `${this.baseUrl}?folderId=${folderId}`;
     
     return lastValueFrom(this.http.get<Report>(url, { headers }));
   }

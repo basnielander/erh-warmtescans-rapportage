@@ -11,10 +11,14 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
     public class ReportController : AuthorizedApiController
     {
         private readonly GoogleDriveService storageService;
+        private readonly ReportService reportService;
+        private readonly FLIRService heatScanService;
 
         public ReportController() : base()
         {
             storageService = new GoogleDriveService();
+            reportService = new ReportService();
+            heatScanService = new FLIRService();
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Report with folder ID and list of images</returns>
         [HttpGet]
-        [Route("report")]
+        [Route("")]
         public async Task<IHttpActionResult> GetReport(string folderId = null, CancellationToken cancellationToken = default)
         {
             return await ExecuteAuthorizedAsync(async accessToken =>
@@ -175,6 +179,51 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 }
 
                 await storageService.UpdateReportDetailsAsync(accessToken, folderId, reportDetails, cancellationToken);
+                return Ok();
+            });
+        }
+
+        [HttpPost]
+        [Route("document")]
+        public async Task<IHttpActionResult> CreateReport(string folderId = null, CancellationToken cancellationToken = default)
+        {
+            return await ExecuteAuthorizedAsync(async accessToken =>
+            {
+                var validationResult = ValidateRequired("folderId", folderId);
+                if (validationResult != null)
+                {
+                    return validationResult;
+                }
+
+                var report = await storageService.GetReportAsync(accessToken, folderId, cancellationToken);
+
+                if (report == null)
+                {
+                    return BadRequest("Report not found");
+                }
+
+                var heatScans = new List<Models.Image>();
+                foreach (var image in report.Images)
+                {
+                    if (!image.ExcludeFromReport)
+                    {
+                        var imageFileId = image.Id;
+
+                        using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, imageFileId, cancellationToken))
+                        {
+                            var heatScan = heatScanService.GetHeatscanImage(rawFileAsStream);
+
+                            heatScan.Id = imageFileId;
+
+                            return Ok(heatScan);
+                        }
+                    }
+                }
+
+                var reportDocument = await reportService.CreateReportDocumentAsync(folderId, report, heatScans, cancellationToken);
+
+                _ = Task.Run(async () => await storageService.CreateOrUpdateFile($"{report.Address} - Warmtescanrapport {report.PhotosTakenAt.Value.ToString("dd-MM-yyyy")}.docx", folderId, reportDocument, accessToken, cancellationToken));
+
                 return Ok();
             });
         }

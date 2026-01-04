@@ -52,6 +52,21 @@
   }
 }
 
+.daylight-photo-container {
+  background-color: $color-gray-100;
+  border-radius: $border-radius-base;
+  border: 1px solid $color-gray-300;
+}
+
+.daylight-photo-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: $border-radius-sm;
+  background-color: $color-gray-200;
+  max-height: 400px;
+}
+
 .image-thumbnail {
   width: 100%;
   height: 100%;

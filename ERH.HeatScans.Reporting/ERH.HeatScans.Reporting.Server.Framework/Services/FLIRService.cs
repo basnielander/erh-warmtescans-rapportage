@@ -137,6 +137,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             {
                 Data = image.Data,
                 MimeType = image.MimeType,
+                DaylightPhotoData = image.DaylightPhotoData,
                 DateTaken = image.DateTaken,
                 Spots = image.Spots.Select(spot => new ImageSpot()
                 {

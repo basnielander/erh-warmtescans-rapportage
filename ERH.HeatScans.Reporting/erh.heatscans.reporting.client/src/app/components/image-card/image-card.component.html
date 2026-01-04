@@ -131,6 +131,18 @@
       </div>
     </div>
 
+    <!-- Daylight Photo Display -->
+    @if (currentImage()?.daylightPhotoData) {
+      <div class="daylight-photo-container">
+        <img 
+          [src]="'data:' + currentImage()!.mimeType + ';base64,' + currentImage()!.daylightPhotoData"
+          [alt]="'Daylight photo of ' + image().name"
+          class="daylight-photo-image"
+          loading="lazy"
+        />
+      </div>
+    }
+
     <!-- Exclude/Include Button (View Mode - shown below image) -->
     <div *ngIf="!isEditing()" class="image-actions-below">
       <div class="action-buttons">

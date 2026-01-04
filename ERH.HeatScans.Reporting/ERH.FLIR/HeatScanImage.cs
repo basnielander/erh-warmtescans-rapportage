@@ -9,6 +9,8 @@ public class HeatScanImage
     public byte[] Data { get; set; }
     public string MimeType { get; set; }
 
+    public byte[] DaylightPhotoData { get; set; }
+
     public ICollection<Spot> Spots { get; set; }
 
     public DateTimeOffset DateTaken { get; set; }

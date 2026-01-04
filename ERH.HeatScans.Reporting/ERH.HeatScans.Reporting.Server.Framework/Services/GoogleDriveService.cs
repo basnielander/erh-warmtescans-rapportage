@@ -735,13 +735,45 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
         internal async Task SaveFile(string imageFileId, byte[] data, string accessToken, CancellationToken cancellationToken)
         {
             // Upload updated file content
-            using (var driveService = CreateDriveService(accessToken))
+            using var driveService = CreateDriveService(accessToken);
+
+            using var stream = new MemoryStream(data);
+
+            var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), imageFileId, stream, null);
+            await request.UploadAsync(cancellationToken);
+        }
+
+        internal async Task CreateOrUpdateFile(string fileName, string folderId, byte[] data, string accessToken, CancellationToken cancellationToken)
+        {
+            using var driveService = CreateDriveService(accessToken);
+
+            // Check if file already exists in the folder
+            var query = $"name = '{fileName.Replace("'", "\\'")}' and '{folderId}' in parents and trashed = false";
+            var listRequest = driveService.Files.List();
+            listRequest.Q = query;
+            listRequest.Fields = "files(id, name)";
+            var listResponse = await listRequest.ExecuteAsync(cancellationToken);
+            if (listResponse.Files != null && listResponse.Files.Count > 0)
             {
-                using (var stream = new MemoryStream(data))
+                // File exists, update it
+                var existingFile = listResponse.Files[0];
+
+                using var stream = new MemoryStream(data);
+                var updateRequest = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), existingFile.Id, stream, null);
+                await updateRequest.UploadAsync(cancellationToken);
+            }
+            else
+            {
+                // File does not exist, create it
+                var fileMetadata = new Google.Apis.Drive.v3.Data.File()
                 {
-                    var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), imageFileId, stream, null);
-                    await request.UploadAsync(cancellationToken);
-                }
+                    Name = fileName,
+                    Parents = [folderId]
+                };
+
+                using var stream = new MemoryStream(data);
+                var createRequest = driveService.Files.Create(fileMetadata, stream, null);
+                await createRequest.UploadAsync(cancellationToken);
             }
         }
     }
