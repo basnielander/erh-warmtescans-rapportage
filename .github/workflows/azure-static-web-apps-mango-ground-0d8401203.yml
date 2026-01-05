@@ -24,6 +24,24 @@ jobs:
           lfs: false
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
+      - name: Replace prod environment variable 'api base url'
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: '**/environment.prod.ts'
+          search-text: '@@api-base-url@@'
+          replacement-text: 'https://erh-warmtescans-rapportage-api-ezdmdjdcghhxaafz.westeurope-01.azurewebsites.net/api/'
+          exclude: 'node_modules/**'
+          encoding: 'utf8'
+          max-parallelism: 10
+      - name: Replace prod environment variable 'google client id'
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: '**/environment.prod.ts'
+          search-text: '@@google-client-id@@'
+          replacement-text: '343866397450-jt4c9enoljg2c8n6v65ighfmhsl30cag'
+          exclude: 'node_modules/**'
+          encoding: 'utf8'
+          max-parallelism: 10
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken
@@ -40,6 +58,7 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          app_build_command: "npm run build:prod"
           app_location: "./ERH.HeatScans.Reporting/erh.heatscans.reporting.client" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "dist/erh.heatscans.reporting.client/browser" # Built app content directory - optional
