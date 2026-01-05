@@ -10,6 +10,7 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path="NuGet.Config" />
   </Folder>
   <Project Path="ERH.FLIR/ERH.FLIR.csproj" Id="1dc4cf1a-ac29-4acd-97ba-d228dc353bbe">
     <Platform Solution="*|x64" Project="x64" />

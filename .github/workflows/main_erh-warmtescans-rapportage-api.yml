@@ -22,7 +22,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Restore NuGet packages
-        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.slnx -ConfigFile ./ERH.HeatScans.Reporting/NuGet.Config        
+        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.slnx
 
       - name: Publish to folder
         run: msbuild ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.slnx /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
