@@ -166,9 +166,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FLIR4310.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccessToken.cs" />
     <Compile Include="Controllers\AuthorizedApiController.cs" />
@@ -257,10 +254,9 @@
     <Content Include="protos\google\api\annotations.proto" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Copy-FLIR-DLLs.ps1" />
-    <Content Include="Copy-FLIR-DLLs.bat" />
     <Content Include="appSettings.xml" />
     <Content Include="appSettings.template.xml" />
+    <Content Include="Api-build.targets" />
     <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
     <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
     <Content Include="Web.config" />
@@ -328,6 +324,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>call "$(ProjectDir)Copy-FLIR-DLLs.bat"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
