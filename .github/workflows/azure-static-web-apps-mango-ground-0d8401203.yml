@@ -24,7 +24,7 @@ jobs:
           lfs: false
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
-      - name: Replace prod environment variable 'api base url'
+      - name: Replace prod environment variable - api base url
         uses: richardrigutins/replace-in-files@v2
         with:
           files: '**/environment.prod.ts'
@@ -33,7 +33,7 @@ jobs:
           exclude: 'node_modules/**'
           encoding: 'utf8'
           max-parallelism: 10
-      - name: Replace prod environment variable 'google client id'
+      - name: Replace prod environment variable - google client id
         uses: richardrigutins/replace-in-files@v2
         with:
           files: '**/environment.prod.ts'
