@@ -254,11 +254,12 @@
     <Content Include="protos\google\api\backend.proto" />
     <Content Include="protos\google\api\auth.proto" />
     <Content Include="protos\google\api\annotations.proto" />
-    <Content Include="SetEnvVars.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Copy-FLIR-DLLs.ps1" />
     <Content Include="Copy-FLIR-DLLs.bat" />
+    <Content Include="appSettings.xml" />
+    <Content Include="appSettings.template.xml" />
     <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
     <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
     <Content Include="Web.config" />
@@ -274,6 +275,7 @@
       <Name>ERH.HeatScans.Reporting</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

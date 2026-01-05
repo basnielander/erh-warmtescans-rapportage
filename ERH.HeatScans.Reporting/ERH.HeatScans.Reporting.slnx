@@ -4,6 +4,10 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/CI-CD/">
+    <File Path="../.github/workflows/azure-static-web-apps-mango-ground-0d8401203.yml" />
+    <File Path="../.github/workflows/main_erh-warmtescans-rapportage-api.yml" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
