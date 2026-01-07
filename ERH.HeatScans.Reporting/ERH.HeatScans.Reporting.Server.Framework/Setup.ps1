@@ -4,6 +4,25 @@ Write-Host "ERH Heat Scans Reporting - .NET Framework 4.8.1 Setup" -ForegroundCo
 Write-Host "======================================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Copy appSettings.template.xml to appSettings.xml
+$appSettingsTemplate = ".\appSettings.template.xml"
+$appSettingsFile = ".\appSettings.xml"
+
+if (Test-Path $appSettingsTemplate) {
+    if (!(Test-Path $appSettingsFile)) {
+        Write-Host "Copying appSettings.template.xml to appSettings.xml..." -ForegroundColor Yellow
+        Copy-Item $appSettingsTemplate $appSettingsFile
+        Write-Host "? appSettings.xml created successfully" -ForegroundColor Green
+        Write-Host "  Please update the values in appSettings.xml with your configuration" -ForegroundColor Yellow
+    } else {
+        Write-Host "? appSettings.xml already exists" -ForegroundColor Green
+    }
+} else {
+    Write-Host "? Warning: appSettings.template.xml not found" -ForegroundColor Red
+}
+
+Write-Host ""
+
 # Check if google-credentials.json exists in parent directory
 $parentCredPath = "..\ERH.HeatScans.Reporting.Server\google-credentials.json"
 $localCredPath = ".\google-credentials.json"
