@@ -45,6 +45,10 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting
         run: nuget restore .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
 
+      - name: Set appSettings.xml
+        working-directory: .\ERH.HeatScans.Reporting.Server.Framework
+        run: copy .\appSettings.template.xml .\appSettings.xml /Y
+  
       - name: Publish to folder
         working-directory: .\ERH.HeatScans.Reporting
         run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
