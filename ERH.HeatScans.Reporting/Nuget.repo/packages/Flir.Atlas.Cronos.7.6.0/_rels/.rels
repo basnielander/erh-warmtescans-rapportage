@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/Flir.Atlas.Cronos.nuspec" Id="RC7BC35AE6628352A" />
+  <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/1dda877760054a9cbe5378b6b1d09b1d.psmdcp" Id="RD72A489A8E63E82D" />
+</Relationships>

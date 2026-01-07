@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props" Condition="Exists('C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" />
+  <Import Project="..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props" Condition="Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="Api-build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -68,19 +69,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <!--<ItemGroup>
-    <NativeLibs Include="C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-$(PlatformTarget)\native\*.dll" />
-    <Content Include="@(NativeLibs)">
-      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Platform)' == 'Win32' Or '$(Platform)' == 'x86'">
-    <Content Include="$(MSBuildThisFileDirectory)\win-x86\lib\*.dll" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <Content Include="C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\*.dll" />
-  </ItemGroup>-->
   <ItemGroup>
     <PackageReference Include="Google.Api.Gax" Version="4.12.1" />
     <PackageReference Include="Google.Api.Gax.Grpc" Version="4.12.1" />
@@ -229,7 +217,7 @@
   <ItemGroup>
     <Content Include="appSettings.xml" />
     <Content Include="appSettings.template.xml" />
-    <Content Include="Api-build.targets" />
+    <None Include="Api-build.props" />
     <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
     <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
     <Content Include="Web.config" />
@@ -267,10 +255,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" Text="$([System.String]::Format('$(ErrorText)', 'C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props'))" />
-    <Error Condition="!Exists('C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" Text="$([System.String]::Format('$(ErrorText)', 'C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets'))" />
+    <Error Condition="!Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props'))" />
+    <Error Condition="!Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets'))" />
   </Target>
-  <Import Project="C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('C:\Projects\Nuget\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />
+  <Import Project="..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />  
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">

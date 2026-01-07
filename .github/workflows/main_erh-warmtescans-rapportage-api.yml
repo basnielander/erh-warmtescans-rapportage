@@ -21,11 +21,17 @@ jobs:
       - name: Setup MSBuild path
         uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Restore NuGet packages
-        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.slnx -Verbosity detailed
+      - name: Restore NuGet packages (FLIR)
+        run: nuget restore ./ERH.HeatScans.Reporting/ERH.FLIR/ERH.FLIR.csproj -Verbosity detailed
+
+      - name: Restore NuGet packages (HeatScans.Reporting)
+        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.csproj -Verbosity detailed
+
+      - name: Restore NuGet packages (Server)
+        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
 
       - name: Publish to folder
-        run: msbuild ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.slnx /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
+        run: msbuild ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
