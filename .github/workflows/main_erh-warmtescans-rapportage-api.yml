@@ -21,17 +21,29 @@ jobs:
       - name: Setup MSBuild path
         uses: microsoft/setup-msbuild@v1.0.2
 
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1
+
+      - name: Extract local NuGet packages
+        working-directory: ./ERH.HeatScans.Reporting/Nuget.repo
+        run: |
+          nuget add Flir.Atlas.Cronos.7.6.0.nupkg -source ./packages -Expand
+
       - name: Restore NuGet packages (FLIR)
-        run: nuget restore ./ERH.HeatScans.Reporting/ERH.FLIR/ERH.FLIR.csproj -Verbosity detailed
+        working-directory: ./ERH.HeatScans.Reporting
+        run: nuget restore ./ERH.FLIR/ERH.FLIR.csproj -Verbosity detailed
 
       - name: Restore NuGet packages (HeatScans.Reporting)
-        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.csproj -Verbosity detailed
+        working-directory: ./ERH.HeatScans.Reporting
+        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.csproj -Verbosity detailed
 
       - name: Restore NuGet packages (Server)
-        run: nuget restore ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
+        working-directory: ./ERH.HeatScans.Reporting
+        run: nuget restore ./ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
 
       - name: Publish to folder
-        run: msbuild ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
+        working-directory: ./ERH.HeatScans.Reporting
+        run: msbuild ./ERH.HeatScans.Reporting.Server.Framework/ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
