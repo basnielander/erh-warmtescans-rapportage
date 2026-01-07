@@ -154,7 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CleanAndRestore.bat" />
-    <Content Include="http-client.env.json" />
     <Content Include="Maps.http" />
     <Content Include="UserGoogleDrive.http" />
     <Content Include="protos\google\type\timeofday.proto" />
@@ -215,7 +214,7 @@
     <Content Include="protos\google\api\annotations.proto" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appSettings.xml" />
+    <Content Include="appSettings.xml"  Condition=" '$(Configuration)' == 'Debug'" />
     <Content Include="appSettings.template.xml" />
     <None Include="Api-build.props" />
     <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
@@ -258,7 +257,7 @@
     <Error Condition="!Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props'))" />
     <Error Condition="!Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets'))" />
   </Target>
-  <Import Project="..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />  
+  <Import Project="..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
