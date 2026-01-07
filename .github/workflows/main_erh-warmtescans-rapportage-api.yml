@@ -22,7 +22,9 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1
+        uses: NuGet/setup-nuget@v2
+        with:
+          nuget-version: 'latest'
 
       - name: Extract local NuGet packages
         working-directory: ./ERH.HeatScans.Reporting/Nuget.repo
