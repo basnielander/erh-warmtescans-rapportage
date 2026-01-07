@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch:    
 
 jobs:
   build:
@@ -16,7 +16,9 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          lfs: true
 
       - name: Setup MSBuild path
         uses: microsoft/setup-msbuild@v1.0.2
