@@ -153,9 +153,9 @@
     <Content Include="Global.asax" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CleanAndRestore.bat" />
-    <Content Include="Maps.http" />
-    <Content Include="UserGoogleDrive.http" />
+    <None Include="CleanAndRestore.bat" />
+    <None Include="Maps.http" />
+    <None Include="UserGoogleDrive.http" />
     <Content Include="protos\google\type\timeofday.proto" />
     <Content Include="protos\google\type\quaternion.proto" />
     <Content Include="protos\google\type\postal_address.proto" />
@@ -214,11 +214,9 @@
     <Content Include="protos\google\api\annotations.proto" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appSettings.xml"  Condition=" '$(Configuration)' == 'Debug'" />
+    <Content Include="appSettings.xml" Condition=" '$(Configuration)' == 'Debug'" />
     <Content Include="appSettings.template.xml" />
     <None Include="Api-build.props" />
-    <None Include="Properties\PublishProfiles\LocalIIS-MSDeploy.pubxml" />
-    <None Include="Properties\PublishProfiles\LocalIIS.pubxml" />
     <Content Include="Web.config" />
     <None Include="Web.config.template" />
   </ItemGroup>
