@@ -29,19 +29,17 @@ jobs:
         with:
           files: '**/environment.prod.ts'
           search-text: '@@api-base-url@@'
-          replacement-text: 'https://erh-warmtescans-rapportage-api-ezdmdjdcghhxaafz.westeurope-01.azurewebsites.net/api/'
+          replacement-text: '${{ vars.API_BASE_URL }}'
           exclude: 'node_modules/**'
           encoding: 'utf8'
-          max-parallelism: 10
       - name: Replace prod environment variable - google client id
         uses: richardrigutins/replace-in-files@v2
         with:
           files: '**/environment.prod.ts'
           search-text: '@@google-client-id@@'
-          replacement-text: '343866397450-jt4c9enoljg2c8n6v65ighfmhsl30cag'
+          replacement-text: '${{ secrets.GOOGLE_CLIENT_ID }}'
           exclude: 'node_modules/**'
           encoding: 'utf8'
-          max-parallelism: 10
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken

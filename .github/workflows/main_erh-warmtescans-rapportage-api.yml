@@ -47,8 +47,32 @@ jobs:
 
       - name: Set appSettings.xml
         working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
-        run: copy .\appSettings.template.xml .\appSettings.xml /Y
+        run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
   
+      - name: Replace prod environment variable - google client id
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
+          search-text: '@@YOUR_CLIENT_ID@@'
+          replacement-text: '${{ secrets.GOOGLE_CLIENT_ID }}'
+          encoding: 'utf8'
+
+      - name: Replace prod environment variable - users folder id
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
+          search-text: '@@UsersFolderId@@'
+          replacement-text: '${{ secrets.DRIVE_USERS_FOLDER_ID }}'
+          encoding: 'utf8'
+
+      - name: Replace prod environment variable - google maps api key
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
+          search-text: '@@YOUR_GOOGLE_MAPS_API_KEY@@'
+          replacement-text: '${{ secrets.GOOGLE_MAPS_API_KEY }}'
+          encoding: 'utf8'
+
       - name: Publish to folder
         working-directory: .\ERH.HeatScans.Reporting
         run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
