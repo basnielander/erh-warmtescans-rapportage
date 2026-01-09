@@ -61,7 +61,7 @@ jobs:
         uses: richardrigutins/replace-in-files@v2
         with:
           files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
-          search-text: '@@UsersFolderId@@'
+          search-text: '@@YOUR_GOOGLE_DRIVE_FOLDER_ID@@'
           replacement-text: ${{ secrets.DRIVE_USERS_FOLDER_ID }}
           encoding: 'utf8'
 
