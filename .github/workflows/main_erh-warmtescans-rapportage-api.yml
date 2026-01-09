@@ -28,11 +28,6 @@ jobs:
         with:
           nuget-version: 'latest'
 
-      - name: Extract local NuGet packages
-        working-directory: .\ERH.HeatScans.Reporting\Nuget.repo
-        run: |
-          nuget add Flir.Atlas.Cronos.7.6.0.nupkg -source .\packages -Expand
-
       - name: Restore NuGet packages (FLIR)
         working-directory: .\ERH.HeatScans.Reporting
         run: nuget restore .\ERH.FLIR\ERH.FLIR.csproj -Verbosity detailed
@@ -49,12 +44,16 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
         run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
   
+      - name: Env variables
+        run: echo ${{ vars.API_BASE_URL }} >> $GITHUB_STEP_SUMMARY
+
+        # Replace all placeholders with actual secrets from GitHub Secrets  
       - name: Replace prod environment variable - google client id
         uses: richardrigutins/replace-in-files@v2
         with:
           files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
           search-text: '@@YOUR_CLIENT_ID@@'
-          replacement-text: '${{ secrets.GOOGLE_CLIENT_ID }}'
+          replacement-text: ${{ secrets.GOOGLE_CLIENT_ID }}
           encoding: 'utf8'
 
       - name: Replace prod environment variable - users folder id
@@ -62,7 +61,7 @@ jobs:
         with:
           files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
           search-text: '@@UsersFolderId@@'
-          replacement-text: '${{ secrets.DRIVE_USERS_FOLDER_ID }}'
+          replacement-text: ${{ secrets.DRIVE_USERS_FOLDER_ID }}
           encoding: 'utf8'
 
       - name: Replace prod environment variable - google maps api key
@@ -70,7 +69,7 @@ jobs:
         with:
           files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
           search-text: '@@YOUR_GOOGLE_MAPS_API_KEY@@'
-          replacement-text: '${{ secrets.GOOGLE_MAPS_API_KEY }}'
+          replacement-text: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           encoding: 'utf8'
 
       - name: Publish to folder
