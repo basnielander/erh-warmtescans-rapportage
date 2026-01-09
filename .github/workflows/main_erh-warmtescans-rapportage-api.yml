@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    environment:  Warmtescans Rapportages  
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -40,9 +41,9 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting
         run: nuget restore .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
 
-      # - name: Set appSettings.xml
-      #   working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
-      #   run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
+      - name: Set appSettings.xml
+        working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
+        run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
   
       - name: Env variables
         run: env
