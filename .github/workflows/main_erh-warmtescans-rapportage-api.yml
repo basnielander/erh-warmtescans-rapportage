@@ -40,9 +40,9 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting
         run: nuget restore .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
 
-      - name: Set appSettings.xml
-        working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
-        run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
+      # - name: Set appSettings.xml
+      #   working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
+      #   run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
   
       - name: Env variables
         run: env
@@ -59,18 +59,61 @@ jobs:
       - name: Replace prod environment variable - users folder id
         uses: richardrigutins/replace-in-files@v2
         with:
-          files: '.\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework\appSettings.xml'
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
           search-text: '@@UsersFolderId@@'
           replacement-text: ${{ secrets.DRIVE_USERS_FOLDER_ID }}
           encoding: 'utf8'
 
       - name: Replace prod environment variable - google maps api key
-        uses: richardrigutins\replace-in-files@v2
+        uses: richardrigutins/replace-in-files@v2
         with:
-          files: '.\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework\appSettings.xml'
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
           search-text: '@@YOUR_GOOGLE_MAPS_API_KEY@@'
           replacement-text: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           encoding: 'utf8'
 
       - name: AppSettings
-        run: cat .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework\appSettings.xml
+        run: cat ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml
+
+      - name: Publish to folder
+        working-directory: .\ERH.HeatScans.Reporting
+        run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl="\published\"
+
+      - name: List All Files
+        run: 
+          tree ${{ env.GITHUB_ACTION_PATH }} /f /a
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASP-app
+          path: '\published\**'
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: ASP-app
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FBFA491B69C847C192506901CC32CF5E }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CE3D94EA584C4E549115455D49243C9E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_642209E2957C438E9251E2F60045F0A3 }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'erh-warmtescans-rapportage-api'
+          slot-name: 'Production'
+          package: .
+          
