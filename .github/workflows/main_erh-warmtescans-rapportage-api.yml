@@ -45,7 +45,7 @@ jobs:
         run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
   
       - name: Env variables
-        run: echo ${{ vars.API_BASE_URL }} >> $GITHUB_STEP_SUMMARY
+        run: echo "Api_base_url ${{ vars.API_BASE_URL }} " >> $env:GITHUB_STEP_SUMMARY
 
         # Replace all placeholders with actual secrets from GitHub Secrets  
       - name: Replace prod environment variable - google client id
