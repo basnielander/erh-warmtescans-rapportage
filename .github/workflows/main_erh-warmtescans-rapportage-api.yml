@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    environment:  Warmtescans Rapportages  
+    environment:  Warmtescans Rapportages
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -45,9 +45,6 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
         run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
   
-      - name: Env variables
-        run: env
-
         # Replace all placeholders with actual secrets from GitHub Secrets  
       - name: Replace prod environment variable - google client id
         uses: richardrigutins/replace-in-files@v2
@@ -72,9 +69,6 @@ jobs:
           search-text: '@@YOUR_GOOGLE_MAPS_API_KEY@@'
           replacement-text: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           encoding: 'utf8'
-
-      - name: AppSettings
-        run: cat ./ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml
 
       - name: Publish to folder
         working-directory: .\ERH.HeatScans.Reporting

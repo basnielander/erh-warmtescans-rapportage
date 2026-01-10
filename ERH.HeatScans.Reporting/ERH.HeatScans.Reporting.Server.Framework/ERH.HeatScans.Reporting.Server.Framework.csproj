@@ -2,7 +2,6 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props" Condition="Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="Api-build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -112,6 +111,38 @@
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FLIR.ATS.Format.Utilities, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\FLIR.ATS.Format.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\Flir.Cronos.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Filter, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\Flir.Cronos.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Filter.Adapter, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\Flir.Cronos.Filter.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.Cronos.Panorama, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\Flir.Cronos.Panorama.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.FormatPlugin.IRSDK, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\Flir.FormatPlugin.IRSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Flir.FormatPlugin.PTW, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\Flir.FormatPlugin.PTW.dll</HintPath>
+    </Reference>
+    <Reference Include="FLIRCommunicationsAdapter, Version=7.0.0.0, Culture=neutral, PublicKeyToken=caa391fd8e07c76b, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\win-x64\lib\FLIRCommunicationsAdapter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
@@ -150,12 +181,25 @@
     <Compile Include="Services\GoogleMapsService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="atlas_c_sdk.dll" />
+    <Content Include="avcodec-58.dll" />
+    <Content Include="avdevice-58.dll" />
+    <Content Include="avfilter-7.dll" />
+    <Content Include="avformat-58.dll" />
+    <Content Include="avutil-56.dll" />
+    <Content Include="DynamicFilter.dll" />
+    <Content Include="Flir.Atlas.PleoraWrapper.dll" />
+    <Content Include="Flir.Atlas.SpinnakerWrapper.dll" />
+    <Content Include="Flir.Cronos.ImageProcessingCPU.dll" />
+    <Content Include="FLIRCommunications.dll" />
     <Content Include="Global.asax" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CleanAndRestore.bat" />
+    <None Include="Clean.bat" />
     <None Include="Maps.http" />
     <None Include="UserGoogleDrive.http" />
+    <Content Include="ImageProcessingWrapper.dll" />
+    <Content Include="live666.dll" />
     <Content Include="protos\google\type\timeofday.proto" />
     <Content Include="protos\google\type\quaternion.proto" />
     <Content Include="protos\google\type\postal_address.proto" />
@@ -216,7 +260,8 @@
   <ItemGroup>
     <Content Include="appSettings.xml" Condition=" '$(Configuration)' == 'Debug'" />
     <Content Include="appSettings.template.xml" />
-    <None Include="Api-build.props" />
+    <Content Include="swresample-3.dll" />
+    <Content Include="swscale-5.dll" />
     <Content Include="Web.config" />
     <None Include="Web.config.template" />
   </ItemGroup>
@@ -248,14 +293,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.props'))" />
-    <Error Condition="!Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets'))" />
-  </Target>
-  <Import Project="..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets" Condition="Exists('..\Nuget.repo\packages\Flir.Atlas.Cronos.7.6.0\build\net452\Flir.Atlas.Cronos.targets')" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
