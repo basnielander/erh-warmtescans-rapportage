@@ -137,7 +137,7 @@
 .details-map-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  gap: 12px;
   align-items: start;
 }
 
@@ -147,7 +147,6 @@
   flex-direction: column;
 }
 
-.map-section,
 .info-section,
 .images-section {
   @include card-base;
