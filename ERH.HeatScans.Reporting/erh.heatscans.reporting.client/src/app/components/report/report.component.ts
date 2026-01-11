@@ -41,7 +41,6 @@ export class ReportComponent implements OnInit {
   // Batch calibration state
   showBatchOutdoorCalibration = signal<boolean>(false);
   showBatchIndoorCalibration = signal<boolean>(false);
-  showReportDetailsEditor = signal<boolean>(false);
 
   // Computed signal for sorted images
   sortedImages = computed(() => {
@@ -320,10 +319,6 @@ export class ReportComponent implements OnInit {
     this.showBatchIndoorCalibration.set(false);
   }
 
-  onShowReportDetailsEditor(): void {
-    this.showReportDetailsEditor.set(true);
-  }
-
   async onReportDetailsSave(updatedDetails: Partial<Report>): Promise<void> {
     const currentReport = this.addressReport();
     if (!currentReport) return;
@@ -336,7 +331,6 @@ export class ReportComponent implements OnInit {
         ...currentReport,
         ...updatedDetails
       });
-      this.showReportDetailsEditor.set(false);
     } catch (err: any) {
       console.error('Error updating report details:', err);
       alert('Failed to update report details. Please try again.');
@@ -344,6 +338,8 @@ export class ReportComponent implements OnInit {
   }
 
   onReportDetailsCancel(): void {
-    this.showReportDetailsEditor.set(false);
+    // Since editor is inline, cancel just means don't save
+    // We could add logic here to reset form if needed
+    console.log('Report details edit cancelled');
   }
 }
