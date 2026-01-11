@@ -11,7 +11,6 @@
   transition: all $transition-base;
 
   &:hover {
-    transform: translateX(4px);
     box-shadow: $shadow-md;
     border-color: $color-primary-blue;
   }
@@ -260,10 +259,6 @@
   .scale-container {
     width: 100%;
     justify-content: center;
-  }
-
-  .image-card:hover {
-    transform: translateY(-2px);
   }
 
   .action-buttons {

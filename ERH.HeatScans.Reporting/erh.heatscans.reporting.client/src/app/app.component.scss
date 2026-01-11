@@ -95,7 +95,7 @@ main {
   color: white;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(51, 110, 255, 0.4);
   }
 }
@@ -143,7 +143,7 @@ main {
   cursor: pointer;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }
