@@ -1,10 +1,10 @@
 <div class="folder-browser">
   <div class="header">
-    <h2>Folder Browser</h2>
+    <h2>Drive - Warmtescan-bestanden</h2>
     <div *ngIf="folderStructure() && !isLoading()" class="actions">
-      <button (click)="expandAll()" class="btn-action">Expand All</button>
-      <button (click)="collapseAll()" class="btn-action">Collapse All</button>
-      <button (click)="refreshFolderStructure()" class="btn-action">Refresh</button>
+      <button (click)="expandAll()" class="btn-action" title="Alle folders uitklappen">Uitklappen</button>
+      <button (click)="collapseAll()" class="btn-action" title="Alle folders inklappen">Inklappen</button>
+      <button (click)="refreshFolderStructure()" class="btn-action" title="Folders updaten/verversen">Verversen</button>
     </div>
   </div>
 
@@ -15,31 +15,18 @@
 
   <div *ngIf="error()" class="error">
     <p>{{ error() }}</p>
-    <button (click)="loadFolderStructure()">Retry</button>
+    <button (click)="loadFolderStructure()">Opnieuw proberen</button>
   </div>
 
   <div *ngIf="folderStructure() && !isLoading()" class="folder-structure">
     <!-- Root folder -->
     <div class="tree-item root-item">
       <div class="item-header" (click)="toggleFolder(folderStructure()!.id)">
-        <span class="expand-icon">
-          {{ isFolderExpanded(folderStructure()!.id) ? '▼' : '▶' }}
-        </span>
+        
         <span class="item-icon folder-icon">📁</span>
         <span class="item-name">{{ folderStructure()!.name }}</span>
-        <span class="item-info" *ngIf="folderStructure()!.children">
-          ({{ getItemCount(folderStructure()!).folders }} folders, {{ getItemCount(folderStructure()!).files }} files)
-        </span>
       </div>
       
-      <!-- Root metadata -->
-      <div class="item-meta">
-        <span class="meta-item">ID: {{ folderStructure()!.id }}</span>
-        <span *ngIf="folderStructure()!.modifiedTime" class="meta-item">
-          Modified: {{ folderStructure()!.modifiedTime | date:'short' }}
-        </span>
-      </div>
-
       <!-- Root children -->
       <div *ngIf="isFolderExpanded(folderStructure()!.id) && folderStructure()!.children && folderStructure()!.children.length > 0" 
            class="tree-children">
@@ -52,7 +39,7 @@
       <div *ngIf="isFolderExpanded(folderStructure()!.id) && (!folderStructure()!.children || folderStructure()!.children.length === 0)" 
            class="empty-folder">
         <span class="empty-icon">📭</span>
-        <span>This folder is empty</span>
+        <span>Deze folder is leeg</span>
       </div>
     </div>
   </div>
@@ -82,15 +69,12 @@
       
       <!-- Add "Click to view report" hint for level 2 folders -->
       <span class="report-hint" *ngIf="level === 2">
-        (Click to view report)
+        (Klik voor het tonen van het rapport)
       </span>
       
       <span class="item-info" *ngIf="level !== 2 && item.children && item.children.length > 0">
-        ({{ getItemCount(item).folders }} folders, {{ getItemCount(item).files }} files)
-      </span>
-      <span *ngIf="item.modifiedTime" class="item-modified">
-        {{ item.modifiedTime | date:'short' }}
-      </span>
+        ({{ getItemCount(item).folders }} folder(s))
+      </span>      
     </div>
 
     <!-- File item -->
@@ -98,10 +82,7 @@
       <span class="expand-icon placeholder"></span>
       <span class="item-icon file-icon">{{ getFileIcon(item.mimeType) }}</span>
       <span class="item-name">{{ item.name }}</span>
-      <span *ngIf="item.size" class="item-size">{{ formatFileSize(item.size) }}</span>
-      <span *ngIf="item.modifiedTime" class="item-modified">
-        {{ item.modifiedTime | date:'short' }}
-      </span>
+      <span *ngIf="item.size" class="item-size">{{ formatFileSize(item.size) }}</span>      
     </div>
 
     <!-- Folder children (recursive) - Don't show for level 2 folders -->
@@ -117,7 +98,7 @@
          class="empty-folder"
          [style.padding-left.px]="(level + 1) * 20">
       <span class="empty-icon">📭</span>
-      <span>Empty folder</span>
+      <span>Lege folder</span>
     </div>
   </div>
 </ng-template>

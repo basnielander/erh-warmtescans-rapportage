@@ -74,10 +74,6 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting
         run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl="\published\"
 
-      - name: List All Files
-        run: 
-          tree ${{ env.GITHUB_ACTION_PATH }} /f /a
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
