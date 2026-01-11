@@ -241,48 +241,6 @@
   }
 }
 
-.image-edit-form {
-  @include flex-column;
-  gap: 10px;
-  margin-top: $spacing-xs;
-  padding: 10px;
-  background-color: $color-info-bg;
-  border-radius: $border-radius-base;
-  border: 1px solid #d0d8e8;
-}
-
-.form-group {
-  @include flex-column;
-  gap: $spacing-xs;
-}
-
-.form-label {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-  color: $color-gray-900;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.form-checkbox {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.checkbox-label {
-  font-weight: $font-weight-medium;
-  user-select: none;
-}
-
-.form-textarea {
-  @include form-input-base;
-  resize: vertical;
-  min-height: 60px;
-  font-size: $font-size-sm;
-}
-
 .image-actions {
   margin-top: $spacing-sm;
 }
@@ -301,9 +259,7 @@
 
 .btn-exclude,
 .btn-include,
-.btn-edit,
-.btn-save,
-.btn-cancel {
+.btn-edit {
   @include button-base;
   padding: 6px 12px;
   font-size: $font-size-sm;
@@ -335,26 +291,6 @@
 
   &:hover {
     background-color: $color-primary-blue-darker;
-    @include button-hover-lift;
-  }
-}
-
-.btn-save {
-  background-color: $color-green;
-  color: white;
-
-  &:hover {
-    background-color: $color-green-dark;
-    @include button-hover-lift;
-  }
-}
-
-.btn-cancel {
-  background-color: #757575;
-  color: white;
-
-  &:hover {
-    background-color: #616161;
     @include button-hover-lift;
   }
 }

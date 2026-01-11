@@ -7,11 +7,12 @@ import { Image } from "../../models/image.model";
 import { FoldersAndFileService } from '../../services/folders-and-files.service';
 import { ImageService } from '../../services/image.service';
 import { ImageScaleComponent } from '../image-scale/image-scale.component';
+import { ImageEditFormComponent } from '../image-edit-form/image-edit-form.component';
 
 @Component({
   selector: 'app-image-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImageScaleComponent],
+  imports: [CommonModule, FormsModule, ImageScaleComponent, ImageEditFormComponent],
   templateUrl: './image-card.component.html',
   styleUrl: './image-card.component.scss'
 })
@@ -26,10 +27,6 @@ export class ImageCardComponent implements OnInit {
   isLoading = signal<boolean>(true);
   hasError = signal<boolean>(false);
   isEditing = signal<boolean>(false);
-  
-  // Local state for editing
-  editComment = signal<string>('');
-  editOutdoor = signal<boolean>(true);
 
   // Store image data for displaying spots
   currentImage = signal<Image | null>(null);
@@ -42,8 +39,6 @@ export class ImageCardComponent implements OnInit {
     // Use effect to handle image changes
     effect(() => {
       const currentImage = this.image();
-      this.editComment.set(currentImage.comments || '');
-      this.editOutdoor.set(currentImage.outdoor ?? true);
       this.loadImage();
     });
   }
@@ -99,28 +94,16 @@ export class ImageCardComponent implements OnInit {
     this.toggleExclude.emit(this.image().id);
   }
 
-  onEditClick(event: MouseEvent): void {
-    event.stopPropagation();
-    this.isEditing.set(true);
-    this.editComment.set(this.image().comments || '');
-    this.editOutdoor.set(this.image().outdoor ?? true);
-  }
-
-  onSaveClick(event: MouseEvent): void {
-    event.stopPropagation();
+  onFormSave(data: { comment: string, outdoor: boolean }): void {
     this.updateImageProperties.emit({
       imageId: this.image().id,
-      comment: this.editComment(),
-      outdoor: this.editOutdoor()
+      comment: data.comment,
+      outdoor: data.outdoor
     });
-    this.isEditing.set(false);
   }
 
-  onCancelClick(event: MouseEvent): void {
-    event.stopPropagation();
-    this.isEditing.set(false);
-    this.editComment.set(this.image().comments || '');
-    this.editOutdoor.set(this.image().outdoor ?? true);
+  onFormCancel(): void {
+    // Reset handled by the child component
   }
 
   async onDeleteSpotClick(event: MouseEvent, spotName: string): Promise<void> {
