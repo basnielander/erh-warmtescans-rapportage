@@ -29,26 +29,26 @@ export class ReportDetailsEditorComponent implements OnInit {
   
   // Wind direction options
   windDirectionOptions = [
-    { value: 'N', label: 'North (N)', icon: '⬆️' },
-    { value: 'NE', label: 'Northeast (NE)', icon: '↗️' },
-    { value: 'E', label: 'East (E)', icon: '➡️' },
-    { value: 'SE', label: 'Southeast (SE)', icon: '↘️' },
-    { value: 'S', label: 'South (S)', icon: '⬇️' },
-    { value: 'SW', label: 'Southwest (SW)', icon: '↙️' },
+    { value: 'N', label: 'Noord (N)', icon: '⬆️' },
+    { value: 'NE', label: 'Noordoost (NO)', icon: '↗️' },
+    { value: 'E', label: 'Oost (O)', icon: '➡️' },
+    { value: 'SE', label: 'Zuidoost (ZO)', icon: '↘️' },
+    { value: 'S', label: 'Zuid (Z)', icon: '⬇️' },
+    { value: 'SW', label: 'Zuidwest (ZW)', icon: '↙️' },
     { value: 'W', label: 'West (W)', icon: '⬅️' },
-    { value: 'NW', label: 'Northwest (NW)', icon: '↖️' }
+    { value: 'NW', label: 'Noordwest (NW)', icon: '↖️' }
   ];
   
   // Door direction options
   doorDirectionOptions = [
-    { value: 'N', label: 'North (N)', icon: '⬆️' },
-    { value: 'NE', label: 'Northeast (NE)', icon: '↗️' },
-    { value: 'E', label: 'East (E)', icon: '➡️' },
-    { value: 'SE', label: 'Southeast (SE)', icon: '↘️' },
-    { value: 'S', label: 'South (S)', icon: '⬇️' },
-    { value: 'SW', label: 'Southwest (SW)', icon: '↙️' },
+    { value: 'N', label: 'Noord (N)', icon: '⬆️' },
+    { value: 'NE', label: 'Noordoost (NO)', icon: '↗️' },
+    { value: 'E', label: 'Oost (O)', icon: '➡️' },
+    { value: 'SE', label: 'Zuidoost (ZO)', icon: '↘️' },
+    { value: 'S', label: 'Zuid (Z)', icon: '⬇️' },
+    { value: 'SW', label: 'Zuidwest (ZW)', icon: '↙️' },
     { value: 'W', label: 'West (W)', icon: '⬅️' },
-    { value: 'NW', label: 'Northwest (NW)', icon: '↖️' }
+    { value: 'NW', label: 'Noordwest (NW)', icon: '↖️' }
   ];
   
   constructor() {
