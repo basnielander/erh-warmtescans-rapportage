@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Flir.Atlas.Cronos</id>
+    <version>7.6.0</version>
+    <title>Flir.Atlas.Cronos</title>
+    <authors>FLIR</authors>
+    <owners>FLIR</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://www.flir.com/instruments/display/?id=60416</licenseUrl>
+    <iconUrl>http://www.flir.com/v5-5/asset/img/flirLogo_slash.png</iconUrl>
+    <description>FLIR Atlas SDK for .NET</description>
+    <summary>FLIR Atlas SDK for .NET</summary>
+    <releaseNotes>Supports IR-Image with Fusion, Measurements, Scale, Compass, Gps, Temperature Units.</releaseNotes>
+    <copyright>Copyright 2020 FLIR. All rights reserved.</copyright>
+    <tags>atlas image api</tags>
+    <references>
+      <reference file="Flir.Atlas.Image.dll" />
+      <reference file="Flir.Atlas.Live.dll" />
+      <reference file="Flir.Atlas.Gigevision.dll" />
+    </references>
+  </metadata>
+</package>

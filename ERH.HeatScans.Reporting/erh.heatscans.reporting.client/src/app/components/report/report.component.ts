@@ -321,10 +321,6 @@ export class ReportComponent implements OnInit {
     this.showBatchIndoorCalibration.set(false);
   }
 
-  onShowReportDetailsEditor(): void {
-    this.showReportDetailsEditor.set(true);
-  }
-
   async onReportDetailsSave(updatedDetails: Partial<Report>): Promise<void> {
     const currentReport = this.addressReport();
     if (!currentReport) return;
@@ -337,15 +333,18 @@ export class ReportComponent implements OnInit {
         ...currentReport,
         ...updatedDetails
       });
-      this.showReportDetailsEditor.set(false);
     } catch (err: any) {
       console.error('Error updating report details:', err);
       alert('Failed to update report details. Please try again.');
+      // Trigger a reload to reset the editor state
+      await this.loadReport();
     }
   }
 
   onReportDetailsCancel(): void {
-    this.showReportDetailsEditor.set(false);
+    // Since editor is inline, cancel just means don't save
+    // We could add logic here to reset form if needed
+    console.log('Report details edit cancelled');
   }
 
   async onExportReport(): Promise<void> {

@@ -24,12 +24,6 @@
           🏠 Calibrate Indoor Images
         </button>
         <button 
-          class="menu-btn menu-btn-edit" 
-          (click)="onShowReportDetailsEditor()"
-          [disabled]="isUpdatingIndices()">
-          ✏️ Edit Report Details
-        </button>
-        <button 
           class="menu-btn menu-btn-export" 
           (click)="onExportReport()"
           [disabled]="isUpdatingIndices() || isExportingReport()">
@@ -62,21 +56,18 @@
   </div>
 
   <div class="report-content" *ngIf="!isSettingUp() && !isLoadingReport()">
-    <div class="map-section">
-      <h3>📍 Location Map</h3>
-      <app-map-display [address]="folderName()"></app-map-display>
-    </div>
-
-    <div class="info-section">
-      <h3>ℹ️ Folder Information</h3>
-      <div class="info-item">
-        <strong>Folder Name:</strong> {{ folderName() }}
+    <!-- Report Details & Map Side by Side -->
+    <div class="details-map-section" *ngIf="addressReport()">
+      <div class="report-details-wrapper">
+        <app-report-details-editor
+          [report]="addressReport()!"
+          (save)="onReportDetailsSave($event)"
+          (cancel)="onReportDetailsCancel()">
+        </app-report-details-editor>
       </div>
-      <div class="info-item">
-        <strong>Folder ID:</strong> {{ folderId() }}
-      </div>
-      <div class="info-item" *ngIf="addressReport()">
-        <strong>Total Images:</strong> {{ sortedImages().length }}
+      
+      <div class="map-section">
+        <app-map-display [address]="folderName()"></app-map-display>
       </div>
     </div>
 
@@ -85,7 +76,7 @@
       <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
       <div class="update-status" *ngIf="isUpdatingIndices()">
         <div class="spinner-small"></div>
-        <span>Updating order...</span>
+        <span>Volgorde van scans voor het rapport update...</span>
       </div>
       <div class="images-grid">
         <div 
@@ -154,18 +145,5 @@
       (saveCalibration)="onBatchCalibrationSave($event)"
       (cancel)="onBatchCalibrationCancel()">
     </app-batch-indoor-calibration>
-  </app-modal>
-
-  <!-- Report Details Editor Modal -->
-  <app-modal 
-    [isOpen]="showReportDetailsEditor()" 
-    title="📝 Edit Report Details"
-    (close)="onReportDetailsCancel()">
-    <app-report-details-editor
-      *ngIf="addressReport()"
-      [report]="addressReport()!"
-      (save)="onReportDetailsSave($event)"
-      (cancel)="onReportDetailsCancel()">
-    </app-report-details-editor>
   </app-modal>
 </div>

@@ -1,11 +1,9 @@
 <div class="map-container">
-  <h3>Map for: {{ address() }}</h3>
-  
   <div class="map-content">
     <!-- Loading State -->
     <div *ngIf="isLoading()" class="loading">
       <div class="spinner"></div>
-      <p>Loading map...</p>
+      <p>Laden van kaart map...</p>
     </div>
 
     <!-- Error State -->
@@ -16,12 +14,7 @@
 
     <!-- Map Image -->
     <div *ngIf="imageUrl() && !isLoading() && !error()" class="map-image-wrapper">
-      <img [src]="imageUrl()" [alt]="'Map of ' + address()" class="map-image" />
-      <div class="map-info">
-        <p><strong>Address:</strong> {{ address() }}</p>
-        <p><strong>Zoom:</strong> {{ zoom() }}</p>
-        <button (click)="reload()" class="reload-button">Reload Map</button>
-      </div>
+      <img [src]="imageUrl()" [alt]="'Kaart van ' + address()" class="map-image" />
     </div>
   </div>
 </div>

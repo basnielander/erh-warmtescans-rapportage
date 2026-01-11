@@ -4,8 +4,13 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/CI-CD/">
+    <File Path="../.github/workflows/azure-static-web-apps-mango-ground-0d8401203.yml" />
+    <File Path="../.github/workflows/main_erh-warmtescans-rapportage-api.yml" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path="NuGet.Config" />
   </Folder>
   <Project Path="ERH.FLIR/ERH.FLIR.csproj" Id="1dc4cf1a-ac29-4acd-97ba-d228dc353bbe">
     <Platform Solution="*|x64" Project="x64" />

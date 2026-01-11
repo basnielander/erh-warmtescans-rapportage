@@ -137,7 +137,20 @@
   gap: 30px;
 }
 
-.map-section,
+// Side-by-side layout for report details and map
+.details-map-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.report-details-wrapper {
+  // Remove padding from wrapper as the editor has its own
+  display: flex;
+  flex-direction: column;
+}
+
 .info-section,
 .images-section {
   @include card-base;
@@ -273,5 +286,11 @@
 
   .menu-btn {
     width: 100%;
+  }
+
+  // Stack vertically on mobile
+  .details-map-section {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
   }
 }
