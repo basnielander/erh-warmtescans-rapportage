@@ -8,11 +8,12 @@ import { FoldersAndFileService } from '../../services/folders-and-files.service'
 import { ImageService } from '../../services/image.service';
 import { ImageScaleComponent } from '../image-scale/image-scale.component';
 import { ImageEditFormComponent } from '../image-edit-form/image-edit-form.component';
+import { TemperatureSpotsListComponent } from '../temperature-spots-list/temperature-spots-list.component';
 
 @Component({
   selector: 'app-image-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImageScaleComponent, ImageEditFormComponent],
+  imports: [CommonModule, FormsModule, ImageScaleComponent, ImageEditFormComponent, TemperatureSpotsListComponent],
   templateUrl: './image-card.component.html',
   styleUrl: './image-card.component.scss'
 })
@@ -30,6 +31,9 @@ export class ImageCardComponent implements OnInit {
 
   // Store image data for displaying spots
   currentImage = signal<Image | null>(null);
+
+  // Track daylight photo collapsed state
+  isDaylightPhotoCollapsed = signal<boolean>(true);
 
   constructor(
     private driveService: FoldersAndFileService,
@@ -106,9 +110,7 @@ export class ImageCardComponent implements OnInit {
     // Reset handled by the child component
   }
 
-  async onDeleteSpotClick(event: MouseEvent, spotName: string): Promise<void> {
-    event.stopPropagation();
-    
+  async onDeleteSpotClick(spotName: string): Promise<void> {
     console.log(`Deleting spot ${spotName} from image ${this.image().id}`);
 
     try {
@@ -132,5 +134,9 @@ export class ImageCardComponent implements OnInit {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+  }
+
+  toggleDaylightPhoto(): void {
+    this.isDaylightPhotoCollapsed.set(!this.isDaylightPhotoCollapsed());
   }
 }

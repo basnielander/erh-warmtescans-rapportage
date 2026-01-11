@@ -52,6 +52,34 @@
   }
 }
 
+.daylight-photo-section {
+  @include flex-column;
+  gap: $spacing-xs;
+}
+
+.daylight-photo-header {
+  @include flex-row;
+  align-items: center;
+  padding: $spacing-sm;
+  background-color: $color-gray-100;
+  border-radius: $border-radius-base;
+  border: 1px solid $color-gray-300;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: $color-gray-200;
+    border-color: $color-primary-blue;
+  }
+}
+
+.daylight-photo-title {
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
+  color: $color-gray-950;
+  user-select: none;
+}
+
 .daylight-photo-container {
   background-color: $color-gray-100;
   border-radius: $border-radius-base;
@@ -157,88 +185,6 @@
 .detail-value {
   color: $color-gray-950;
   flex: 1;
-}
-
-.spots-list {
-  margin-top: $spacing-sm;
-  padding: 10px;
-  background-color: $color-yellow-lightest;
-  border-radius: $border-radius-base;
-  border: 1px solid $color-yellow;
-}
-
-.spots-header {
-  margin-bottom: $spacing-sm;
-  padding-bottom: 6px;
-  border-bottom: 1px solid $color-yellow;
-}
-
-.spots-title {
-  font-weight: $font-weight-semibold;
-  font-size: 13px;
-  color: $color-gray-950;
-}
-
-.spots-items {
-  @include flex-column;
-  gap: 6px;
-}
-
-.spot-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 8px;
-  background-color: $color-white;
-  border-radius: $border-radius-sm;
-  border: 1px solid $color-yellow-light;
-  transition: all $transition-fast;
-
-  &:hover {
-    background-color: $color-yellow-lighter;
-    border-color: $color-yellow;
-    box-shadow: 0 1px 3px rgba($color-yellow, 0.2);
-  }
-}
-
-.spot-details {
-  @include flex-column;
-  gap: 2px;
-  flex: 1;
-}
-
-.spot-name {
-  font-weight: $font-weight-semibold;
-  font-size: $font-size-sm;
-  color: $color-gray-900;
-}
-
-.spot-temperature {
-  font-size: 13px;
-  color: $color-yellow;
-  font-weight: $font-weight-semibold;
-}
-
-.btn-delete-spot {
-  @include button-base;
-  background-color: transparent;
-  border: 1px solid $color-gray-300;
-  border-radius: $border-radius-sm;
-  padding: $spacing-xs $spacing-sm;
-  font-size: $font-size-base;
-  min-width: 32px;
-  height: 32px;
-
-  &:hover {
-    background-color: $color-red;
-    border-color: $color-red;
-    transform: scale(1.1);
-    box-shadow: 0 2px 4px rgba($color-red, 0.3);
-  }
-
-  &:active {
-    transform: scale(1.05);
-  }
 }
 
 .image-actions {

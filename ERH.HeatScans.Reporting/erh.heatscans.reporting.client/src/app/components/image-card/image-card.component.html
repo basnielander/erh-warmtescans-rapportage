@@ -1,39 +1,13 @@
 <div class="image-card">
   <div class="image-info">
     <div class="image-name" [title]="image().name">{{ image().name }}</div>
-    <div class="image-meta">
-      <span *ngIf="image().size" class="image-size">{{ formatFileSize(image().size) }}</span>
-      <span *ngIf="image().modifiedTime" class="image-date">
-        {{ image().modifiedTime | date:'short' }}
-      </span>
-      <span *ngIf="currentImage()?.dateTaken" class="image-date-taken">
-        📅 Taken: {{ currentImage()!.dateTaken | date:'short' }}
-      </span>
-      <span *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="image-spots">
-        🎯 Spots: {{ currentImage()!.spots.length }}
-      </span>
-    </div>
-
+    
     <!-- Temperature Spots List -->
-    <div *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="spots-list">
-      <div class="spots-header">
-        <span class="spots-title">🌡️ Metingen</span>
-      </div>
-      <div class="spots-items">
-        <div *ngFor="let spot of currentImage()!.spots" class="spot-item">
-          <div class="spot-details">
-            <span class="spot-name">{{ spot.name }}</span>
-            <span class="spot-temperature">{{ spot.temperature }}</span>
-          </div>
-          <button 
-            class="btn-delete-spot"
-            (click)="onDeleteSpotClick($event, spot.name)"
-            title="Delete spot">
-            🗑️
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-temperature-spots-list
+      *ngIf="currentImage()?.spots"
+      [spots]="currentImage()!.spots"
+      (deleteSpot)="onDeleteSpotClick($event)"
+    />
 
     <!-- Image Edit Form Component -->
     <app-image-edit-form
@@ -74,13 +48,22 @@
 
     <!-- Daylight Photo Display -->
     @if (currentImage()?.daylightPhotoData) {
-      <div class="daylight-photo-container">
-        <img 
-          [src]="'data:' + currentImage()!.mimeType + ';base64,' + currentImage()!.daylightPhotoData"
-          [alt]="'Daylight photo of ' + image().name"
-          class="daylight-photo-image"
-          loading="lazy"
-        />
+      <div class="daylight-photo-section">
+        <div class="daylight-photo-header" (click)="toggleDaylightPhoto()">
+          <span class="daylight-photo-title">
+            {{ isDaylightPhotoCollapsed() ? '▶' : '▼' }} Daglicht foto
+          </span>
+        </div>
+        @if (!isDaylightPhotoCollapsed()) {
+          <div class="daylight-photo-container">
+            <img 
+              [src]="'data:' + currentImage()!.mimeType + ';base64,' + currentImage()!.daylightPhotoData"
+              [alt]="'Daylight photo of ' + image().name"
+              class="daylight-photo-image"
+              loading="lazy"
+            />
+          </div>
+        }
       </div>
     }
 
