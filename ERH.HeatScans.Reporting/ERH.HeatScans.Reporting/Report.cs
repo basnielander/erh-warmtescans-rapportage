@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ERH.HeatScans.Reporting
 {
@@ -11,7 +10,7 @@ namespace ERH.HeatScans.Reporting
         public string FolderId { get; set; } = folderId;
         public string Address { get; set; } = address;
 
-        public DateTimeOffset? PhotosTakenAt { get; set; }
+        public string? PhotosTakenAt { get; set; }
 
         public IList<ReportImage> Images { get; set; } = [];
 

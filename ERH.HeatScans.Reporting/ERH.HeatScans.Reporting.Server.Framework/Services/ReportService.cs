@@ -15,7 +15,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
 
             using var frontPagePhotoStream = new MemoryStream(heatScans.First().DaylightPhotoData);
 
-            report.PhotosTakenAt = heatScans.First().DateTaken;
+            report.PhotosTakenAt = heatScans.First().DateTaken.ToString("dd-MM-yyyy");
 
             reportDocumentGenerator.CreateDocumentWithoutTheImages(report, frontPagePhotoStream);
 

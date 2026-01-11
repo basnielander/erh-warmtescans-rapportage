@@ -32,7 +32,7 @@ namespace ERH.HeatScans.Reporting
                 wordDocument = new WordDocument(frontPageWritable, pageTemplateWritable);
                 wordDocument.Init();
                 wordDocument.SetReportValue("Object", report.Address);
-                wordDocument.SetReportValue("Datum opname", report.PhotosTakenAt.Value.Date.ToShortDateString() ?? "");
+                wordDocument.SetReportValue("Datum opname", report.PhotosTakenAt);
                 wordDocument.SetReportValue("Temperatuur", $"{report.Temperature}⁰C");
                 wordDocument.SetReportValue("Windkracht", $"{report.WindSpeed} km/u");
                 wordDocument.SetReportValue("Windrichting", report.WindDirection);

@@ -421,7 +421,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        private async Task UpdateReportFileAsync(DriveService driveService, string fileId, Report report, CancellationToken cancellationToken)
+        public async Task UpdateReportFileAsync(DriveService driveService, string fileId, Report report, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(report, Formatting.Indented);
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -436,6 +436,49 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
                 {
                     throw new Exception("Failed to update report.json file");
+                }
+            }
+        }
+
+        public async Task UpdateReportFileAsync(string accessToken, string addressFolderId, Report report, CancellationToken cancellationToken)
+        {
+            using (var driveService = CreateDriveService(accessToken))
+            {
+                // Get all items in the address folder
+                var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                // Find "2. Bewerkt" subfolder
+                var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                    item.IsFolder && item.Name == "2. Bewerkt");
+
+                if (bewerktFolder == null)
+                {
+                    throw new Exception($"Subfolder '2. Bewerkt' not found in folder {addressFolderId}");
+                }
+
+                string bewerktFolderId = bewerktFolder.Id;
+
+                // Get all items in "2. Bewerkt" folder
+                var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                // Look for report.json file
+                var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                    !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                var json = JsonConvert.SerializeObject(report, Formatting.Indented);
+                var bytes = Encoding.UTF8.GetBytes(json);
+
+                var fileMetadata = new Google.Apis.Drive.v3.Data.File();
+
+                using (var stream = new MemoryStream(bytes))
+                {
+                    var request = driveService.Files.Update(fileMetadata, reportFile.Id, stream, "application/json");
+                    var file = await request.UploadAsync(cancellationToken);
+
+                    if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
+                    {
+                        throw new Exception("Failed to update report.json file");
+                    }
                 }
             }
         }

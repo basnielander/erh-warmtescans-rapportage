@@ -44,6 +44,15 @@ export class ReportComponent implements OnInit {
   showReportDetailsEditor = signal<boolean>(false);
   isExportingReport = signal<boolean>(false);
 
+  // Computed signal for data the photos were taken
+  photosTakenAt = computed(() => {
+    const report = this.addressReport();
+
+    if (!report || !report.photosTakenAt) return "";
+    
+    return report.photosTakenAt;
+  });
+
   // Computed signal for sorted images
   sortedImages = computed(() => {
     const report = this.addressReport();

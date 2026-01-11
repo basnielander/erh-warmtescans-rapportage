@@ -41,6 +41,20 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
                 }
 
                 var report = await storageService.GetReportAsync(accessToken, folderId, cancellationToken);
+
+                if (report.PhotosTakenAt == null)
+                {
+                    var imageFileId = report.Images.First().Id;
+                    using (var rawFileAsStream = await storageService.GetFileBytesAsync(accessToken, report.Images.First().Id, cancellationToken))
+                    {
+                        var heatScan = heatScanService.GetHeatscanImage(rawFileAsStream);
+
+                        report.PhotosTakenAt = heatScan.DateTaken.ToString("dd-MM-yyyy");
+
+                        await storageService.UpdateReportFileAsync(accessToken, folderId, report, cancellationToken);
+                    }
+                }
+
                 return Ok(report);
             });
         }
@@ -218,7 +232,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 
                 var reportDocument = reportService.CreateReportDocumentAsync(folderId, report, heatScans);
 
-                _ = Task.Run(async () => await storageService.CreateOrUpdateFile($"{report.Address} - Warmtescanrapport {report.PhotosTakenAt.Value.ToString("dd-MM-yyyy")}.docx", folderId, reportDocument, accessToken, cancellationToken));
+                _ = Task.Run(async () => await storageService.CreateOrUpdateFile($"{report.Address} - Warmtescanrapport {report.PhotosTakenAt}.docx", folderId, reportDocument, accessToken, cancellationToken));
 
                 return Ok(reportDocument);
             });
