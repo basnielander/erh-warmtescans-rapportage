@@ -334,6 +334,8 @@ export class ReportComponent implements OnInit {
     } catch (err: any) {
       console.error('Error updating report details:', err);
       alert('Failed to update report details. Please try again.');
+      // Trigger a reload to reset the editor state
+      await this.loadReport();
     }
   }
 

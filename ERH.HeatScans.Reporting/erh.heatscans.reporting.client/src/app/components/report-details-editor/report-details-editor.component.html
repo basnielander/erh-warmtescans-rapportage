@@ -123,20 +123,21 @@
         </div>
       </div>
     </div>
+  </div>
   
   <!-- Action Buttons -->
   <div class="editor-actions">
     <button 
       class="btn-save" 
       (click)="onSave()"
-      [disabled]="isSaving() || !isValid()">
+      [disabled]="isSaving() || !isValid() || !hasChanges()">
       <span *ngIf="!isSaving()">✅ Opslaan</span>
       <span *ngIf="isSaving()">⏳ Verwerken...</span>
     </button>
     <button 
       class="btn-cancel" 
       (click)="onCancel()"
-      [disabled]="isSaving()">
+      [disabled]="isSaving() || !hasChanges()">
       ❌ Annuleren
     </button>
   </div>

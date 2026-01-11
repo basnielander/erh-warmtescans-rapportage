@@ -1,4 +1,4 @@
-import { Component, output, signal, OnInit, input, effect } from '@angular/core';
+import { Component, output, signal, OnInit, input, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Report } from '../../models/report.model';
@@ -25,7 +25,27 @@ export class ReportDetailsEditorComponent implements OnInit {
   hoursOfSunshine = signal<number | undefined>(undefined);
   frontDoorDirection = signal<string>('');
   
+  // Original values for change tracking
+  private originalAddress = signal<string>('');
+  private originalTemperature = signal<number | undefined>(undefined);
+  private originalWindSpeed = signal<number | undefined>(undefined);
+  private originalWindDirection = signal<string>('');
+  private originalHoursOfSunshine = signal<number | undefined>(undefined);
+  private originalFrontDoorDirection = signal<string>('');
+  
   isSaving = signal<boolean>(false);
+  
+  // Computed signal to check if any value has changed
+  hasChanges = computed(() => {
+    return (
+      this.address() !== this.originalAddress() ||
+      this.temperature() !== this.originalTemperature() ||
+      this.windSpeed() !== this.originalWindSpeed() ||
+      this.windDirection() !== this.originalWindDirection() ||
+      this.hoursOfSunshine() !== this.originalHoursOfSunshine() ||
+      this.frontDoorDirection() !== this.originalFrontDoorDirection()
+    );
+  });
   
   // Wind direction options
   windDirectionOptions = [
@@ -55,12 +75,34 @@ export class ReportDetailsEditorComponent implements OnInit {
     // Use effect to initialize form fields when report input changes
     effect(() => {
       const currentReport = this.report();
-      this.address.set(currentReport.address || '');
-      this.temperature.set(currentReport.temperature);
-      this.windSpeed.set(currentReport.windSpeed);
-      this.windDirection.set(currentReport.windDirection || '');
-      this.hoursOfSunshine.set(currentReport.hoursOfSunshine);
-      this.frontDoorDirection.set(currentReport.frontDoorDirection || '');
+      const address = currentReport.address || '';
+      const temperature = currentReport.temperature;
+      const windSpeed = currentReport.windSpeed;
+      const windDirection = currentReport.windDirection || '';
+      const hoursOfSunshine = currentReport.hoursOfSunshine;
+      const frontDoorDirection = currentReport.frontDoorDirection || '';
+      
+      // Set current values
+      this.address.set(address);
+      this.temperature.set(temperature);
+      this.windSpeed.set(windSpeed);
+      this.windDirection.set(windDirection);
+      this.hoursOfSunshine.set(hoursOfSunshine);
+      this.frontDoorDirection.set(frontDoorDirection);
+      
+      // Set original values for change tracking
+      this.originalAddress.set(address);
+      this.originalTemperature.set(temperature);
+      this.originalWindSpeed.set(windSpeed);
+      this.originalWindDirection.set(windDirection);
+      this.originalHoursOfSunshine.set(hoursOfSunshine);
+      this.originalFrontDoorDirection.set(frontDoorDirection);
+      
+      // Reset isSaving state when report updates (successful save)
+      // This will be triggered when parent updates the report after save
+      if (this.isSaving()) {
+        this.isSaving.set(false);
+      }
     });
   }
   
@@ -70,7 +112,7 @@ export class ReportDetailsEditorComponent implements OnInit {
   
   onSave(): void {
     if (!this.isValid()) {
-      alert('Please fill in all required fields correctly');
+      alert('Vul alle waarden in met valide gegevens');
       return;
     }
     
@@ -92,6 +134,15 @@ export class ReportDetailsEditorComponent implements OnInit {
     if (this.isSaving()) {
       return;
     }
+    
+    // Revert all form fields to their original values
+    this.address.set(this.originalAddress());
+    this.temperature.set(this.originalTemperature());
+    this.windSpeed.set(this.originalWindSpeed());
+    this.windDirection.set(this.originalWindDirection());
+    this.hoursOfSunshine.set(this.originalHoursOfSunshine());
+    this.frontDoorDirection.set(this.originalFrontDoorDirection());
+    
     this.cancel.emit();
   }
   
