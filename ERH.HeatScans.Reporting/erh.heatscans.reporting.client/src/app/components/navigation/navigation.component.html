@@ -1,0 +1,25 @@
+<nav class="navigation">
+  <div class="nav-container">
+    <ul class="nav-list">
+      @for (item of navItems; track item.label) {
+        <li class="nav-item">
+          @if (item.route) {
+            <a [routerLink]="item.route" class="nav-link" (click)="onNavItemClick(item, $event)">
+              @if (item.icon) {
+                <span class="nav-icon">{{ item.icon }}</span>
+              }
+              <span class="nav-label">{{ item.label }}</span>
+            </a>
+          } @else {
+            <button class="nav-link nav-button" (click)="onNavItemClick(item, $event)">
+              @if (item.icon) {
+                <span class="nav-icon">{{ item.icon }}</span>
+              }
+              <span class="nav-label">{{ item.label }}</span>
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</nav>

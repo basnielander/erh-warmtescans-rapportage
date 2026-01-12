@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FoldersAndFileService } from '../../services/folders-and-files.service';
 import { GoogleDriveItem } from '../../models/google-drive.model';
+import { NavigationComponent, NavItem } from '../navigation/navigation.component';
 
 @Component({
   selector: 'app-folder-browser',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NavigationComponent],
   templateUrl: './folder-browser.component.html',
   styleUrl: './folder-browser.component.scss'
 })
@@ -20,6 +21,8 @@ export class FolderBrowserComponent implements OnInit {
   
   // Local UI state
   expandedFolders = signal<Set<string>>(new Set());
+
+  navItems: NavItem[] = [];
 
   constructor(
     private googleDriveService: FoldersAndFileService,
