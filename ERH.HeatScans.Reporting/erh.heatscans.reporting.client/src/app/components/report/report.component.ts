@@ -8,19 +8,19 @@ import { BatchIndoorCalibrationComponent } from '../batch-indoor-calibration/bat
 import { ModalComponent } from '../modal/modal.component';
 import { ReportDetailsEditorComponent } from '../report-details-editor/report-details-editor.component';
 import { FoldersAndFileService } from '../../services/folders-and-files.service';
+import { NavigationService } from '../../services/navigation.service';
 import { Report } from '../../models/report.model';
 import { ImageInfo } from "../../models/image-info.model";
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReportService } from '../../services/report.service';
-import { NavigationComponent, NavItem } from '../navigation/navigation.component';
+import { NavItem } from '../navigation/navigation.component';
 
 
 @Component({
   selector: 'app-report',
   standalone: true,
   imports: [
-    CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent, ReportDetailsEditorComponent,
-    NavigationComponent
+    CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent, ReportDetailsEditorComponent
   ],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
@@ -89,13 +89,12 @@ export class ReportComponent implements OnInit {
     return this.sortedImages().some((image) => image.outdoor);
   });
 
-  navItems: NavItem[] = [];
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private driveService: FoldersAndFileService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private navigationService: NavigationService
   ) {
     this.params.set(toSignal(this.route?.paramMap)() ?? null);
 
@@ -118,21 +117,27 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialization is now handled in the constructor's effect
+    this.setupNavigation();
+  }
 
-    // Set up navigation items
-    this.navItems = [
+  ngOnDestroy(): void {
+    this.navigationService.clearNavItems();
+  }
+
+  setupNavigation(): void {
+    const navItems: NavItem[] = [
       {
         label: '← Terug naar folders',
         route: '/',
         icon: ''
       },
       {
-        label: 'Sla rapport op',
-        icon: '💾',
+        label: 'Download rapport',
+        icon: '📥',
         action: () => this.onExportReport()
       }
     ];
+    this.navigationService.setNavItems(navItems);
   }
 
   async setupAddressFolder(): Promise<void> {

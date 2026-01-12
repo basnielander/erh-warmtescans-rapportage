@@ -15,6 +15,7 @@
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: block;
 }
 
 * {
@@ -42,7 +43,7 @@ p {
 
 main {
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 160px);
   padding: 2rem;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }

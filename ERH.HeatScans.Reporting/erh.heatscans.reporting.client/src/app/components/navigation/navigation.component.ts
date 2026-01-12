@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -16,7 +16,7 @@ export interface NavItem {
   styleUrl: './navigation.component.scss'
 })
 export class NavigationComponent {
-  @Input() navItems: NavItem[] = [];
+  navItems = input<NavItem[]>([]);
 
   onNavItemClick(item: NavItem, event: Event): void {
     if (item.action) {

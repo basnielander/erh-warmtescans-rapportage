@@ -1,13 +1,6 @@
-<app-navigation [navItems]="navItems"></app-navigation>
-
 <div class="folder-browser">
   <div class="header">
     <h2>Drive - Warmtescan-bestanden</h2>
-    <div *ngIf="folderStructure() && !isLoading()" class="actions">
-      <button (click)="expandAll()" class="btn-action" title="Alle folders uitklappen">Uitklappen</button>
-      <button (click)="collapseAll()" class="btn-action" title="Alle folders inklappen">Inklappen</button>
-      <button (click)="refreshFolderStructure()" class="btn-action" title="Folders updaten/verversen">Verversen</button>
-    </div>
   </div>
 
   <div *ngIf="isLoading()" class="loading">
