@@ -386,9 +386,7 @@ export class ReportComponent implements OnInit {
     this.isExportingReport.set(true);
 
     try {
-      const blob = await this.reportService.createReport(this.folderId());
-      console.log('Report exported successfully:');
-     
+      const blob = await this.reportService.createReportDocument(this.folderId());
       
       // Create a download link
       const url = window.URL.createObjectURL(blob);
@@ -403,10 +401,7 @@ export class ReportComponent implements OnInit {
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
-      console.log('Report file downloaded');
     } catch (err: any) {
-      console.error('Error exporting report:', err);
       alert('Failed to export report. Please try again.');
     } finally {
       this.isExportingReport.set(false);

@@ -23,7 +23,7 @@ export class ImageCardComponent implements OnInit {
   
   toggleExclude = output<string>();
   updateImageProperties = output<{ imageId: string, comment: string, outdoor: boolean }>();
-  
+
   imageUrl = signal<SafeUrl | null>(null);
   isLoading = signal<boolean>(true);
   hasError = signal<boolean>(false);
@@ -73,11 +73,59 @@ export class ImageCardComponent implements OnInit {
   }
 
   async onImageClick(event: MouseEvent): Promise<void> {
+    const img = this.currentImage();
+
+    if (img == null) {
+      return;
+    }
+
     const imgElement = event.target as HTMLImageElement;
     const rect = imgElement.getBoundingClientRect();
     
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
+    // Calculate relative position in the displayed image
+    
+
+    const imageResolution = (img.size.width / img.size.height);
+    const imageElementResolution = (rect.width / rect.height);
+
+    const localClickPositionX = (event.clientX - rect.left);
+    const localClickPositionY = (event.clientY - rect.top)
+
+    // Calculate coordinates based on actual image dimensions
+    let x = 0;
+    let y = 0;
+
+    if (imageResolution > imageElementResolution) {
+
+      const overflowHalfHeight = (rect.height - (rect.width / imageResolution)) / 2;
+
+      if (localClickPositionY < overflowHalfHeight) {
+        return; // clicked above the image
+      }
+      if (localClickPositionY > rect.height - overflowHalfHeight) {
+        return; // clicked below the image
+      }
+
+      x = localClickPositionX / rect.width;
+      y = (localClickPositionY - overflowHalfHeight) / (rect.height - (2 * overflowHalfHeight));
+
+    } else if (imageResolution < imageElementResolution) {
+
+      const overflowHalfWidth = (rect.width - (rect.height * imageResolution)) / 2;
+
+      if (localClickPositionX < overflowHalfWidth) {
+        return; // clicked left of the image
+      }
+      if (localClickPositionX > rect.width - overflowHalfWidth) {
+        return; // clicked right of the image
+      }
+
+      x = (localClickPositionX - overflowHalfWidth) / (rect.width - (2 * overflowHalfWidth));
+      y = localClickPositionY / rect.height;
+    } else {
+      x = localClickPositionX / rect.width;
+      y = localClickPositionY / rect.height;
+    }
 
     try {
       const imageData = await this.imageService.addSpot(this.image().id, x, y);

@@ -1,7 +1,7 @@
 <nav class="navigation">
   <div class="nav-container">
     <ul class="nav-list">
-      @for (item of navItems; track item.label) {
+      @for (item of navItems(); track item.label) {
         <li class="nav-item">
           @if (item.route) {
             <a [routerLink]="item.route" class="nav-link" (click)="onNavItemClick(item, $event)">

@@ -2,7 +2,6 @@
 using ERH.HeatScans.Reporting.Server.Framework.Models;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Services
@@ -89,7 +88,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 // Process the image in the separate AppDomain
                 var imageData = processorAction(processor);
 
-                return ToImageResult(imageData);
+                return Image.FromHeatscan(imageData);
             }
             catch (Exception ex)
             {
@@ -129,31 +128,6 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 processor => processor.RemoveSpot(imageStream, name),
                 "removing spot from heat scan image"
             );
-        }
-
-        private static Image ToImageResult(HeatScanImage image)
-        {
-            return new Image
-            {
-                Data = image.Data,
-                MimeType = image.MimeType,
-                DaylightPhotoData = image.DaylightPhotoData,
-                DateTaken = image.DateTaken,
-                Spots = image.Spots.Select(spot => new ImageSpot()
-                {
-                    Id = spot.Id,
-                    Name = spot.Name,
-                    Temperature = spot.Temperature,
-                    Point = new ImageSpotPoint() { X = spot.X, Y = spot.Y }
-                }).ToList(),
-                Scale = image.ScaleImage != null ? new ImageScale()
-                {
-                    Data = image.ScaleImage.Data,
-                    MimeType = image.ScaleImage.MimeType,
-                    MinTemperature = image.ScaleImage.MinTemperature,
-                    MaxTemperature = image.ScaleImage.MaxTemperature
-                } : null
-            };
         }
     }
 

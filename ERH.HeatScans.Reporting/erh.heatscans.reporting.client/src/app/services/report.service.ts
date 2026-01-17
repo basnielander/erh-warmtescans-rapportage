@@ -29,7 +29,7 @@ export class ReportService {
     return lastValueFrom(this.http.get<Report>(url, { headers }));
   }
 
-  createReport(folderId: string): Promise<Blob> {
+  createReportDocument(folderId: string): Promise<Blob> {
     const headers = this.getAuthHeaders();
     const url = `${this.baseUrl}/document?folderId=${folderId}`;
 
