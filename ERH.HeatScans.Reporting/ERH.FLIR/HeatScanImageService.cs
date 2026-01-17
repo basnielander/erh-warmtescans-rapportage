@@ -152,8 +152,17 @@ public class HeatScanImageService
             DateTaken = thermalImage.DateTaken,
             Spots = [.. thermalImage.Measurements.MeasurementSpots.Select(ms => new Spot(ms))],
             ScaleImage = CreateThermalScaleImage(thermalImage),
-            DaylightPhotoData = GetDaylightPhotoData(thermalImage)
+            DaylightPhotoData = GetDaylightPhotoData(thermalImage),
+            Size = GetImageSize(thermalImageStream)
         };
+    }
+
+    private static HeatScanSize GetImageSize(MemoryStream thermalImageStream)
+    {
+        using var imageStream = new MemoryStream(thermalImageStream.ToArray());
+        var image = Image.FromStream(imageStream);
+
+        return new(image.Width, image.Height);
     }
 
 }

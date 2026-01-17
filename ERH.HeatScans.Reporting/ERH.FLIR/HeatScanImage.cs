@@ -17,11 +17,14 @@ public class HeatScanImage
 
     public HeatScanScale ScaleImage { get; set; }
 
+    public HeatScanSize Size { get; set; }
+
     public HeatScanImage()
     {
         Data = [];
         Spots = [];
         MimeType = string.Empty;
         DateTaken = DateTimeOffset.UtcNow;
+        Size = new HeatScanSize(0, 0);
     }
 }

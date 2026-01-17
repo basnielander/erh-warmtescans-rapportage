@@ -54,7 +54,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             return documentStream.ToArray();
         }
 
-        private ImageSize GetImageSize(byte[] data)
+        private Word.ImageSize GetImageSize(byte[] data)
         {
             using var imageStream = new MemoryStream(data);
             var image = System.Drawing.Image.FromStream(imageStream);
