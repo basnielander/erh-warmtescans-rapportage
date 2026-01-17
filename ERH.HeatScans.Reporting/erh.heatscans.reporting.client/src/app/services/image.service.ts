@@ -18,22 +18,22 @@ export class ImageService {
     private authService: AuthService
   ) {}
   
-  getImage(fileId: string): Promise<Image> {
-    const headers = this.getAuthHeaders();
+  async getImage(fileId: string): Promise<Image> {
+    const headers = await this.authService.getAuthHeaders();
     const url = `${this.baseUrl}/${fileId}`;
     
     return lastValueFrom(this.http.get<Image>(url, { headers }));
   }
 
-  addSpot(imageFileId: string, x: number, y: number): Promise<Image> {
-    const headers = this.getAuthHeaders();
+  async addSpot(imageFileId: string, x: number, y: number): Promise<Image> {
+    const headers = await this.authService.getAuthHeaders();
     const url = `${this.baseUrl}/${imageFileId}/spots?relativeX=${x}&relativeY=${y}`;
     
     return lastValueFrom(this.http.post<Image>(url, null, { headers }));
   }
 
-  deleteSpot(imageFileId: string, spotName: string): Promise<Image> {
-    const headers = this.getAuthHeaders();
+  async deleteSpot(imageFileId: string, spotName: string): Promise<Image> {
+    const headers = await this.authService.getAuthHeaders();
     const url = `${this.baseUrl}/${imageFileId}/spots/${spotName}`;
     
     return lastValueFrom(this.http.delete<Image>(url, { headers }));
@@ -51,13 +51,5 @@ export class ImageService {
       bytes[i] = binaryString.charCodeAt(i);
     }
     return new Blob([bytes], { type: image.mimeType });
-  }
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = this.authService.getAccessToken();
-
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
   }
 }
