@@ -21,7 +21,7 @@
           placeholder="Adres"
           required
         />
-        <span class="field-hint">Full address of the property being surveyed</span>
+        <span class="field-hint">Adres (straatnaam + huisnummer). Als het een adres buiten Houten is, ook de plaatsnaam invullen.</span>
       </div>
       
       <div class="form-group">
@@ -47,6 +47,15 @@
       <div class="section-header">
         <span class="section-icon">🌤️</span>
         <h3 class="section-title">Weer condities</h3>
+        <a 
+          *ngIf="getWeatherArchiveUrl()" 
+          [href]="getWeatherArchiveUrl()" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="weather-archive-link"
+          title="Bekijk weerarchief">
+          📊 Weerarchief
+        </a>
       </div>
       
       <div class="form-row">

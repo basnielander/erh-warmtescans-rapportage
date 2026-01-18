@@ -199,4 +199,18 @@ export class ReportDetailsEditorComponent implements OnInit {
   onFrontDoorDirectionChange(value: string): void {
     this.frontDoorDirection.set(value);
   }
+  
+  getWeatherArchiveUrl(): string {
+    const date = this.report().photosTakenAt; // date has format dd-MM-yyyy
+    if (!date) {
+      return '';
+    }
+    // Convert date to YYYYMMDD format
+    const year = date.substring(6, 10);
+    const month = date.substring(3, 5);
+    const day = date.substring(0, 2);
+    const formattedDate = `${year}${month}${day}`;
+    return `https://neerslagkaart.nl/archief/?k=zon&d=${formattedDate}&dm=dag`;
+  }
+  
 }

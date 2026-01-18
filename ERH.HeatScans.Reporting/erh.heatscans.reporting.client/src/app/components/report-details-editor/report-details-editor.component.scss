@@ -25,6 +25,19 @@
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+}
+
+.weather-archive-link {
+  flex-basis: 100%;
+  font-size: 0.9rem;
+  color: #3498db;
+  text-decoration: none;
+  margin-top: 8px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .section-icon {
