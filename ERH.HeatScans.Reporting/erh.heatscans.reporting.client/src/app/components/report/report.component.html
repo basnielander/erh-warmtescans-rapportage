@@ -82,6 +82,7 @@
           *ngFor="let image of allIncludedImages(); let i = index"
           class="image-wrapper"
           [class.dragging]="draggedIndex() === i"
+          [class.drag-active]="draggedIndex() !== null"
           draggable="true"
           (dragstart)="onDragStart($event, i)"
           (dragover)="onDragOver($event)"
