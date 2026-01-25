@@ -25,4 +25,6 @@
   <Project Path="ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.csproj" Id="1149835a-85e5-4d0f-b3e5-4d1753a06aa3">
     <Platform Solution="*|x64" Project="x64" />
   </Project>
+  <Project Path="ERH.Weather.Client/ERH.Weather.Client.csproj" Id="18d170ff-b706-425f-9a64-7b8cfc8eb7a6" />
+  <Project Path="Kitchensink/Kitchensink.csproj" Id="f2a6adff-4850-43c2-afd4-5532441abab7" />
 </Solution>
