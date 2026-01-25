@@ -62,31 +62,6 @@ namespace ERH.Weather.Client
         }
 
         /// <summary>
-        /// Retrieves hours of sunshine for a specific location and date.
-        /// </summary>
-        /// <param name="location">The geographic location for which to retrieve sunshine data.</param>
-        /// <param name="date">The date for which to retrieve sunshine hours.</param>
-        /// <returns>A SunshineData object containing the sunshine duration information.</returns>
-        public async Task<SunshineData> GetSunshineHoursAsync(WeatherLocation location, DateTime date)
-        {
-            if (location == null)
-            {
-                throw new ArgumentNullException(nameof(location));
-            }
-
-            var targetDate = date.Date;
-            var url = BuildSunshineUrl(location, targetDate, targetDate);
-
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var apiResponse = DeserializeResponse(json);
-
-            return MapToSunshineData(apiResponse, location, targetDate);
-        }
-
-        /// <summary>
         /// Builds the API URL with the required parameters.
         /// </summary>
         private string BuildUrl(WeatherLocation location, DateTime startDate, DateTime endDate)
@@ -97,23 +72,9 @@ namespace ERH.Weather.Client
             var end = endDate.ToString("yyyy-MM-dd");
 
             var hourlyParams = "temperature_2m,wind_speed_10m,wind_direction_10m";
-
-            return $"{BaseUrl}?latitude={latitude}&longitude={longitude}&start_date={start}&end_date={end}&hourly={hourlyParams}&timezone=Europe%2FBerlin";
-        }
-
-        /// <summary>
-        /// Builds the API URL for sunshine duration requests.
-        /// </summary>
-        private string BuildSunshineUrl(WeatherLocation location, DateTime startDate, DateTime endDate)
-        {
-            var latitude = location.Latitude.ToString("F4", CultureInfo.InvariantCulture);
-            var longitude = location.Longitude.ToString("F4", CultureInfo.InvariantCulture);
-            var start = startDate.ToString("yyyy-MM-dd");
-            var end = endDate.ToString("yyyy-MM-dd");
-
             var dailyParams = "sunshine_duration";
 
-            return $"{BaseUrl}?latitude={latitude}&longitude={longitude}&start_date={start}&end_date={end}&daily={dailyParams}&timezone=auto";
+            return $"{BaseUrl}?latitude={latitude}&longitude={longitude}&start_date={start}&end_date={end}&daily={dailyParams}&hourly={hourlyParams}&timezone=Europe%2FBerlin";
         }
 
         /// <summary>
@@ -235,34 +196,19 @@ namespace ERH.Weather.Client
                 }
             }
 
-            return weatherData;
-        }
-
-        /// <summary>
-        /// Maps the API response to a SunshineData object for the specified date.
-        /// </summary>
-        private SunshineData MapToSunshineData(OpenMeteoResponse response, WeatherLocation location, DateTime date)
-        {
-            var sunshineData = new SunshineData
-            {
-                Date = date,
-                Location = location
-            };
-
             if (response.Daily?.Time != null)
             {
-                var targetDate = date.ToString("yyyy-MM-dd");
+                var targetDate = dateTime.ToString("yyyy-MM-dd");
                 var index = response.Daily.Time.FindIndex(t => t == targetDate);
 
                 if (index >= 0)
                 {
                     var durationSeconds = GetValueAtIndex(response.Daily.Sunshine_Duration, index);
-                    sunshineData.SunshineDurationSeconds = durationSeconds;
-                    sunshineData.SunshineDurationHours = durationSeconds.HasValue ? durationSeconds.Value / 3600.0 : (double?)null;
+                    weatherData.SunshineDurationSeconds = durationSeconds;
+                    weatherData.SunshineDurationHours = durationSeconds.HasValue ? durationSeconds.Value / 3600.0 : (double?)null;
                 }
             }
-
-            return sunshineData;
+            return weatherData;
         }
 
         /// <summary>
