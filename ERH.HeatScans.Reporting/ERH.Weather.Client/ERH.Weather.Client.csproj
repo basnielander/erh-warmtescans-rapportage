@@ -43,10 +43,10 @@
   <ItemGroup>
     <Compile Include="HistoricalWeatherClient.cs" />
     <Compile Include="Models\OpenMeteoResponse.cs" />
+    <Compile Include="Models\SunshineData.cs" />
     <Compile Include="Models\WeatherData.cs" />
     <Compile Include="Models\WeatherLocation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WeatherClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

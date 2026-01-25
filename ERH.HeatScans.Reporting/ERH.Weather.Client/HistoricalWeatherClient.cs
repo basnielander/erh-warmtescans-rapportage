@@ -1,9 +1,10 @@
 using ERH.Weather.Client.Models;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 
 namespace ERH.Weather.Client
 {
@@ -44,7 +45,9 @@ namespace ERH.Weather.Client
         public async Task<WeatherData> GetHistoricalWeatherAsync(WeatherLocation location, DateTime dateTime)
         {
             if (location == null)
+            {
                 throw new ArgumentNullException(nameof(location));
+            }
 
             var date = dateTime.Date;
             var url = BuildUrl(location, date, date);
@@ -59,6 +62,31 @@ namespace ERH.Weather.Client
         }
 
         /// <summary>
+        /// Retrieves hours of sunshine for a specific location and date.
+        /// </summary>
+        /// <param name="location">The geographic location for which to retrieve sunshine data.</param>
+        /// <param name="date">The date for which to retrieve sunshine hours.</param>
+        /// <returns>A SunshineData object containing the sunshine duration information.</returns>
+        public async Task<SunshineData> GetSunshineHoursAsync(WeatherLocation location, DateTime date)
+        {
+            if (location == null)
+            {
+                throw new ArgumentNullException(nameof(location));
+            }
+
+            var targetDate = date.Date;
+            var url = BuildSunshineUrl(location, targetDate, targetDate);
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var apiResponse = DeserializeResponse(json);
+
+            return MapToSunshineData(apiResponse, location, targetDate);
+        }
+
+        /// <summary>
         /// Builds the API URL with the required parameters.
         /// </summary>
         private string BuildUrl(WeatherLocation location, DateTime startDate, DateTime endDate)
@@ -68,9 +96,24 @@ namespace ERH.Weather.Client
             var start = startDate.ToString("yyyy-MM-dd");
             var end = endDate.ToString("yyyy-MM-dd");
 
-            var hourlyParams = "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m,pressure_msl,cloud_cover";
+            var hourlyParams = "temperature_2m,wind_speed_10m,wind_direction_10m";
 
-            return $"{BaseUrl}?latitude={latitude}&longitude={longitude}&start_date={start}&end_date={end}&hourly={hourlyParams}&timezone=auto";
+            return $"{BaseUrl}?latitude={latitude}&longitude={longitude}&start_date={start}&end_date={end}&hourly={hourlyParams}&timezone=Europe%2FBerlin";
+        }
+
+        /// <summary>
+        /// Builds the API URL for sunshine duration requests.
+        /// </summary>
+        private string BuildSunshineUrl(WeatherLocation location, DateTime startDate, DateTime endDate)
+        {
+            var latitude = location.Latitude.ToString("F4", CultureInfo.InvariantCulture);
+            var longitude = location.Longitude.ToString("F4", CultureInfo.InvariantCulture);
+            var start = startDate.ToString("yyyy-MM-dd");
+            var end = endDate.ToString("yyyy-MM-dd");
+
+            var dailyParams = "sunshine_duration";
+
+            return $"{BaseUrl}?latitude={latitude}&longitude={longitude}&start_date={start}&end_date={end}&daily={dailyParams}&timezone=auto";
         }
 
         /// <summary>
@@ -78,62 +121,91 @@ namespace ERH.Weather.Client
         /// </summary>
         private OpenMeteoResponse DeserializeResponse(string json)
         {
-            var serializer = new JavaScriptSerializer();
-            var dict = serializer.Deserialize<dynamic>(json);
-
             var response = new OpenMeteoResponse
             {
-                Latitude = Convert.ToDouble(dict["latitude"]),
-                Longitude = Convert.ToDouble(dict["longitude"]),
-                Hourly = new HourlyData()
+                Latitude = ExtractDouble(json, "latitude"),
+                Longitude = ExtractDouble(json, "longitude"),
+                Hourly = new HourlyData(),
+                Daily = new DailyData()
             };
 
-            if (dict.ContainsKey("hourly"))
+            var hourlyMatch = Regex.Match(json, @"""hourly"":\s*\{([^}]+(?:\{[^}]*\}[^}]*)*)\}");
+            if (hourlyMatch.Success)
             {
-                var hourly = dict["hourly"];
-                response.Hourly.Time = ConvertToList<string>(hourly["time"]);
-                response.Hourly.Temperature_2m = ConvertToNullableDoubleList(hourly["temperature_2m"]);
-                response.Hourly.Relative_Humidity_2m = ConvertToNullableDoubleList(hourly["relative_humidity_2m"]);
-                response.Hourly.Precipitation = ConvertToNullableDoubleList(hourly["precipitation"]);
-                response.Hourly.Wind_Speed_10m = ConvertToNullableDoubleList(hourly["wind_speed_10m"]);
-                response.Hourly.Wind_Direction_10m = ConvertToNullableDoubleList(hourly["wind_direction_10m"]);
-                response.Hourly.Pressure_Msl = ConvertToNullableDoubleList(hourly["pressure_msl"]);
-                response.Hourly.Cloud_Cover = ConvertToNullableDoubleList(hourly["cloud_cover"]);
+                var hourlyJson = hourlyMatch.Groups[1].Value;
+
+                response.Hourly.Time = ExtractStringArray(hourlyJson, "time");
+                response.Hourly.Temperature_2m = ExtractDoubleArray(hourlyJson, "temperature_2m");
+                response.Hourly.Wind_Speed_10m = ExtractDoubleArray(hourlyJson, "wind_speed_10m");
+                response.Hourly.Wind_Direction_10m = ExtractDoubleArray(hourlyJson, "wind_direction_10m");
+            }
+
+            var dailyMatch = Regex.Match(json, @"""daily"":\s*\{([^}]+(?:\{[^}]*\}[^}]*)*)\}");
+            if (dailyMatch.Success)
+            {
+                var dailyJson = dailyMatch.Groups[1].Value;
+
+                response.Daily.Time = ExtractStringArray(dailyJson, "time");
+                response.Daily.Sunshine_Duration = ExtractDoubleArray(dailyJson, "sunshine_duration");
             }
 
             return response;
         }
 
         /// <summary>
-        /// Converts a dynamic array to a strongly-typed list.
+        /// Extracts a double value from JSON.
         /// </summary>
-        private System.Collections.Generic.List<T> ConvertToList<T>(dynamic array)
+        private double ExtractDouble(string json, string key)
         {
-            var list = new System.Collections.Generic.List<T>();
-            if (array != null)
+            var match = Regex.Match(json, $@"""{key}"":\s*(-?\d+\.?\d*)");
+            if (match.Success)
             {
-                foreach (var item in array)
+                return double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Extracts a string array from JSON.
+        /// </summary>
+        private List<string> ExtractStringArray(string json, string key)
+        {
+            var list = new List<string>();
+            var match = Regex.Match(json, $@"""{key}"":\s*\[(.*?)\]");
+            if (match.Success)
+            {
+                var values = match.Groups[1].Value;
+                var stringMatches = Regex.Matches(values, @"""([^""]+)""");
+                foreach (Match m in stringMatches)
                 {
-                    list.Add((T)item);
+                    list.Add(m.Groups[1].Value);
                 }
             }
             return list;
         }
 
         /// <summary>
-        /// Converts a dynamic array to a list of nullable doubles.
+        /// Extracts a nullable double array from JSON.
         /// </summary>
-        private System.Collections.Generic.List<double?> ConvertToNullableDoubleList(dynamic array)
+        private List<double?> ExtractDoubleArray(string json, string key)
         {
-            var list = new System.Collections.Generic.List<double?>();
-            if (array != null)
+            var list = new List<double?>();
+            var match = Regex.Match(json, $@"""{key}"":\s*\[(.*?)\]");
+            if (match.Success)
             {
-                foreach (var item in array)
+                var values = match.Groups[1].Value;
+                var numberMatches = Regex.Matches(values, @"(-?\d+\.?\d*|null)");
+                foreach (Match m in numberMatches)
                 {
-                    if (item == null)
+                    var value = m.Groups[1].Value;
+                    if (value == "null")
+                    {
                         list.Add(null);
+                    }
                     else
-                        list.Add(Convert.ToDouble(item));
+                    {
+                        list.Add(double.Parse(value, CultureInfo.InvariantCulture));
+                    }
                 }
             }
             return list;
@@ -158,17 +230,39 @@ namespace ERH.Weather.Client
                 if (index >= 0)
                 {
                     weatherData.TemperatureCelsius = GetValueAtIndex(response.Hourly.Temperature_2m, index);
-                    weatherData.Humidity = GetValueAtIndex(response.Hourly.Relative_Humidity_2m, index);
-                    weatherData.Precipitation = GetValueAtIndex(response.Hourly.Precipitation, index);
                     weatherData.WindSpeed = GetValueAtIndex(response.Hourly.Wind_Speed_10m, index);
                     weatherData.WindDirection = GetValueAtIndex(response.Hourly.Wind_Direction_10m, index);
-                    weatherData.Pressure = GetValueAtIndex(response.Hourly.Pressure_Msl, index);
-                    weatherData.CloudCover = GetValueAtIndex(response.Hourly.Cloud_Cover, index);
-                    weatherData.Description = GenerateDescription(weatherData);
                 }
             }
 
             return weatherData;
+        }
+
+        /// <summary>
+        /// Maps the API response to a SunshineData object for the specified date.
+        /// </summary>
+        private SunshineData MapToSunshineData(OpenMeteoResponse response, WeatherLocation location, DateTime date)
+        {
+            var sunshineData = new SunshineData
+            {
+                Date = date,
+                Location = location
+            };
+
+            if (response.Daily?.Time != null)
+            {
+                var targetDate = date.ToString("yyyy-MM-dd");
+                var index = response.Daily.Time.FindIndex(t => t == targetDate);
+
+                if (index >= 0)
+                {
+                    var durationSeconds = GetValueAtIndex(response.Daily.Sunshine_Duration, index);
+                    sunshineData.SunshineDurationSeconds = durationSeconds;
+                    sunshineData.SunshineDurationHours = durationSeconds.HasValue ? durationSeconds.Value / 3600.0 : (double?)null;
+                }
+            }
+
+            return sunshineData;
         }
 
         /// <summary>
@@ -177,26 +271,11 @@ namespace ERH.Weather.Client
         private double? GetValueAtIndex(System.Collections.Generic.List<double?> list, int index)
         {
             if (list != null && index >= 0 && index < list.Count)
-                return list[index];
-            return null;
-        }
-
-        /// <summary>
-        /// Generates a human-readable weather description based on the weather data.
-        /// </summary>
-        private string GenerateDescription(WeatherData data)
-        {
-            if (data.CloudCover.HasValue && data.Precipitation.HasValue && data.TemperatureCelsius.HasValue)
             {
-                if (data.Precipitation.Value > 0)
-                    return "Rainy";
-                if (data.CloudCover.Value > 75)
-                    return "Cloudy";
-                if (data.CloudCover.Value > 25)
-                    return "Partly Cloudy";
-                return "Clear";
+                return list[index];
             }
-            return "Unknown";
+
+            return null;
         }
 
         /// <summary>
