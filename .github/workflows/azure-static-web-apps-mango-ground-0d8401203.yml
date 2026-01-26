@@ -1,4 +1,4 @@
-name: Azure Static Web Apps CI/CD
+﻿name: Warmtescans Rapportages APP CI/CD
 
 on:
   push:
@@ -25,6 +25,7 @@ jobs:
           lfs: false
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
+      
       - name: Replace prod environment variable - api base url
         uses: richardrigutins/replace-in-files@v2
         with:
@@ -33,6 +34,7 @@ jobs:
           replacement-text: '${{ vars.API_BASE_URL }}'
           exclude: 'node_modules/**'
           encoding: 'utf8'
+
       - name: Replace prod environment variable - google client id
         uses: richardrigutins/replace-in-files@v2
         with:
@@ -41,28 +43,24 @@ jobs:
           replacement-text: '${{ secrets.GOOGLE_CLIENT_ID }}'
           exclude: 'node_modules/**'
           encoding: 'utf8'
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
+     
+      - name: Build 
+        id: build
+        run: npm run build:prod
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
-      - name: Build And Deploy
-        id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_GROUND_0D8401203 }}
-          action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_build_command: "npm run build:prod"
-          app_location: "./ERH.HeatScans.Reporting/erh.heatscans.reporting.client" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist/erh.heatscans.reporting.client/browser" # Built app content directory - optional
-          github_id_token: ${{ steps.idtoken.outputs.result }}
-          ###### End of Repository/Build Configurations ######
+          server: nielander.nl
+          protocol: ftps
+          username: ${{ secrets.hostuser }}
+          password: ${{ secrets.hostpwd }}
+          local-dir: ./dist/erh.heatscans.reporting.client/browser
+          server-dir: ./ERH-Warmtescans
+          dry-run: true
+
+
+
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

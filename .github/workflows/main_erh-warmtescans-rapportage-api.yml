@@ -1,7 +1,7 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+﻿# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP app to Azure Web App - erh-warmtescans-rapportage-api
+name: Warmtescans Rapportages API CI/CD
 
 on:
   push:
@@ -82,6 +82,7 @@ jobs:
 
   deploy:
     runs-on: windows-latest
+    environment:  Warmtescans Rapportages
     needs: build
     permissions:
       id-token: write #This is required for requesting the JWT
@@ -93,18 +94,11 @@ jobs:
         with:
           name: ASP-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FBFA491B69C847C192506901CC32CF5E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CE3D94EA584C4E549115455D49243C9E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_642209E2957C438E9251E2F60045F0A3 }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'erh-warmtescans-rapportage-api'
-          slot-name: 'Production'
-          package: .
-          
+          server: nielander.nl
+          protocol: ftps
+          username: ${{ secrets.hostuser }}
+          password: ${{ secrets.hostpwd }}
+          dry-run: true
