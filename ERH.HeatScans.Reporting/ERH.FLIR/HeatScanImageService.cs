@@ -102,7 +102,7 @@ public class HeatScanImageService
         // Create a new bitmap with the target size
         using var resizedBmp = new Bitmap(newWidth, originalHeight);
         using var graphics = Graphics.FromImage(resizedBmp);
-        
+
         // Set high-quality rendering
         graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
         graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
@@ -123,6 +123,18 @@ public class HeatScanImageService
             MaxTemperature = thermalImage.Scale.Range.Maximum
         };
     }
+    private static byte[] GetDaylightPhotoData(ThermalImageFile thermalImage)
+    {
+        var currentFusionMode = thermalImage.Fusion.Mode;
+        thermalImage.Fusion.Mode = thermalImage.Fusion.VisualOnly;
+
+        using var ms = new MemoryStream();
+        thermalImage.Fusion.VisualImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+        thermalImage.Fusion.Mode = currentFusionMode;
+
+        return ms.ToArray();
+    }
 
     private static HeatScanImage SaveAndConvert(ThermalImageFile thermalImage)
     {
@@ -139,7 +151,18 @@ public class HeatScanImageService
             MimeType = "image/jpeg",
             DateTaken = thermalImage.DateTaken,
             Spots = [.. thermalImage.Measurements.MeasurementSpots.Select(ms => new Spot(ms))],
-            ScaleImage = CreateThermalScaleImage(thermalImage)
+            ScaleImage = CreateThermalScaleImage(thermalImage),
+            DaylightPhotoData = GetDaylightPhotoData(thermalImage),
+            Size = GetImageSize(thermalImageStream)
         };
     }
+
+    private static HeatScanSize GetImageSize(MemoryStream thermalImageStream)
+    {
+        using var imageStream = new MemoryStream(thermalImageStream.ToArray());
+        var image = Image.FromStream(imageStream);
+
+        return new(image.Width, image.Height);
+    }
+
 }

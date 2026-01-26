@@ -15,20 +15,13 @@ export class MapsService {
     private authService: AuthService
   ) {}
 
-  getStaticMapImage(address: string, zoom: number = 16, size: string = '600x400'): Promise<Blob> {
-    const headers = this.getAuthHeaders();
+  async getStaticMapImage(address: string, zoom: number = 16, size: string = '600x400'): Promise<Blob> {
+    const headers = await this.authService.getAuthHeaders();
     const url = `${this.baseUrl}/image?address=${encodeURIComponent(address)}&zoom=${zoom}&size=${size}`;
     
     return lastValueFrom(this.http.get(url, { 
       headers,
       responseType: 'blob'
     }));
-  }
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = this.authService.getAccessToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
   }
 }

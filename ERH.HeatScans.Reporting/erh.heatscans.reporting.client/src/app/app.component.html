@@ -1,3 +1,7 @@
+@if (isAuthenticated()) {
+  <app-navigation [navItems]="navItems()"></app-navigation>
+}
+
 <main class="main">
   <div class="container">
     <!-- Authentication Section -->

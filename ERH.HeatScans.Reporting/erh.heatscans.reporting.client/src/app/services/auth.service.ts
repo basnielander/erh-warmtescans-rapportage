@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { HttpHeaders } from '@angular/common/http';
 
 /// <reference types="gapi" />
 declare const gapi: any;
@@ -18,6 +19,7 @@ export interface User {
 export class AuthService {
   // Session storage keys
   private readonly ACCESS_TOKEN_KEY = 'google_access_token';
+  private readonly TOKEN_EXPIRY_KEY = 'google_token_expiry';
   private readonly USER_KEY = 'google_user';
 
   // Signals for state management
@@ -35,6 +37,7 @@ export class AuthService {
 
   private tokenClient: any = null;
   private accessToken: string | null = null;
+  private tokenExpiry: number | null = null;
 
   constructor() {
     // Effect to log authentication state changes
@@ -52,11 +55,22 @@ export class AuthService {
   private restoreAuthState(): void {
     try {
       const storedToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+      const storedExpiry = localStorage.getItem(this.TOKEN_EXPIRY_KEY);
       const storedUser = localStorage.getItem(this.USER_KEY);
 
-      if (storedToken && storedUser) {
+      if (storedToken && storedExpiry && storedUser) {
         this.accessToken = storedToken;
+        this.tokenExpiry = parseInt(storedExpiry, 10);
         this.userSignal.set(JSON.parse(storedUser));
+
+        // Check if token is expired
+        if (this.isTokenExpired()) {
+          console.log('Stored token is expired, clearing auth state');
+          this.clearLocalStorage();
+          this.accessToken = null;
+          this.tokenExpiry = null;
+          this.userSignal.set(null);
+        }
       }
     } catch (error) {
       console.error('Failed to restore auth state:', error);
@@ -65,12 +79,15 @@ export class AuthService {
   }
 
   /**
-   * Save access token to session storage
+   * Save access token and expiry to session storage
    */
-  private saveAccessToken(token: string): void {
+  private saveAccessToken(token: string, expiresIn: number): void {
     try {
       localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+      const expiryTime = Date.now() + (expiresIn * 1000);
+      localStorage.setItem(this.TOKEN_EXPIRY_KEY, expiryTime.toString());
       this.accessToken = token;
+      this.tokenExpiry = expiryTime;
     } catch (error) {
       console.error('Failed to save access token:', error);
     }
@@ -94,6 +111,7 @@ export class AuthService {
   private clearLocalStorage(): void {
     try {
       localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(this.TOKEN_EXPIRY_KEY);
       localStorage.removeItem(this.USER_KEY);
     } catch (error) {
       console.error('Failed to clear local storage:', error);
@@ -172,7 +190,9 @@ export class AuthService {
           console.error('Token error:', response);
           return;
         }
-        this.saveAccessToken(response.access_token);
+        // Store token with expiration time (default to 3600 seconds if not provided)
+        const expiresIn = response.expires_in || 3600;
+        this.saveAccessToken(response.access_token, expiresIn);
         this.fetchUserInfo();
       },
     });
@@ -248,12 +268,87 @@ export class AuthService {
 
     this.handleSignOut();
   }
+  
+  /**
+   * Check if the current token is expired
+   */
+  private isTokenExpired(): boolean {
+    if (!this.tokenExpiry) {
+      return true;
+    }
+    // Add 5 minute buffer to refresh before actual expiration
+    const bufferMs = 5 * 60 * 1000;
+    return Date.now() >= (this.tokenExpiry - bufferMs);
+  }
 
   /**
-   * Get current access token
+   * Refresh the access token silently if expired
    */
-  getAccessToken(): string | null {
-    return this.accessToken;
+  async refreshTokenIfNeeded(): Promise<void> {
+    if (!this.isTokenExpired()) {
+      return;
+    }
+
+    console.log('Token expired or expiring soon, requesting new token');
+
+    if (!this.tokenClient) {
+      this.errorSignal.set('Authentication not initialized');
+      throw new Error('Authentication not initialized');
+    }
+
+    return new Promise((resolve, reject) => {
+      const originalCallback = this.tokenClient.callback;
+      
+      this.tokenClient.callback = (response: any) => {
+        // Restore original callback
+        this.tokenClient.callback = originalCallback;
+        
+        if (response.error) {
+          this.errorSignal.set(response.error);
+          console.error('Token refresh error:', response);
+          reject(new Error(response.error));
+          return;
+        }
+        
+        // Store token with expiration time
+        const expiresIn = response.expires_in || 3600;
+        this.saveAccessToken(response.access_token, expiresIn);
+        resolve();
+      };
+
+      try {
+        // Request token silently (no prompt if user already consented)
+        this.tokenClient.requestAccessToken({ prompt: '' });
+      } catch (error) {
+        this.tokenClient.callback = originalCallback;
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Get a valid access token, refreshing if necessary
+   */
+  async getValidAccessToken(): Promise<string | null> {
+    if (!this.accessToken) {
+      return null;
+    }
+
+    try {
+      await this.refreshTokenIfNeeded();
+      return this.accessToken;
+    } catch (error) {
+      console.error('Failed to get valid access token:', error);
+      return null;
+    }
+  }
+
+  async getAuthHeaders(): Promise<HttpHeaders> {
+    const token = await this.getValidAccessToken();
+
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
   }
 
   /**
@@ -262,6 +357,7 @@ export class AuthService {
   private handleSignOut(): void {
     this.userSignal.set(null);
     this.accessToken = null;
+    this.tokenExpiry = null;
     this.clearLocalStorage();
   }
 }

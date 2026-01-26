@@ -85,6 +85,10 @@
   @include button-gradient($color-purple, $color-purple-dark, $color-purple-dark, $color-purple);
 }
 
+.menu-btn-export {
+  @include button-gradient($color-green, $color-green-dark, $color-green-dark, $color-green);
+}
+
 .setup-status {
   padding: $spacing-lg;
   margin-bottom: $spacing-lg;
@@ -137,7 +141,7 @@
 .details-map-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  gap: 12px;
   align-items: start;
 }
 
@@ -147,7 +151,6 @@
   flex-direction: column;
 }
 
-.map-section,
 .info-section,
 .images-section {
   @include card-base;
@@ -204,8 +207,16 @@
     border-color: $color-primary-blue;
   }
 
+  &.drag-active {
+    app-image-card {
+      max-height: 120px;
+      overflow: hidden;
+    }
+  }
+
   app-image-card {
     flex: 1;
+    transition: max-height $transition-base;
   }
 }
 

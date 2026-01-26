@@ -1,107 +1,22 @@
 <div class="image-card">
   <div class="image-info">
     <div class="image-name" [title]="image().name">{{ image().name }}</div>
-    <div class="image-meta">
-      <span *ngIf="image().size" class="image-size">{{ formatFileSize(image().size) }}</span>
-      <span *ngIf="image().modifiedTime" class="image-date">
-        {{ image().modifiedTime | date:'short' }}
-      </span>
-      <span *ngIf="currentImage()?.dateTaken" class="image-date-taken">
-        📅 Taken: {{ currentImage()!.dateTaken | date:'short' }}
-      </span>
-      <span *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="image-spots">
-        🎯 Spots: {{ currentImage()!.spots.length }}
-      </span>
-    </div>
-
-    <!-- View Mode -->
-    <div *ngIf="!isEditing()" class="image-details">
-      <div class="detail-item">
-        <span class="detail-label">Location:</span>
-        <span class="detail-value">{{ image().outdoor ? '🌤️ Outdoor' : '🏠 Indoor' }}</span>
-      </div>
-      <div class="detail-item" *ngIf="image().comments">
-        <span class="detail-label">Comments:</span>
-        <span class="detail-value">{{ image().comments }}</span>
-      </div>
-    </div>
-
-    <!-- Action Buttons (View Mode - Edit button shown before spots list) -->
-    <div *ngIf="!isEditing()" class="image-actions">
-      <div class="action-buttons">
-        <button 
-          class="btn-edit" 
-          (click)="onEditClick($event)"
-          title="Edit properties">
-          ✏️ Edit
-        </button>
-      </div>
-    </div>
-
+    
     <!-- Temperature Spots List -->
-    <div *ngIf="currentImage()?.spots && currentImage()!.spots.length > 0" class="spots-list">
-      <div class="spots-header">
-        <span class="spots-title">🌡️ Temperature Spots</span>
-      </div>
-      <div class="spots-items">
-        <div *ngFor="let spot of currentImage()!.spots" class="spot-item">
-          <div class="spot-details">
-            <span class="spot-name">{{ spot.name }}</span>
-            <span class="spot-temperature">{{ spot.temperature }}</span>
-          </div>
-          <button 
-            class="btn-delete-spot"
-            (click)="onDeleteSpotClick($event, spot.name)"
-            title="Delete spot">
-            🗑️
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-temperature-spots-list
+      *ngIf="currentImage()?.spots"
+      [spots]="currentImage()!.spots"
+      (deleteSpot)="onDeleteSpotClick($event)"
+    />
 
-    <!-- Edit Mode -->
-    <div *ngIf="isEditing()" class="image-edit-form">
-      <div class="form-group">
-        <label class="form-label">
-          <input 
-            type="checkbox" 
-            [checked]="editOutdoor()"
-            (change)="editOutdoor.set(!editOutdoor())"
-            class="form-checkbox"
-          />
-          <span class="checkbox-label">{{ editOutdoor() ? '🌤️ Outdoor' : '🏠 Indoor' }}</span>
-        </label>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="comments-{{image().id}}">Comments:</label>
-        <textarea 
-          id="comments-{{image().id}}"
-          [value]="editComment()"
-          (input)="editComment.set($any($event.target).value)"
-          class="form-textarea"
-          rows="3"
-          placeholder="Add a comment about this image()..."
-        ></textarea>
-      </div>
-    </div>
-
-    <!-- Action Buttons (Edit Mode) -->
-    <div *ngIf="isEditing()" class="image-actions">
-      <div class="action-buttons">
-        <button 
-          class="btn-save" 
-          (click)="onSaveClick($event)"
-          title="Save changes">
-          ✅ Save
-        </button>
-        <button 
-          class="btn-cancel" 
-          (click)="onCancelClick($event)"
-          title="Cancel editing">
-          ❌ Cancel
-        </button>
-      </div>
-    </div>
+    <!-- Image Edit Form Component -->
+    <app-image-edit-form
+      [imageId]="image().id"
+      [originalComment]="image().comments || ''"
+      [originalOutdoor]="image().outdoor ?? true"
+      (save)="onFormSave($event)"
+      (cancel)="onFormCancel()"
+    />
   </div>
   
   <div class="image-section">
@@ -130,6 +45,27 @@
         <app-image-scale [imageScale]="currentImage()!.scale!" />
       </div>
     </div>
+
+    <!-- Daylight Photo Display -->
+    @if (currentImage()?.daylightPhotoData) {
+      <div class="daylight-photo-section">
+        <div class="daylight-photo-header" (click)="toggleDaylightPhoto()">
+          <span class="daylight-photo-title">
+            {{ isDaylightPhotoCollapsed() ? '▶' : '▼' }} Daglicht foto
+          </span>
+        </div>
+        @if (!isDaylightPhotoCollapsed()) {
+          <div class="daylight-photo-container">
+            <img 
+              [src]="'data:' + currentImage()!.mimeType + ';base64,' + currentImage()!.daylightPhotoData"
+              [alt]="'Daylight photo of ' + image().name"
+              class="daylight-photo-image"
+              loading="lazy"
+            />
+          </div>
+        }
+      </div>
+    }
 
     <!-- Exclude/Include Button (View Mode - shown below image) -->
     <div *ngIf="!isEditing()" class="image-actions-below">

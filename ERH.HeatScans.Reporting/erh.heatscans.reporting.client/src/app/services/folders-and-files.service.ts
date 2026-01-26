@@ -33,7 +33,7 @@ export class FoldersAndFileService {
     this.errorSignal.set(null);
 
     try {
-      const headers = this.getAuthHeaders();
+      const headers = await this.authService.getAuthHeaders();
       const url = `${this.baseUrl}/users`;
       
       const data = await lastValueFrom(this.http.get<GoogleDriveItem>(url, { headers }));
@@ -51,8 +51,8 @@ export class FoldersAndFileService {
     }
   }
   
-  setupAddressFolder(addressFolderId: string): Promise<void> {
-    const headers = this.getAuthHeaders();
+  async setupAddressFolder(addressFolderId: string): Promise<void> {
+    const headers = await this.authService.getAuthHeaders();
     const url = `${this.baseUrl}?addressFolderId=${addressFolderId}`;
     
     return lastValueFrom(this.http.post<void>(url, null, { headers }));
@@ -66,11 +66,4 @@ export class FoldersAndFileService {
     this.errorSignal.set(null);
   }
   
-  private getAuthHeaders(): HttpHeaders {
-    const token = this.authService.getAccessToken();
-
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
 }

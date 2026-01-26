@@ -8,17 +8,22 @@ import { BatchIndoorCalibrationComponent } from '../batch-indoor-calibration/bat
 import { ModalComponent } from '../modal/modal.component';
 import { ReportDetailsEditorComponent } from '../report-details-editor/report-details-editor.component';
 import { FoldersAndFileService } from '../../services/folders-and-files.service';
+import { NavigationService } from '../../services/navigation.service';
 import { Report } from '../../models/report.model';
 import { ImageInfo } from "../../models/image-info.model";
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReportService } from '../../services/report.service';
+import { NavItem } from '../navigation/navigation.component';
+
 
 @Component({
   selector: 'app-report',
   standalone: true,
-  imports: [CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent, ReportDetailsEditorComponent],
+  imports: [
+    CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent, ReportDetailsEditorComponent
+  ],
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.scss']
+  styleUrl: './report.component.scss'
 })
 export class ReportComponent implements OnInit {
   // Convert route params to signals
@@ -41,6 +46,17 @@ export class ReportComponent implements OnInit {
   // Batch calibration state
   showBatchOutdoorCalibration = signal<boolean>(false);
   showBatchIndoorCalibration = signal<boolean>(false);
+  showReportDetailsEditor = signal<boolean>(false);
+  isExportingReport = signal<boolean>(false);
+
+  // Computed signal for data the photos were taken
+  photosTakenAt = computed(() => {
+    const report = this.addressReport();
+
+    if (!report || !report.photosTakenAt) return "";
+    
+    return report.photosTakenAt;
+  });
 
   // Computed signal for sorted images
   sortedImages = computed(() => {
@@ -77,7 +93,8 @@ export class ReportComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private driveService: FoldersAndFileService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private navigationService: NavigationService
   ) {
     this.params.set(toSignal(this.route?.paramMap)() ?? null);
 
@@ -100,7 +117,27 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialization is now handled in the constructor's effect
+    this.setupNavigation();
+  }
+
+  ngOnDestroy(): void {
+    this.navigationService.clearNavItems();
+  }
+
+  setupNavigation(): void {
+    const navItems: NavItem[] = [
+      {
+        label: '← Terug naar folders',
+        route: '/',
+        icon: ''
+      },
+      {
+        label: 'Download rapport',
+        icon: '📥',
+        action: () => this.onExportReport()
+      }
+    ];
+    this.navigationService.setNavItems(navItems);
   }
 
   async setupAddressFolder(): Promise<void> {
@@ -334,6 +371,8 @@ export class ReportComponent implements OnInit {
     } catch (err: any) {
       console.error('Error updating report details:', err);
       alert('Failed to update report details. Please try again.');
+      // Trigger a reload to reset the editor state
+      await this.loadReport();
     }
   }
 
@@ -341,5 +380,31 @@ export class ReportComponent implements OnInit {
     // Since editor is inline, cancel just means don't save
     // We could add logic here to reset form if needed
     console.log('Report details edit cancelled');
+  }
+
+  async onExportReport(): Promise<void> {
+    this.isExportingReport.set(true);
+
+    try {
+      const blob = await this.reportService.createReportDocument(this.folderId());
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `report-${this.folderName()}-${new Date().toISOString().split('T')[0]}.docx`;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      alert('Failed to export report. Please try again.');
+    } finally {
+      this.isExportingReport.set(false);
+    }
   }
 }

@@ -2,7 +2,9 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FoldersAndFileService } from '../../services/folders-and-files.service';
+import { NavigationService } from '../../services/navigation.service';
 import { GoogleDriveItem } from '../../models/google-drive.model';
+import { NavItem } from '../navigation/navigation.component';
 
 @Component({
   selector: 'app-folder-browser',
@@ -23,11 +25,38 @@ export class FolderBrowserComponent implements OnInit {
 
   constructor(
     private googleDriveService: FoldersAndFileService,
-    private router: Router
+    private router: Router,
+    private navigationService: NavigationService
   ) {}
 
   ngOnInit(): void {
     this.loadFolderStructure();
+    this.setupNavigation();
+  }
+
+  ngOnDestroy(): void {
+    this.navigationService.clearNavItems();
+  }
+
+  setupNavigation(): void {
+    const navItems: NavItem[] = [
+      {
+        label: 'Ververs',
+        icon: '🔄',
+        action: () => this.refreshFolderStructure()
+      },
+      {
+        label: 'Alles uitklappen',
+        icon: '📂',
+        action: () => this.expandAll()
+      },
+      {
+        label: 'Alles inklappen',
+        icon: '📁',
+        action: () => this.collapseAll()
+      }
+    ];
+    this.navigationService.setNavItems(navItems);
   }
 
   async loadFolderStructure(): Promise<void> {

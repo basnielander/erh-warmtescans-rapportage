@@ -421,7 +421,7 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
             }
         }
 
-        private async Task UpdateReportFileAsync(DriveService driveService, string fileId, Report report, CancellationToken cancellationToken)
+        public async Task UpdateReportFileAsync(DriveService driveService, string fileId, Report report, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(report, Formatting.Indented);
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -436,6 +436,49 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
                 if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
                 {
                     throw new Exception("Failed to update report.json file");
+                }
+            }
+        }
+
+        public async Task UpdateReportFileAsync(string accessToken, string addressFolderId, Report report, CancellationToken cancellationToken)
+        {
+            using (var driveService = CreateDriveService(accessToken))
+            {
+                // Get all items in the address folder
+                var addressFolderItems = await GetChildrenAsync(driveService, addressFolderId, cancellationToken);
+
+                // Find "2. Bewerkt" subfolder
+                var bewerktFolder = addressFolderItems.FirstOrDefault(item =>
+                    item.IsFolder && item.Name == "2. Bewerkt");
+
+                if (bewerktFolder == null)
+                {
+                    throw new Exception($"Subfolder '2. Bewerkt' not found in folder {addressFolderId}");
+                }
+
+                string bewerktFolderId = bewerktFolder.Id;
+
+                // Get all items in "2. Bewerkt" folder
+                var bewerktFolderItems = await GetChildrenAsync(driveService, bewerktFolderId, cancellationToken);
+
+                // Look for report.json file
+                var reportFile = bewerktFolderItems.FirstOrDefault(item =>
+                    !item.IsFolder && item.Name.Equals("report.json", StringComparison.OrdinalIgnoreCase));
+
+                var json = JsonConvert.SerializeObject(report, Formatting.Indented);
+                var bytes = Encoding.UTF8.GetBytes(json);
+
+                var fileMetadata = new Google.Apis.Drive.v3.Data.File();
+
+                using (var stream = new MemoryStream(bytes))
+                {
+                    var request = driveService.Files.Update(fileMetadata, reportFile.Id, stream, "application/json");
+                    var file = await request.UploadAsync(cancellationToken);
+
+                    if (file.Status != Google.Apis.Upload.UploadStatus.Completed)
+                    {
+                        throw new Exception("Failed to update report.json file");
+                    }
                 }
             }
         }
@@ -735,13 +778,45 @@ namespace ERH.HeatScans.Reporting.Server.Framework.Services
         internal async Task SaveFile(string imageFileId, byte[] data, string accessToken, CancellationToken cancellationToken)
         {
             // Upload updated file content
-            using (var driveService = CreateDriveService(accessToken))
+            using var driveService = CreateDriveService(accessToken);
+
+            using var stream = new MemoryStream(data);
+
+            var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), imageFileId, stream, null);
+            await request.UploadAsync(cancellationToken);
+        }
+
+        internal async Task CreateOrUpdateFile(string fileName, string folderId, byte[] data, string accessToken, CancellationToken cancellationToken)
+        {
+            using var driveService = CreateDriveService(accessToken);
+
+            // Check if file already exists in the folder
+            var query = $"name = '{fileName.Replace("'", "\\'")}' and '{folderId}' in parents and trashed = false";
+            var listRequest = driveService.Files.List();
+            listRequest.Q = query;
+            listRequest.Fields = "files(id, name)";
+            var listResponse = await listRequest.ExecuteAsync(cancellationToken);
+            if (listResponse.Files != null && listResponse.Files.Count > 0)
             {
-                using (var stream = new MemoryStream(data))
+                // File exists, update it
+                var existingFile = listResponse.Files[0];
+
+                using var stream = new MemoryStream(data);
+                var updateRequest = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), existingFile.Id, stream, null);
+                await updateRequest.UploadAsync(cancellationToken);
+            }
+            else
+            {
+                // File does not exist, create it
+                var fileMetadata = new Google.Apis.Drive.v3.Data.File()
                 {
-                    var request = driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), imageFileId, stream, null);
-                    await request.UploadAsync(cancellationToken);
-                }
+                    Name = fileName,
+                    Parents = [folderId]
+                };
+
+                using var stream = new MemoryStream(data);
+                var createRequest = driveService.Files.Create(fileMetadata, stream, null);
+                await createRequest.UploadAsync(cancellationToken);
             }
         }
     }

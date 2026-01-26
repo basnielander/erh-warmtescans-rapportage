@@ -1,4 +1,4 @@
-import { Component, output, signal, OnInit, input, effect } from '@angular/core';
+import { Component, output, signal, OnInit, input, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Report } from '../../models/report.model';
@@ -25,42 +25,84 @@ export class ReportDetailsEditorComponent implements OnInit {
   hoursOfSunshine = signal<number | undefined>(undefined);
   frontDoorDirection = signal<string>('');
   
+  // Original values for change tracking
+  private originalAddress = signal<string>('');
+  private originalTemperature = signal<number | undefined>(undefined);
+  private originalWindSpeed = signal<number | undefined>(undefined);
+  private originalWindDirection = signal<string>('');
+  private originalHoursOfSunshine = signal<number | undefined>(undefined);
+  private originalFrontDoorDirection = signal<string>('');
+  
   isSaving = signal<boolean>(false);
+  
+  // Computed signal to check if any value has changed
+  hasChanges = computed(() => {
+    return (
+      this.address() !== this.originalAddress() ||
+      this.temperature() !== this.originalTemperature() ||
+      this.windSpeed() !== this.originalWindSpeed() ||
+      this.windDirection() !== this.originalWindDirection() ||
+      this.hoursOfSunshine() !== this.originalHoursOfSunshine() ||
+      this.frontDoorDirection() !== this.originalFrontDoorDirection()
+    );
+  });
   
   // Wind direction options
   windDirectionOptions = [
-    { value: 'N', label: 'North (N)', icon: '⬆️' },
-    { value: 'NE', label: 'Northeast (NE)', icon: '↗️' },
-    { value: 'E', label: 'East (E)', icon: '➡️' },
-    { value: 'SE', label: 'Southeast (SE)', icon: '↘️' },
-    { value: 'S', label: 'South (S)', icon: '⬇️' },
-    { value: 'SW', label: 'Southwest (SW)', icon: '↙️' },
+    { value: 'N', label: 'Noord (N)', icon: '⬆️' },
+    { value: 'NE', label: 'Noordoost (NO)', icon: '↗️' },
+    { value: 'E', label: 'Oost (O)', icon: '➡️' },
+    { value: 'SE', label: 'Zuidoost (ZO)', icon: '↘️' },
+    { value: 'S', label: 'Zuid (Z)', icon: '⬇️' },
+    { value: 'SW', label: 'Zuidwest (ZW)', icon: '↙️' },
     { value: 'W', label: 'West (W)', icon: '⬅️' },
-    { value: 'NW', label: 'Northwest (NW)', icon: '↖️' }
+    { value: 'NW', label: 'Noordwest (NW)', icon: '↖️' }
   ];
   
   // Door direction options
   doorDirectionOptions = [
-    { value: 'N', label: 'North (N)', icon: '⬆️' },
-    { value: 'NE', label: 'Northeast (NE)', icon: '↗️' },
-    { value: 'E', label: 'East (E)', icon: '➡️' },
-    { value: 'SE', label: 'Southeast (SE)', icon: '↘️' },
-    { value: 'S', label: 'South (S)', icon: '⬇️' },
-    { value: 'SW', label: 'Southwest (SW)', icon: '↙️' },
+    { value: 'N', label: 'Noord (N)', icon: '⬆️' },
+    { value: 'NE', label: 'Noordoost (NO)', icon: '↗️' },
+    { value: 'E', label: 'Oost (O)', icon: '➡️' },
+    { value: 'SE', label: 'Zuidoost (ZO)', icon: '↘️' },
+    { value: 'S', label: 'Zuid (Z)', icon: '⬇️' },
+    { value: 'SW', label: 'Zuidwest (ZW)', icon: '↙️' },
     { value: 'W', label: 'West (W)', icon: '⬅️' },
-    { value: 'NW', label: 'Northwest (NW)', icon: '↖️' }
+    { value: 'NW', label: 'Noordwest (NW)', icon: '↖️' }
   ];
   
   constructor() {
     // Use effect to initialize form fields when report input changes
     effect(() => {
       const currentReport = this.report();
-      this.address.set(currentReport.address || '');
-      this.temperature.set(currentReport.temperature);
-      this.windSpeed.set(currentReport.windSpeed);
-      this.windDirection.set(currentReport.windDirection || '');
-      this.hoursOfSunshine.set(currentReport.hoursOfSunshine);
-      this.frontDoorDirection.set(currentReport.frontDoorDirection || '');
+      const address = currentReport.address || '';
+      const temperature = currentReport.temperature;
+      const windSpeed = currentReport.windSpeed;
+      const windDirection = currentReport.windDirection || '';
+      const hoursOfSunshine = currentReport.hoursOfSunshine;
+      const frontDoorDirection = currentReport.frontDoorDirection || '';
+      
+      // Set current values
+      this.address.set(address);
+      this.temperature.set(temperature);
+      this.windSpeed.set(windSpeed);
+      this.windDirection.set(windDirection);
+      this.hoursOfSunshine.set(hoursOfSunshine);
+      this.frontDoorDirection.set(frontDoorDirection);
+      
+      // Set original values for change tracking
+      this.originalAddress.set(address);
+      this.originalTemperature.set(temperature);
+      this.originalWindSpeed.set(windSpeed);
+      this.originalWindDirection.set(windDirection);
+      this.originalHoursOfSunshine.set(hoursOfSunshine);
+      this.originalFrontDoorDirection.set(frontDoorDirection);
+      
+      // Reset isSaving state when report updates (successful save)
+      // This will be triggered when parent updates the report after save
+      if (this.isSaving()) {
+        this.isSaving.set(false);
+      }
     });
   }
   
@@ -70,7 +112,7 @@ export class ReportDetailsEditorComponent implements OnInit {
   
   onSave(): void {
     if (!this.isValid()) {
-      alert('Please fill in all required fields correctly');
+      alert('Vul alle waarden in met valide gegevens');
       return;
     }
     
@@ -92,6 +134,15 @@ export class ReportDetailsEditorComponent implements OnInit {
     if (this.isSaving()) {
       return;
     }
+    
+    // Revert all form fields to their original values
+    this.address.set(this.originalAddress());
+    this.temperature.set(this.originalTemperature());
+    this.windSpeed.set(this.originalWindSpeed());
+    this.windDirection.set(this.originalWindDirection());
+    this.hoursOfSunshine.set(this.originalHoursOfSunshine());
+    this.frontDoorDirection.set(this.originalFrontDoorDirection());
+    
     this.cancel.emit();
   }
   
@@ -148,4 +199,18 @@ export class ReportDetailsEditorComponent implements OnInit {
   onFrontDoorDirectionChange(value: string): void {
     this.frontDoorDirection.set(value);
   }
+  
+  getWeatherArchiveUrl(): string {
+    const date = this.report().photosTakenAt; // date has format dd-MM-yyyy
+    if (!date) {
+      return '';
+    }
+    // Convert date to YYYYMMDD format
+    const year = date.substring(6, 10);
+    const month = date.substring(3, 5);
+    const day = date.substring(0, 2);
+    const formattedDate = `${year}${month}${day}`;
+    return `https://neerslagkaart.nl/archief/?k=zon&d=${formattedDate}&dm=dag`;
+  }
+  
 }

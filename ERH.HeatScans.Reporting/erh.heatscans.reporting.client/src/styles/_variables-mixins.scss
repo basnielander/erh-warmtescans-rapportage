@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // ============================================
 // SCSS Variables - Colors
 // ============================================
@@ -174,7 +176,7 @@ $breakpoint-desktop: 1280px;
 
 @mixin button-hover-lift {
   &:hover:not(:disabled) {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: $shadow-hover-base;
   }
 
@@ -208,7 +210,6 @@ $breakpoint-desktop: 1280px;
   transition: all $transition-base;
 
   &:hover {
-    transform: translateY(-2px);
     box-shadow: $shadow-md;
   }
 }
@@ -259,8 +260,13 @@ $breakpoint-desktop: 1280px;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // ============================================
@@ -313,15 +319,15 @@ $breakpoint-desktop: 1280px;
 
   &::-webkit-scrollbar-track {
     background: $track-color;
-    border-radius: $width / 2;
+    border-radius: math.div($width, 2);
   }
 
   &::-webkit-scrollbar-thumb {
     background: $thumb-color;
-    border-radius: $width / 2;
+    border-radius: math.div($width, 2);
   }
 
-  &::-webkit-scrollbar-thumb:hover {
-    background: $thumb-hover-color;
-  }
+    &::-webkit-scrollbar-thumb:hover {
+      background: $thumb-hover-color;
+    }
 }

@@ -1,7 +1,6 @@
 <div class="report-container">
   <div class="report-header">
-    <button (click)="goBack()" class="btn-back">← Back to Browser</button>
-    <h2>📊 Report: {{ folderName() }}</h2>
+    <h2>📊 {{ folderName() }} - {{ photosTakenAt() }}</h2>
   </div>
 
   <!-- Menu Bar -->
@@ -22,6 +21,12 @@
           *ngIf="indoorImagesAvailable()"
           [disabled]="isUpdatingIndices()">
           🏠 Calibrate Indoor Images
+        </button>
+        <button 
+          class="menu-btn menu-btn-export" 
+          (click)="onExportReport()"
+          [disabled]="isUpdatingIndices() || isExportingReport()">
+          {{ isExportingReport() ? '⏳ Exporting...' : '📥 Export Report' }}
         </button>
       </div>
     </div>
@@ -61,7 +66,6 @@
       </div>
       
       <div class="map-section">
-        <h3>📍 Location Map</h3>
         <app-map-display [address]="folderName()"></app-map-display>
       </div>
     </div>
@@ -78,6 +82,7 @@
           *ngFor="let image of allIncludedImages(); let i = index"
           class="image-wrapper"
           [class.dragging]="draggedIndex() === i"
+          [class.drag-active]="draggedIndex() !== null"
           draggable="true"
           (dragstart)="onDragStart($event, i)"
           (dragover)="onDragOver($event)"

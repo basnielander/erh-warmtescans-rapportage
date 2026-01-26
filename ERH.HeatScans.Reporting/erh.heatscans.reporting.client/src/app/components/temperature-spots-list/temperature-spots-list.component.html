@@ -1,0 +1,20 @@
+<div *ngIf="spots() && spots().length > 0" class="spots-section">
+  <div class="section-header">
+    <span class="section-icon">🌡️</span>
+    <h3 class="section-title">Metingen</h3>
+  </div>
+  <div class="spots-items">
+    <div *ngFor="let spot of spots()" class="spot-item">
+      <div class="spot-details">
+        <span class="spot-name">{{ spot.name }}:</span>
+        <span class="spot-temperature">{{ spot.temperature }}</span>
+      </div>
+      <button 
+        class="btn-delete-spot"
+        (click)="onDeleteSpotClick($event, spot.name)"
+        title="Delete spot">
+        🗑️
+      </button>
+    </div>
+  </div>
+</div>

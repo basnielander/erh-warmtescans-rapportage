@@ -15,6 +15,7 @@
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: block;
 }
 
 * {
@@ -42,7 +43,7 @@ p {
 
 main {
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 160px);
   padding: 2rem;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
@@ -95,7 +96,7 @@ main {
   color: white;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(51, 110, 255, 0.4);
   }
 }
@@ -111,7 +112,7 @@ main {
 }
 
 .content-section {
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .loading {
@@ -143,7 +144,7 @@ main {
   cursor: pointer;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }

@@ -9,11 +9,15 @@ public class HeatScanImage
     public byte[] Data { get; set; }
     public string MimeType { get; set; }
 
+    public byte[] DaylightPhotoData { get; set; }
+
     public ICollection<Spot> Spots { get; set; }
 
     public DateTimeOffset DateTaken { get; set; }
 
     public HeatScanScale ScaleImage { get; set; }
+
+    public HeatScanSize Size { get; set; }
 
     public HeatScanImage()
     {
@@ -21,5 +25,6 @@ public class HeatScanImage
         Spots = [];
         MimeType = string.Empty;
         DateTaken = DateTimeOffset.UtcNow;
+        Size = new HeatScanSize(0, 0);
     }
 }

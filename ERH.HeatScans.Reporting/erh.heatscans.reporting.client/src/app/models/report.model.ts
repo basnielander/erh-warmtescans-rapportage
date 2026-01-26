@@ -4,6 +4,7 @@ export interface Report {
   folderId: string;
   images: ImageInfo[];
   address: string;
+  photosTakenAt: string;
   temperature?: number;
   windSpeed?: number;
   windDirection: string;
