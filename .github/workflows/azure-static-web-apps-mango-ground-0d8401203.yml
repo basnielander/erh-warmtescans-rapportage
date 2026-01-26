@@ -61,7 +61,7 @@ jobs:
           protocol: ftps
           username: ${{ secrets.hostuser }}
           password: ${{ secrets.hostpwd }}
-          local-dir: ./ERH.HeatScans.Reporting/erh.heatscans.reporting.client/dist/erh.heatscans.reporting.client/browser
+          local-dir: ./ERH.HeatScans.Reporting/erh.heatscans.reporting.client/dist/erh.heatscans.reporting.client/browser/
           server-dir: ./ERH-Warmtescans
           dry-run: true
 
@@ -75,6 +75,7 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
+
 
 
 
