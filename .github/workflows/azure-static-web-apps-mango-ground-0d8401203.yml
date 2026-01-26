@@ -45,9 +45,14 @@ jobs:
           exclude: 'node_modules/**'
           encoding: 'utf8'
      
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./erh.heatscans.reporting.client
+
       - name: Build 
         id: build
         run: npm run build:prod
+        working-directory: ./erh.heatscans.reporting.client
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
@@ -60,9 +65,6 @@ jobs:
           server-dir: ./ERH-Warmtescans
           dry-run: true
 
-
-
-
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
@@ -73,6 +75,7 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
+
 
 
 
