@@ -63,7 +63,6 @@ jobs:
           password: ${{ secrets.hostpwd }}
           local-dir: ./ERH.HeatScans.Reporting/erh.heatscans.reporting.client/dist/erh.heatscans.reporting.client/browser/
           server-dir: ./ERH-Warmtescans/
-          dry-run: true
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -75,6 +74,7 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
+
 
 
 
