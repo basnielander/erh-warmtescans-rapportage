@@ -47,12 +47,12 @@ jobs:
      
       - name: Install dependencies
         run: npm ci
-        working-directory: erh.heatscans.reporting.client
+        working-directory: ./ERH.HeatScans.Reporting/erh.heatscans.reporting.client
 
       - name: Build 
         id: build
         run: npm run build:prod
-        working-directory: erh.heatscans.reporting.client
+        working-directory: ./ERH.HeatScans.Reporting/erh.heatscans.reporting.client
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
@@ -75,6 +75,7 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
+
 
 
 
