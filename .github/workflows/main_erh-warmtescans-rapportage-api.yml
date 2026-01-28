@@ -101,4 +101,6 @@ jobs:
           protocol: ftps
           username: ${{ secrets.hostuser }}
           password: ${{ secrets.hostpwd }}
-          dry-run: true
+          local-dir: .
+          server-dir: /v024501c/ERH-Warmtescans-API/
+          log-level: verbose
