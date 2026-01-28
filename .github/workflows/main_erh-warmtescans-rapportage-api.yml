@@ -102,6 +102,7 @@ jobs:
           username: ${{ secrets.hostuser }}
           password: ${{ secrets.hostpwd }}
           local-dir: ./
-          server-dir: /v024501c/ERH-Warmtescans-API/
+          server-dir: /v024501c/
 
           log-level: verbose
+
