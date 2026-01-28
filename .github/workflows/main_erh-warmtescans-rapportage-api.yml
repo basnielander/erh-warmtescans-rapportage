@@ -101,6 +101,7 @@ jobs:
           protocol: ftps
           username: ${{ secrets.hostuser }}
           password: ${{ secrets.hostpwd }}
-          local-dir: .
+          local-dir: ./
           server-dir: /v024501c/ERH-Warmtescans-API/
+
           log-level: verbose
