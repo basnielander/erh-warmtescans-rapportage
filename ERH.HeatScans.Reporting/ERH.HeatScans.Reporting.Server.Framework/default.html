@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bijna leeg</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        #dot {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #1a1a1a;
+            border-radius: 50%;
+            transition: all 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="dot"></div>
+
+    <script>
+        const dot = document.getElementById('dot');
+
+        function moveDot() {
+            const maxX = window.innerWidth - 3;
+            const maxY = window.innerHeight - 3;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            dot.style.left = randomX + 'px';
+            dot.style.top = randomY + 'px';
+        }
+
+        // Move the dot immediately
+        moveDot();
+
+        // Move the dot to a new random position every 100 milliseconds
+        setInterval(moveDot, 100);
+    </script>
+</body>
+</html>

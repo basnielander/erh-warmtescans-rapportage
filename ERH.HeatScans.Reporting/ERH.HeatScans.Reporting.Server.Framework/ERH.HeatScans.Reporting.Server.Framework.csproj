@@ -201,6 +201,7 @@
     <None Include="Maps.http" />
     <None Include="UserGoogleDrive.http" />
     <Content Include="ImageProcessingWrapper.dll" />
+    <Content Include="default.html" />
     <Content Include="live666.dll" />
     <Content Include="protos\google\type\timeofday.proto" />
     <Content Include="protos\google\type\quaternion.proto" />
