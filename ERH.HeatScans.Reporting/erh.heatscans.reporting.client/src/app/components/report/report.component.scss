@@ -1,4 +1,4 @@
-@import '../../../styles/variables-mixins';
+@use '../../../styles/variables-mixins' as *;
 
 .report-container {
   padding: $spacing-lg;

@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 // Import shared variables and mixins
-@import 'styles/variables-mixins';
+@use 'styles/variables-mixins' as *;
 
 * {
   margin: 0;

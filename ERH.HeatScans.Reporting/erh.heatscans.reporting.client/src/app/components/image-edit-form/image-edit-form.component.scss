@@ -1,4 +1,4 @@
-@import '../../../styles/variables-mixins';
+@use '../../../styles/variables-mixins' as *;
 
 .editor-section {
   background: #f9f9f9;
