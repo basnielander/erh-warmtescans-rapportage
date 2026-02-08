@@ -70,6 +70,22 @@ jobs:
           replacement-text: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           encoding: 'utf8'
 
+      - name: Replace prod environment variable - API root url
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config'
+          search-text: '@@API_ROOT_URL@@'
+          replacement-text: "https://nielander.nl/ERH-Warmtescans-API/api"
+          encoding: 'utf8'
+
+      - name: Replace prod environment variable - CORS
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config'
+          search-text: '@@CORS_ALLOWED_ORIGINS@@'
+          replacement-text: "https://nielander.nl"
+          encoding: 'utf8'
+
       - name: Publish to folder
         working-directory: .\ERH.HeatScans.Reporting
         run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl="\published\"

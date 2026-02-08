@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
-    [RoutePrefix("api/report")]
+    [RoutePrefix("report")]
     public class ReportController : AuthorizedApiController
     {
         private readonly GoogleDriveService storageService;

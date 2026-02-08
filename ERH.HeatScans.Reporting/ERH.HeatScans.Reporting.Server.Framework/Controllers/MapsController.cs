@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace ERH.HeatScans.Reporting.Server.Framework.Controllers
 {
-    [RoutePrefix("api/maps")]
+    [RoutePrefix("maps")]
     public class MapsController : ApiController
     {
         private readonly GoogleMapsService mapsService;

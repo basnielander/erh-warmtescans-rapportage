@@ -4,6 +4,8 @@
     <add key="AuthenticationGoogleClientId" value="@@YOUR_CLIENT_ID@@.apps.googleusercontent.com" />
     <add key="UsersFolderId" value="@@YOUR_GOOGLE_DRIVE_FOLDER_ID@@" />
     <add key="GoogleMapsApiKey" value="@@YOUR_GOOGLE_MAPS_API_KEY@@" />
+    <add key="ApiRootUrl" value="@@API_ROOT_URL@@" />
+    <add key="CorsAllowedOrigins" value="@@CORS_ALLOWED_ORIGINS@@" />
   </appSettings>
   <connectionStrings />
   <system.web>
@@ -44,14 +46,7 @@
     <sessionState mode="Off" />
     <authentication mode="None" />
   </system.web>
-  <system.webServer>
-    <defaultDocument>
-      <files>
-        <clear />
-        <add value="default.html" />
-      </files>
-    </defaultDocument>
-
+  <system.webServer>    
     <httpProtocol>
       <customHeaders>
         <remove name="X-Powered-By" />
@@ -64,24 +59,16 @@
 
     <rewrite>
       <rules>
-        <!--<rule name="HTTPS Redirect" stopProcessing="true">
+        <rule name="HTTPS Redirect" stopProcessing="true">
           <match url="(.*)" />
           <conditions>
             <add input="{HTTPS}" pattern="off" ignoreCase="true" />
           </conditions>
           <action type="Redirect" url="https://{HTTP_HOST}/{R:1}" redirectType="Permanent" />
-        </rule>-->
+        </rule>
       </rules>
     </rewrite>
-
-    <!-- Static Content Caching -->
-    <staticContent>
-      <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="7.00:00:00" />
-    </staticContent>
-
-    <!-- Dynamic Content Compression -->
-    <urlCompression doStaticCompression="true" doDynamicCompression="true" dynamicCompressionBeforeCache="true" />
-
+    
     <!-- Handlers -->
     <handlers>
       <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
