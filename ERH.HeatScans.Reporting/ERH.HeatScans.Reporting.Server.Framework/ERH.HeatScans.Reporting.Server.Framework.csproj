@@ -261,7 +261,6 @@
     <Content Include="protos\google\api\annotations.proto" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appSettings.xml" Condition=" '$(Configuration)' == 'Debug'" />
     <Content Include="swresample-3.dll" />
     <Content Include="swscale-5.dll" />
     <Content Include="Web.config" />
