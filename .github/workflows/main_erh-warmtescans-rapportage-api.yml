@@ -1,4 +1,4 @@
-﻿# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
 name: Warmtescans Rapportages API CI/CD
@@ -31,25 +31,25 @@ jobs:
 
       - name: Restore NuGet packages (FLIR)
         working-directory: .\ERH.HeatScans.Reporting
-        run: nuget restore .\ERH.FLIR\ERH.FLIR.csproj -Verbosity detailed
+        run: nuget restore .\ERH.FLIR\ERH.FLIR.csproj 
 
       - name: Restore NuGet packages (HeatScans.Reporting)
         working-directory: .\ERH.HeatScans.Reporting
-        run: nuget restore .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.csproj -Verbosity detailed
+        run: nuget restore .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.csproj 
 
       - name: Restore NuGet packages (Server)
         working-directory: .\ERH.HeatScans.Reporting
-        run: nuget restore .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj -Verbosity detailed
+        run: nuget restore .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj
 
-      - name: Set appSettings.xml
+      - name: Set Web.config
         working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
-        run: copy .\appSettings.template.xml -Destination .\appSettings.xml 
-  
+        run: copy .\Web.config.template -Destination .\Web.config 
+
         # Replace all placeholders with actual secrets from GitHub Secrets  
       - name: Replace prod environment variable - google client id
         uses: richardrigutins/replace-in-files@v2
         with:
-          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config'
           search-text: '@@YOUR_CLIENT_ID@@'
           replacement-text: ${{ secrets.GOOGLE_CLIENT_ID }}
           encoding: 'utf8'
@@ -57,7 +57,7 @@ jobs:
       - name: Replace prod environment variable - users folder id
         uses: richardrigutins/replace-in-files@v2
         with:
-          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config'
           search-text: '@@YOUR_GOOGLE_DRIVE_FOLDER_ID@@'
           replacement-text: ${{ secrets.DRIVE_USERS_FOLDER_ID }}
           encoding: 'utf8'
@@ -65,7 +65,7 @@ jobs:
       - name: Replace prod environment variable - google maps api key
         uses: richardrigutins/replace-in-files@v2
         with:
-          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml'
+          files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config'
           search-text: '@@YOUR_GOOGLE_MAPS_API_KEY@@'
           replacement-text: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           encoding: 'utf8'
@@ -94,7 +94,7 @@ jobs:
         with:
           name: ASP-app
       
-      - name: 📂 Sync files
+      - name: ?? Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: nielander.nl

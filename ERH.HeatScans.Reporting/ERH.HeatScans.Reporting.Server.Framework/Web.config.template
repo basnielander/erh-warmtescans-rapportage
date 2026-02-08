@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <appSettings>
-    <add key="AuthenticationGoogleClientId" value="" />
-    <add key="UsersFolderId" value="" />
-    <add key="GoogleMapsApiKey" value="" />
+    <add key="AuthenticationGoogleClientId" value="@@YOUR_CLIENT_ID@@.apps.googleusercontent.com" />
+    <add key="UsersFolderId" value="@@YOUR_GOOGLE_DRIVE_FOLDER_ID@@" />
+    <add key="GoogleMapsApiKey" value="@@YOUR_GOOGLE_MAPS_API_KEY@@" />
   </appSettings>
   <connectionStrings />
   <system.web>
@@ -35,8 +35,8 @@
         <remove assembly="Flir.FormatPlugin.IRSDK" />
         <remove assembly="Flir.FormatPlugin.PTW" />
         <remove assembly="FLIRCommunicationsAdapter" />
-        <remove assembly="Flir.Cronos.Common"/>
-        <remove assembly="FLIR.ATS.Format.Utilities"/>
+        <remove assembly="Flir.Cronos.Common" />
+        <remove assembly="FLIR.ATS.Format.Utilities" />
       </assemblies>
     </compilation>
     <httpRuntime targetFramework="4.8" maxRequestLength="52428800" executionTimeout="3600" enableVersionHeader="false" />
@@ -45,6 +45,13 @@
     <authentication mode="None" />
   </system.web>
   <system.webServer>
+    <defaultDocument>
+      <files>
+        <clear />
+        <add value="default.html" />
+      </files>
+    </defaultDocument>
+
     <httpProtocol>
       <customHeaders>
         <remove name="X-Powered-By" />
@@ -57,16 +64,15 @@
 
     <rewrite>
       <rules>
-        <rule name="HTTPS Redirect" stopProcessing="true">
+        <!--<rule name="HTTPS Redirect" stopProcessing="true">
           <match url="(.*)" />
           <conditions>
             <add input="{HTTPS}" pattern="off" ignoreCase="true" />
           </conditions>
           <action type="Redirect" url="https://{HTTP_HOST}/{R:1}" redirectType="Permanent" />
-        </rule>
+        </rule>-->
       </rules>
     </rewrite>
-
 
     <!-- Static Content Caching -->
     <staticContent>
@@ -163,6 +169,7 @@
   <system.codedom>
     <compilers>
       <compiler language="c#;cs;csharp" extension=".cs" warningLevel="4" compilerOptions="/langversion:default /nowarn:1659;1699;1701;612;618" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" warningLevel="4" compilerOptions="/langversion:default /nowarn:41008,40000,40008 /define:_MYTYPE=\&quot;Web\&quot; /optionInfer+" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     </compilers>
   </system.codedom>
 </configuration>
