@@ -37,9 +37,13 @@ jobs:
         working-directory: .\ERH.HeatScans.Reporting
         run: nuget restore .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.csproj 
 
-      - name: Restore NuGet packages (Server)
+      - name: Restore NuGet packages (Wheather)
         working-directory: .\ERH.HeatScans.Reporting
         run: nuget restore .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj
+
+      - name: Restore NuGet packages (Server)
+        working-directory: .\ERH.HeatScans.Reporting
+        run: nuget restore .\ERH.Weather.Client\ERH.Weather.Client.csproj
 
       - name: Set Web.config
         working-directory: .\ERH.HeatScans.Reporting\ERH.HeatScans.Reporting.Server.Framework
@@ -75,7 +79,7 @@ jobs:
         with:
           files: './ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/Web.config'
           search-text: '@@API_ROOT_URL@@'
-          replacement-text: "https://nielander.nl/ERH-Warmtescans-API/api"
+          replacement-text: "${{ vars.API_BASE_URL }}"
           encoding: 'utf8'
 
       - name: Replace prod environment variable - CORS
@@ -118,7 +122,7 @@ jobs:
           username: ${{ secrets.hostuser }}
           password: ${{ secrets.hostpwd }}
           local-dir: ./
-          server-dir: /v024501c/
+          server-dir: /v024501c/ERH-Warmtescans-Api
 
           log-level: verbose
 
