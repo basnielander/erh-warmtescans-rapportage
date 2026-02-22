@@ -92,7 +92,7 @@ jobs:
 
       - name: Publish to folder
         working-directory: .\ERH.HeatScans.Reporting
-        run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl="\published\"
+        run: msbuild .\ERH.HeatScans.Reporting.Server.Framework\ERH.HeatScans.Reporting.Server.Framework.csproj /nologo /verbosity:m /p:PlatformTarget=x86 /p:RuntimeIdentifier=win-x86 /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl="\published\"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
