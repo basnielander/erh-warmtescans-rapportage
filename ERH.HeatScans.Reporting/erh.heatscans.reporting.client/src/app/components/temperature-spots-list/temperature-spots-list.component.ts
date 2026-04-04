@@ -1,11 +1,11 @@
 import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ImageSpot } from '../../models/image-spot.model';
 
 @Component({
   selector: 'app-temperature-spots-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './temperature-spots-list.component.html',
   styleUrl: './temperature-spots-list.component.scss'
 })

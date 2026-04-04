@@ -1,12 +1,12 @@
 import { Component, output, signal, OnInit, input, effect, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Report } from '../../models/report.model';
 
 @Component({
   selector: 'app-report-details-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './report-details-editor.component.html',
   styleUrl: './report-details-editor.component.scss'
 })

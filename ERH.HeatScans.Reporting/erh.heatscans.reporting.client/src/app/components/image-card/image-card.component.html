@@ -1,13 +1,14 @@
 <div class="image-card">
   <div class="image-info">
     <div class="image-name" [title]="image().name">{{ image().name }}</div>
-    
+
     <!-- Temperature Spots List -->
-    <app-temperature-spots-list
-      *ngIf="currentImage()?.spots"
-      [spots]="currentImage()!.spots"
-      (deleteSpot)="onDeleteSpotClick($event)"
-    />
+    @if (currentImage()?.spots) {
+      <app-temperature-spots-list
+        [spots]="currentImage()!.spots"
+        (deleteSpot)="onDeleteSpotClick($event)"
+        />
+    }
 
     <!-- Image Edit Form Component -->
     <app-image-edit-form
@@ -16,75 +17,86 @@
       [originalOutdoor]="image().outdoor ?? true"
       (save)="onFormSave($event)"
       (cancel)="onFormCancel()"
-    />
-  </div>
-  
-  <div class="image-section">
-    <div class="image-and-scale-wrapper">
-      <div class="image-container">
-        <img 
-          *ngIf="imageUrl() && !isLoading() && !hasError()"
-          [src]="imageUrl()!" 
-          [alt]="image().name"
-          [title]="image().name"
-          class="image-thumbnail"
-          loading="lazy"
-          (click)="onImageClick($event)"
-        />
-        <div *ngIf="isLoading()" class="image-loading">
-          <div class="spinner-small"></div>
-          <p>Loading...</p>
-        </div>
-        <div *ngIf="hasError()" class="image-error">
-          <p>⚠️ Failed to load</p>
-        </div>
-      </div>
-
-      <!-- Image Scale Component -->
-      <div class="scale-container" *ngIf="currentImage()?.scale">
-        <app-image-scale [imageScale]="currentImage()!.scale!" />
-      </div>
+      />
     </div>
 
-    <!-- Daylight Photo Display -->
-    @if (currentImage()?.daylightPhotoData) {
-      <div class="daylight-photo-section">
-        <div class="daylight-photo-header" (click)="toggleDaylightPhoto()">
-          <span class="daylight-photo-title">
-            {{ isDaylightPhotoCollapsed() ? '▶' : '▼' }} Daglicht foto
-          </span>
-        </div>
-        @if (!isDaylightPhotoCollapsed()) {
-          <div class="daylight-photo-container">
-            <img 
-              [src]="'data:' + currentImage()!.mimeType + ';base64,' + currentImage()!.daylightPhotoData"
-              [alt]="'Daylight photo of ' + image().name"
-              class="daylight-photo-image"
+    <div class="image-section">
+      <div class="image-and-scale-wrapper">
+        <div class="image-container">
+          @if (imageUrl() && !isLoading() && !hasError()) {
+            <img
+              [src]="imageUrl()!"
+              [alt]="image().name"
+              [title]="image().name"
+              class="image-thumbnail"
               loading="lazy"
-            />
+              (click)="onImageClick($event)"
+              />
+          }
+          @if (isLoading()) {
+            <div class="image-loading">
+              <div class="spinner-small"></div>
+              <p>Loading...</p>
+            </div>
+          }
+          @if (hasError()) {
+            <div class="image-error">
+              <p>⚠️ Failed to load</p>
+            </div>
+          }
+        </div>
+
+        <!-- Image Scale Component -->
+        @if (currentImage()?.scale) {
+          <div class="scale-container">
+            <app-image-scale [imageScale]="currentImage()!.scale!" />
           </div>
         }
       </div>
-    }
 
-    <!-- Exclude/Include Button (View Mode - shown below image) -->
-    <div *ngIf="!isEditing()" class="image-actions-below">
-      <div class="action-buttons">
-        <button 
-          *ngIf="!image().excludeFromReport"
-          class="btn-exclude" 
-          (click)="onToggleExcludeClick($event)"
-          title="Exclude from report">
-          🗑️ Exclude
-        </button>
-        <button 
-          *ngIf="image().excludeFromReport"
-          class="btn-include" 
-          (click)="onToggleExcludeClick($event)"
-          title="Include in report">
-          ↩️ Include
-        </button>
+      <!-- Daylight Photo Display -->
+      @if (currentImage()?.daylightPhotoData) {
+        <div class="daylight-photo-section">
+          <div class="daylight-photo-header" (click)="toggleDaylightPhoto()">
+            <span class="daylight-photo-title">
+              {{ isDaylightPhotoCollapsed() ? '▶' : '▼' }} Daglicht foto
+            </span>
+          </div>
+          @if (!isDaylightPhotoCollapsed()) {
+            <div class="daylight-photo-container">
+              <img
+                [src]="'data:' + currentImage()!.mimeType + ';base64,' + currentImage()!.daylightPhotoData"
+                [alt]="'Daylight photo of ' + image().name"
+                class="daylight-photo-image"
+                loading="lazy"
+                />
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Exclude/Include Button (View Mode - shown below image) -->
+        @if (!isEditing()) {
+          <div class="image-actions-below">
+            <div class="action-buttons">
+              @if (!image().excludeFromReport) {
+                <button
+                  class="btn-exclude"
+                  (click)="onToggleExcludeClick($event)"
+                  title="Exclude from report">
+                  🗑️ Exclude
+                </button>
+              }
+              @if (image().excludeFromReport) {
+                <button
+                  class="btn-include"
+                  (click)="onToggleExcludeClick($event)"
+                  title="Include in report">
+                  ↩️ Include
+                </button>
+              }
+            </div>
+          </div>
+        }
       </div>
     </div>
-  </div>
-</div>

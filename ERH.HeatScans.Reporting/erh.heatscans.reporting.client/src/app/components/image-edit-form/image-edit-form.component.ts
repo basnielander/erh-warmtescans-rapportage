@@ -1,11 +1,11 @@
 import { Component, input, output, signal, computed, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-image-edit-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './image-edit-form.component.html',
   styleUrl: './image-edit-form.component.scss'
 })

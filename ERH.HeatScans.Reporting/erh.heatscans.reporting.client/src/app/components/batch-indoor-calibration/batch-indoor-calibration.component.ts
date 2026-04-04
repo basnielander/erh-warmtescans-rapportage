@@ -1,12 +1,12 @@
 import { Component, output, signal, computed, OnInit, effect, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ImageInfo } from '../../models/image-info.model';
 
 @Component({
   selector: 'app-batch-indoor-calibration',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './batch-indoor-calibration.component.html',
   styleUrl: './batch-indoor-calibration.component.scss'
 })

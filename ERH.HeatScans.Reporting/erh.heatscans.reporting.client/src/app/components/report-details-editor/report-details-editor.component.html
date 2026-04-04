@@ -6,7 +6,7 @@
         <span class="section-icon">📍</span>
         <h3 class="section-title">Locatie</h3>
       </div>
-      
+
       <div class="form-group">
         <label for="address" class="form-label required">
           Adres
@@ -20,134 +20,143 @@
           class="form-input"
           placeholder="Adres"
           required
-        />
-        <span class="field-hint">Adres (straatnaam + huisnummer). Als het een adres buiten Houten is, ook de plaatsnaam invullen.</span>
-      </div>
-      
-      <div class="form-group">
-        <label for="frontDoorDirection" class="form-label">
-          Straatzijde
-        </label>
-        <select
-          id="frontDoorDirection"
-          [(ngModel)]="frontDoorDirection"
-          [disabled]="isSaving()"
-          class="form-select">
-          <option value="">Selecteer straatzijde...</option>
-          <option *ngFor="let option of doorDirectionOptions" [value]="option.value">
-            {{ option.icon }} {{ option.label }}
-          </option>
-        </select>
-        <span class="field-hint">Richting van de huis aan de straatzijde</span>
-      </div>
-    </div>
-    
-    <!-- Weather Conditions Section -->
-    <div class="editor-section">
-      <div class="section-header">
-        <span class="section-icon">🌤️</span>
-        <h3 class="section-title">Weer condities</h3>
-        <a 
-          *ngIf="getWeatherArchiveUrl()" 
-          [href]="getWeatherArchiveUrl()" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class="weather-archive-link"
-          title="Bekijk weerarchief">
-          📊 Weerarchief
-        </a>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="temperature" class="form-label">
-            🌡️ Temperatuur (°C)
-          </label>
-          <input
-            id="temperature"
-            type="number"
-            step="0.1"
-            [value]="temperature()"
-            (input)="onTemperatureChange($any($event.target).value)"
-            [disabled]="isSaving()"
-            class="form-input"
-            placeholder="e.g., 12.5"
-            min="-40"
-            max="30"
           />
+          <span class="field-hint">Adres (straatnaam + huisnummer). Als het een adres buiten Houten is, ook de plaatsnaam invullen.</span>
         </div>
-        
+
         <div class="form-group">
-          <label for="hoursOfSunshine" class="form-label">
-            ☀️ Zonne-uren
-          </label>
-          <input
-            id="hoursOfSunshine"
-            type="number"
-            step="0.5"
-            [value]="hoursOfSunshine()"
-            (input)="onHoursOfSunshineChange($any($event.target).value)"
-            [disabled]="isSaving()"
-            class="form-input"
-            placeholder="e.g., 6.5"
-            min="0"
-            max="24"
-          />
-          <span class="field-hint">Aantal zonne-uren.</span>
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="windSpeed" class="form-label">
-            💨 Windsnelheid (km/u)
-          </label>
-          <input
-            id="windSpeed"
-            type="number"
-            step="0.1"
-            [value]="windSpeed()"
-            (input)="onWindSpeedChange($any($event.target).value)"
-            [disabled]="isSaving()"
-            class="form-input"
-            placeholder="e.g., 15.5"
-            min="0"
-          />
-        </div>
-        
-        <div class="form-group">
-          <label for="windDirection" class="form-label">
-            🧭 Windrichting
+          <label for="frontDoorDirection" class="form-label">
+            Straatzijde
           </label>
           <select
-            id="windDirection"
-            [(ngModel)]="windDirection"
+            id="frontDoorDirection"
+            [(ngModel)]="frontDoorDirection"
             [disabled]="isSaving()"
             class="form-select">
-            <option value="">Selecteer windrichting...</option>
-            <option *ngFor="let option of windDirectionOptions" [value]="option.value">
-              {{ option.icon }} {{ option.label }}
-            </option>
+            <option value="">Selecteer straatzijde...</option>
+            @for (option of doorDirectionOptions; track option) {
+              <option [value]="option.value">
+                {{ option.icon }} {{ option.label }}
+              </option>
+            }
           </select>
+          <span class="field-hint">Richting van de huis aan de straatzijde</span>
         </div>
       </div>
-    </div>
-  </div>
-  
-  <!-- Action Buttons -->
-  <div class="editor-actions">
-    <button 
-      class="btn-save" 
-      (click)="onSave()"
-      [disabled]="isSaving() || !isValid() || !hasChanges()">
-      <span *ngIf="!isSaving()">✅ Opslaan</span>
-      <span *ngIf="isSaving()">⏳ Verwerken...</span>
-    </button>
-    <button 
-      class="btn-cancel" 
-      (click)="onCancel()"
-      [disabled]="isSaving() || !hasChanges()">
-      ❌ Annuleren
-    </button>
-  </div>
-</div>
+
+      <!-- Weather Conditions Section -->
+      <div class="editor-section">
+        <div class="section-header">
+          <span class="section-icon">🌤️</span>
+          <h3 class="section-title">Weer condities</h3>
+          @if (getWeatherArchiveUrl()) {
+            <a
+              [href]="getWeatherArchiveUrl()"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="weather-archive-link"
+              title="Bekijk weerarchief">
+              📊 Weerarchief
+            </a>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="temperature" class="form-label">
+              🌡️ Temperatuur (°C)
+            </label>
+            <input
+              id="temperature"
+              type="number"
+              step="0.1"
+              [value]="temperature()"
+              (input)="onTemperatureChange($any($event.target).value)"
+              [disabled]="isSaving()"
+              class="form-input"
+              placeholder="e.g., 12.5"
+              min="-40"
+              max="30"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="hoursOfSunshine" class="form-label">
+                ☀️ Zonne-uren
+              </label>
+              <input
+                id="hoursOfSunshine"
+                type="number"
+                step="0.5"
+                [value]="hoursOfSunshine()"
+                (input)="onHoursOfSunshineChange($any($event.target).value)"
+                [disabled]="isSaving()"
+                class="form-input"
+                placeholder="e.g., 6.5"
+                min="0"
+                max="24"
+                />
+                <span class="field-hint">Aantal zonne-uren.</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="windSpeed" class="form-label">
+                  💨 Windsnelheid (km/u)
+                </label>
+                <input
+                  id="windSpeed"
+                  type="number"
+                  step="0.1"
+                  [value]="windSpeed()"
+                  (input)="onWindSpeedChange($any($event.target).value)"
+                  [disabled]="isSaving()"
+                  class="form-input"
+                  placeholder="e.g., 15.5"
+                  min="0"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="windDirection" class="form-label">
+                    🧭 Windrichting
+                  </label>
+                  <select
+                    id="windDirection"
+                    [(ngModel)]="windDirection"
+                    [disabled]="isSaving()"
+                    class="form-select">
+                    <option value="">Selecteer windrichting...</option>
+                    @for (option of windDirectionOptions; track option) {
+                      <option [value]="option.value">
+                        {{ option.icon }} {{ option.label }}
+                      </option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="editor-actions">
+            <button
+              class="btn-save"
+              (click)="onSave()"
+              [disabled]="isSaving() || !isValid() || !hasChanges()">
+              @if (!isSaving()) {
+                <span>✅ Opslaan</span>
+              }
+              @if (isSaving()) {
+                <span>⏳ Verwerken...</span>
+              }
+            </button>
+            <button
+              class="btn-cancel"
+              (click)="onCancel()"
+              [disabled]="isSaving() || !hasChanges()">
+              ❌ Annuleren
+            </button>
+          </div>
+        </div>

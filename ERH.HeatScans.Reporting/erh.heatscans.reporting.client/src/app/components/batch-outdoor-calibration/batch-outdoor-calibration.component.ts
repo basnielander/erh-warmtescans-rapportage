@@ -1,12 +1,12 @@
 import { Component, input, output, signal, computed, OnInit, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ImageInfo } from '../../models/image-info.model';
 
 @Component({
   selector: 'app-batch-outdoor-calibration',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './batch-outdoor-calibration.component.html',
   styleUrl: './batch-outdoor-calibration.component.scss'
 })

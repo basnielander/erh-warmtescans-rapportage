@@ -1,12 +1,12 @@
 import { Component, OnInit, input, effect, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MapsService } from '../../services/maps.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-map-display',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './map-display.component.html',
   styleUrls: ['./map-display.component.scss']
 })

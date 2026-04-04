@@ -4,146 +4,170 @@
   </div>
 
   <!-- Menu Bar -->
-  <div class="menu-bar" *ngIf="!isSettingUp() && !isLoadingReport() && addressReport()">
-    <div class="menu-section">
-      <h4 class="menu-section-title">🔧 Tools</h4>
-      <div class="menu-buttons">
-        <button 
-          class="menu-btn menu-btn-outdoor" 
-          (click)="onShowBatchOutdoorCalibration()" 
-          *ngIf="outdoorImagesAvailable()"
-          [disabled]="isUpdatingIndices()">
-          🌤️ Calibrate Outdoor Images
-        </button>
-        <button 
-          class="menu-btn menu-btn-indoor" 
-          (click)="onShowBatchIndoorCalibration()" 
-          *ngIf="indoorImagesAvailable()"
-          [disabled]="isUpdatingIndices()">
-          🏠 Calibrate Indoor Images
-        </button>
-        <button 
-          class="menu-btn menu-btn-export" 
-          (click)="onExportReport()"
-          [disabled]="isUpdatingIndices() || isExportingReport()">
-          {{ isExportingReport() ? '⏳ Exporting...' : '📥 Export Report' }}
-        </button>
+  @if (!isSettingUp() && !isLoadingReport() && addressReport()) {
+    <div class="menu-bar">
+      <div class="menu-section">
+        <h4 class="menu-section-title">🔧 Tools</h4>
+        <div class="menu-buttons">
+          @if (outdoorImagesAvailable()) {
+            <button
+              class="menu-btn menu-btn-outdoor"
+              (click)="onShowBatchOutdoorCalibration()"
+              [disabled]="isUpdatingIndices()">
+              🌤️ Calibrate Outdoor Images
+            </button>
+          }
+          @if (indoorImagesAvailable()) {
+            <button
+              class="menu-btn menu-btn-indoor"
+              (click)="onShowBatchIndoorCalibration()"
+              [disabled]="isUpdatingIndices()">
+              🏠 Calibrate Indoor Images
+            </button>
+          }
+          <button
+            class="menu-btn menu-btn-export"
+            (click)="onExportReport()"
+            [disabled]="isUpdatingIndices() || isExportingReport()">
+            {{ isExportingReport() ? '⏳ Exporting...' : '📥 Export Report' }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  }
 
   <!-- Setup Status -->
-  <div *ngIf="isSettingUp()" class="setup-status loading">
-    <div class="spinner"></div>
-    <p>Setting up address folder...</p>
-  </div>
+  @if (isSettingUp()) {
+    <div class="setup-status loading">
+      <div class="spinner"></div>
+      <p>Setting up address folder...</p>
+    </div>
+  }
 
-  <div *ngIf="setupError()" class="setup-status error">
-    <p>⚠️ {{ setupError() }}</p>
-    <button (click)="setupAddressFolder()" class="btn-retry">Retry Setup</button>
-  </div>
+  @if (setupError()) {
+    <div class="setup-status error">
+      <p>⚠️ {{ setupError() }}</p>
+      <button (click)="setupAddressFolder()" class="btn-retry">Retry Setup</button>
+    </div>
+  }
 
   <!-- Report Loading Status -->
-  <div *ngIf="isLoadingReport()" class="setup-status loading">
-    <div class="spinner"></div>
-    <p>Loading report...</p>
-  </div>
-
-  <div *ngIf="reportError()" class="setup-status error">
-    <p>⚠️ {{ reportError() }}</p>
-    <button (click)="loadReport()" class="btn-retry">Retry Loading Report</button>
-  </div>
-
-  <div class="report-content" *ngIf="!isSettingUp() && !isLoadingReport()">
-    <!-- Report Details & Map Side by Side -->
-    <div class="details-map-section" *ngIf="addressReport()">
-      <div class="report-details-wrapper">
-        <app-report-details-editor
-          [report]="addressReport()!"
-          (save)="onReportDetailsSave($event)"
-          (cancel)="onReportDetailsCancel()">
-        </app-report-details-editor>
-      </div>
-      
-      <div class="map-section">
-        <app-map-display [address]="folderName()"></app-map-display>
-      </div>
+  @if (isLoadingReport()) {
+    <div class="setup-status loading">
+      <div class="spinner"></div>
+      <p>Loading report...</p>
     </div>
+  }
 
-    <!-- Images Section -->
-    <div class="images-section" *ngIf="addressReport() && allIncludedImages().length > 0">
-      <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
-      <div class="update-status" *ngIf="isUpdatingIndices()">
-        <div class="spinner-small"></div>
-        <span>Volgorde van scans voor het rapport update...</span>
-      </div>
-      <div class="images-grid">
-        <div 
-          *ngFor="let image of allIncludedImages(); let i = index"
-          class="image-wrapper"
-          [class.dragging]="draggedIndex() === i"
-          [class.drag-active]="draggedIndex() !== null"
-          draggable="true"
-          (dragstart)="onDragStart($event, i)"
-          (dragover)="onDragOver($event)"
-          (drop)="onDrop($event, i)"
-          (dragend)="onDragEnd()">
-          <div class="drag-handle">⋮⋮</div>
-          <app-image-card 
-            [image]="image"
-            (toggleExclude)="onToggleExcludeImage($event)"
-            (updateImageProperties)="onUpdateImageProperties($event)">
-          </app-image-card>
+  @if (reportError()) {
+    <div class="setup-status error">
+      <p>⚠️ {{ reportError() }}</p>
+      <button (click)="loadReport()" class="btn-retry">Retry Loading Report</button>
+    </div>
+  }
+
+  @if (!isSettingUp() && !isLoadingReport()) {
+    <div class="report-content">
+      <!-- Report Details & Map Side by Side -->
+      @if (addressReport()) {
+        <div class="details-map-section">
+          <div class="report-details-wrapper">
+            <app-report-details-editor
+              [report]="addressReport()!"
+              (save)="onReportDetailsSave($event)"
+              (cancel)="onReportDetailsCancel()">
+            </app-report-details-editor>
+          </div>
+          <div class="map-section">
+            <app-map-display [address]="folderName()"></app-map-display>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Excluded Images Section -->
-    <div class="images-section excluded-section" *ngIf="addressReport() && excludedImages().length > 0">
-      <h3>🗑️ Excluded Images</h3>
-      <p class="section-description">These images have been excluded from the report.</p>
-      <div class="images-grid">
-        <div 
-          *ngFor="let image of excludedImages(); let i = index"
-          class="image-wrapper excluded">
-          <app-image-card 
-            [image]="image"
-            (toggleExclude)="onToggleExcludeImage($event)"
-            (updateImageProperties)="onUpdateImageProperties($event)">
-          </app-image-card>
+      }
+      <!-- Images Section -->
+      @if (addressReport() && allIncludedImages().length > 0) {
+        <div class="images-section">
+          <h3>🖼️ Images in "2. Bewerkt" Folder</h3>
+          @if (isUpdatingIndices()) {
+            <div class="update-status">
+              <div class="spinner-small"></div>
+              <span>Volgorde van scans voor het rapport update...</span>
+            </div>
+          }
+          <div class="images-grid">
+            @for (image of allIncludedImages(); track image; let i = $index) {
+              <div
+                class="image-wrapper"
+                [class.dragging]="draggedIndex() === i"
+                [class.drag-active]="draggedIndex() !== null"
+                draggable="true"
+                (dragstart)="onDragStart($event, i)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event, i)"
+                (dragend)="onDragEnd()">
+                <div class="drag-handle">⋮⋮</div>
+                <app-image-card
+                  [image]="image"
+                  (toggleExclude)="onToggleExcludeImage($event)"
+                  (updateImageProperties)="onUpdateImageProperties($event)">
+                </app-image-card>
+              </div>
+            }
+          </div>
         </div>
-      </div>
+      }
+      <!-- Excluded Images Section -->
+      @if (addressReport() && excludedImages().length > 0) {
+        <div class="images-section excluded-section">
+          <h3>🗑️ Excluded Images</h3>
+          <p class="section-description">These images have been excluded from the report.</p>
+          <div class="images-grid">
+            @for (image of excludedImages(); track image; let i = $index) {
+              <div
+                class="image-wrapper excluded">
+                <app-image-card
+                  [image]="image"
+                  (toggleExclude)="onToggleExcludeImage($event)"
+                  (updateImageProperties)="onUpdateImageProperties($event)">
+                </app-image-card>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <!-- No Images Message -->
+      @if (addressReport() && sortedImages().length === 0) {
+        <div class="no-images">
+          <p>📭 No images found in the "2. Bewerkt" folder.</p>
+        </div>
+      }
     </div>
-
-    <!-- No Images Message -->
-    <div class="no-images" *ngIf="addressReport() && sortedImages().length === 0">
-      <p>📭 No images found in the "2. Bewerkt" folder.</p>
-    </div>
-  </div>
+  }
 
   <!-- Batch Outdoor Calibration Modal -->
-  <app-modal 
-    [isOpen]="showBatchOutdoorCalibration()" 
+  <app-modal
+    [isOpen]="showBatchOutdoorCalibration()"
     title="🌤️ Batch Calibrate Outdoor Images"
     (close)="onBatchCalibrationCancel()">
-    <app-batch-outdoor-calibration
-      *ngIf="showBatchOutdoorCalibration()"
-      [images]="allIncludedImages()"
-      (saveCalibration)="onBatchCalibrationSave($event)"
-      (cancel)="onBatchCalibrationCancel()">
-    </app-batch-outdoor-calibration>
+    @if (showBatchOutdoorCalibration()) {
+      <app-batch-outdoor-calibration
+        [images]="allIncludedImages()"
+        (saveCalibration)="onBatchCalibrationSave($event)"
+        (cancel)="onBatchCalibrationCancel()">
+      </app-batch-outdoor-calibration>
+    }
   </app-modal>
 
   <!-- Batch Indoor Calibration Modal -->
-  <app-modal 
-    [isOpen]="showBatchIndoorCalibration()" 
+  <app-modal
+    [isOpen]="showBatchIndoorCalibration()"
     title="🏠 Batch Calibrate Indoor Images"
     (close)="onBatchCalibrationCancel()">
-    <app-batch-indoor-calibration
-      *ngIf="showBatchIndoorCalibration()"
-      [images]="allIncludedImages()"
-      (saveCalibration)="onBatchCalibrationSave($event)"
-      (cancel)="onBatchCalibrationCancel()">
-    </app-batch-indoor-calibration>
+    @if (showBatchIndoorCalibration()) {
+      <app-batch-indoor-calibration
+        [images]="allIncludedImages()"
+        (saveCalibration)="onBatchCalibrationSave($event)"
+        (cancel)="onBatchCalibrationCancel()">
+      </app-batch-indoor-calibration>
+    }
   </app-modal>
 </div>

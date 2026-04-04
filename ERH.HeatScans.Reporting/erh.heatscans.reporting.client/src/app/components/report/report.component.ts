@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, effect, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MapDisplayComponent } from '../map-display/map-display.component';
 import { ImageCardComponent } from '../image-card/image-card.component';
@@ -20,8 +20,13 @@ import { NavItem } from '../navigation/navigation.component';
   selector: 'app-report',
   standalone: true,
   imports: [
-    CommonModule, MapDisplayComponent, ImageCardComponent, BatchOutdoorCalibrationComponent, BatchIndoorCalibrationComponent, ModalComponent, ReportDetailsEditorComponent
-  ],
+    MapDisplayComponent,
+    ImageCardComponent,
+    BatchOutdoorCalibrationComponent,
+    BatchIndoorCalibrationComponent,
+    ModalComponent,
+    ReportDetailsEditorComponent
+],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })

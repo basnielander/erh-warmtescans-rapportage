@@ -1,5 +1,5 @@
 import { Component, output, OnInit, signal, input, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ImageInfo } from "../../models/image-info.model";
@@ -13,7 +13,7 @@ import { TemperatureSpotsListComponent } from '../temperature-spots-list/tempera
 @Component({
   selector: 'app-image-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImageScaleComponent, ImageEditFormComponent, TemperatureSpotsListComponent],
+  imports: [FormsModule, ImageScaleComponent, ImageEditFormComponent, TemperatureSpotsListComponent],
   templateUrl: './image-card.component.html',
   styleUrl: './image-card.component.scss'
 })
