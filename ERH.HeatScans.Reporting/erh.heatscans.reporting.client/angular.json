@@ -16,7 +16,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "../ERH.HeatScans.Reporting.Server.Framework/ClientApp",
+            "outputPath": "dist/erh.heatscans.reporting.client",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
