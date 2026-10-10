@@ -425,3 +425,4 @@ FodyWeavers.xsd
 /ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/appSettings.xml
 !?**/Nuget.repo/*.nupkg
 !?**/Nuget.repo/[Pp]ackages/*
+/ERH.HeatScans.Reporting/ERH.HeatScans.Reporting.Server.Framework/ClientApp
